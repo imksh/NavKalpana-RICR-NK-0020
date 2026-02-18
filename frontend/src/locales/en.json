@@ -1,0 +1,243 @@
+{
+  "general": {
+    "back": "Back"
+  },
+  "footer": {
+    "title": "Shri Baglamukhi Puja Seva",
+    "description": "We perform sacred puja, anushthan and sadhna with complete devotion and Vedic rituals to bring peace, protection and positive energy in your life.",
+    "quickLinks": "Quick Links",
+    "home": "Home",
+    "about": "About",
+    "services": "Puja Services",
+    "contact": "Contact",
+    "blog": "Blog",
+    "terms": "Terms & Conditions",
+    "admin": "Admin Login",
+    "address": "Nalkheda, Madhya Pradesh",
+    "phone": "+91 9XXXXXXXXX",
+    "email": "info@baglamukhipuja.com",
+    "rights": "All rights reserved."
+  },
+
+  "header": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "blog": "Blog",
+    "puja": "Puja",
+    "mandir": "Maa Baglamukhi Mandir"
+  },
+
+  "about": {
+    "title": "ABOUT US",
+
+    "hero": {
+      "line1": "FAITH, HOPE, AND LOVE IN",
+      "line2": "ACTION EVERY DAY"
+    },
+
+    "intro": {
+      "heading": "ABOUT US",
+      "para1": "We started our journey with a simple belief: everyone deserves peace, prosperity, and spiritual harmony in their lives. Guided by the wisdom and experience of Aacharya Pandit Chetan Tiwari, we’re here to help you connect with the divine through meaningful and authentic Vedic rituals.",
+      "para2": "Every pooja we perform is more than just a ceremony—it’s a heartfelt experience, tailored to your unique needs and life’s moments. Whether you’re stepping into a new chapter, seeking blessings for your family, or simply looking for guidance, we’re by your side, ensuring each ritual is filled with devotion, care, and the sacredness it deserves.",
+      "para3": "In today’s busy world, we aim to make these ancient traditions accessible and relevant, helping you find balance and peace while staying connected to your roots. Let’s walk this spiritual journey together, preserving the wisdom of the past while embracing the possibilities of the present."
+    },
+
+    "mission": {
+      "title": "OUR MISSION",
+      "heading1": "OUR MISSION TO SERVE,",
+      "heading2": "LOVE, AND GROW",
+      "para1": "Our mission is simple yet profound: to bring the divine blessings of Vedic rituals into the lives of those seeking solace, guidance, or a deeper connection with the sacred.",
+      "para2": "Whether you’re seeking to overcome obstacles, achieve your dreams, or simply find inner peace, we are here to walk beside you on your spiritual path.",
+      "para3": "More than anything, we aspire to be your trusted guide, helping you experience the transformative power of faith and divine grace."
+    },
+
+    "whatWeDo": {
+      "title": "WHAT WE DO",
+      "heading1": "LIVING OUR",
+      "heading2": "FAITH TOGETHER"
+    },
+
+    "pastor": {
+      "title": "PASTOR'S MESSAGE",
+      "heading1": "YOUR GENEROSITY MAKES A",
+      "heading2": "PROFOUND IMPACT",
+      "para1": "Acharya Pandit Chetan Tiwari was born in a Brahmin family in a small village of Nalkheda. His father Shri was devoted to religious activities such as panditya Karm, Puja-Path and Bhagwat Katha. Inspired by his father, Acharya Pandit Chetan Tiwari learned to perform daily Puja-Path, Pranayama and meditation in his childhood. He started his education under Shri Shantiswaroopanand Ji Maharaj at Chardham Vidya Peeth in Ujjain.",
+      "para2": "Later, Acharya Pandit Chetan Tiwari went to Kashi (Varanasi) and studied Vedas, Upanishads, rituals and astrology from scholars. He took initiation in Tantra and did sadhana sequence at Manikarnika after which he did sadhana sequence at places like Vindhyachal, Kamakhya and deepened his understanding of the ancient teachings. His mission was to uplift Sanatan Dharma, revive Vedic religion and re-establish Vedic traditions."
+    }
+  },
+
+  "services": {
+    "items": [
+      {
+        "title": "Personalized Puja Services",
+        "content": "We’re here to make your spiritual journey unique and meaningful. Whether you’re looking to overcome obstacles, celebrate life’s milestones, or bring positive energy into your home, we offer personalized Vedic rituals designed just for you."
+      },
+      {
+        "title": "Bringing People Together",
+        "content": "Faith becomes even more beautiful when shared. We focus on building a sense of community through group rituals, spiritual gatherings, and satsangs."
+      },
+      {
+        "title": "Sharing Ancient Wisdom",
+        "content": "The timeless teachings of the Vedas hold answers to life’s deepest questions. We help you understand and apply this sacred knowledge in daily life."
+      }
+    ]
+  },
+
+  "terms": {
+    "title": "Terms and Conditions",
+    "Welcome": "Welcome to",
+    "intro": "These Terms and Conditions govern your use of our website and the services offered through it. By accessing or using our website, you agree to comply with and be bound by the following terms.",
+    "items": [
+      {
+        "title": "Acceptance of Terms",
+        "content": "By accessing or using this website, you agree to comply with and be bound by these Terms and Conditions. If you do not agree, please discontinue use of the website."
+      },
+      {
+        "title": "Nature of Services",
+        "content": "All puja, anushthan, mantra sadhana, and spiritual services are performed according to traditional Vedic practices and are based on faith and belief."
+      },
+      {
+        "title": "No Guarantee of Results",
+        "content": "We do not guarantee any specific outcome or result. Spiritual practices may vary in effectiveness depending on individual belief and personal circumstances."
+      },
+      {
+        "title": "Payments and Donations",
+        "content": "All payments or donations made toward spiritual services are voluntary. Once a service has been initiated, payments are non-refundable unless clearly stated otherwise."
+      },
+      {
+        "title": "User Responsibilities",
+        "content": "Users agree not to misuse the website, provide false information, or engage in activities that may harm the website or its associated services."
+      },
+      {
+        "title": "Limitation of Liability",
+        "content": "We shall not be held responsible for any loss, damage, or personal decisions made by users based on information provided through this website."
+      },
+      {
+        "title": "External Links",
+        "content": "This website may contain links to third-party websites. We are not responsible for the content, policies, or practices of those external websites."
+      },
+      {
+        "title": "Modifications to Terms",
+        "content": "We reserve the right to modify or update these Terms and Conditions at any time without prior notice. Continued use of the website indicates acceptance of the revised terms."
+      },
+      {
+        "title": "Governing Law",
+        "content": "These Terms and Conditions shall be governed and interpreted in accordance with the laws of India."
+      }
+    ]
+  },
+  "contact": {
+    "title": "CONTACT US",
+    "heading": {
+      "part1": "REACH OUT TO OUR",
+      "part2": "SUPPORT",
+      "part3": ""
+    },
+    "heroText": "We’re here to be your spiritual companion, guiding you through personalized Vedic rituals and helping you find peace, prosperity, and solutions to life’s challenges. Whatever your needs may be, we’re just a call or message away.",
+
+    "cards": {
+      "call": {
+        "label": "Give us a call",
+        "phone1": "(+91) XXXXXXXXXX",
+        "phone2": "(+91) XXXXXXXXXX"
+      },
+      "mail": {
+        "label": "Send us a message",
+        "email1": "info@gmail.com",
+        "email2": "mandir@gmail.com"
+      },
+      "location": {
+        "label": "Visit our location",
+        "address": "Nalkheda, Madhya Pradesh"
+      }
+    },
+
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "message": "Message",
+      "services": "Select Services",
+      "submit": "Submit",
+      "clear": "Clear",
+      "loading": "Submitting..."
+    }
+  },
+
+  "blogs": {
+    "title": "Blog",
+    "button": "Read More"
+  },
+
+  "home": {
+    "hero": {
+      "titlePrimary": "MAKE A DIFFERENCE TODAY",
+      "titleSecondary": "LOVING GOD, LOVING OTHERS AND SERVING THE WORLD!",
+      "description": "Experience God’s love and grace in a welcoming community where faith grows, hope thrives, and everyone is cherished.",
+      "contactBtn": "Contact Us"
+    },
+
+    "movingText": {
+      "mantra": "ॐ ह्लीं बगलामुखि सर्वदुष्टानां वशीकुरुं बन्धनं। मोक्षं प्रदाय महाक्रूरीं सर्वशत्रु विनाशिनीं।"
+    },
+
+    "aboutPreview": {
+      "button": "Read More About Us"
+    },
+
+    "missionPreview": {
+      "contactBtn": "Contact Us"
+    },
+
+    "blogPreview": {
+      "label": "LATEST POST",
+      "heading1": "READ OUR",
+      "heading2": "LATEST ARTICLES"
+    },
+
+    "newsletter": {
+      "label": "SUBSCRIBE NEWSLETTER",
+      "heading1": "KEEP UP WITH OUR",
+      "heading2": "LATEST NEWS",
+      "description": "Subscribe to our newsletter to stay informed about upcoming events, inspiring messages, and the latest news from our community.",
+      "placeholder": "Your Email...",
+      "button": "Subscribe"
+    }
+  },
+  "puja": {
+    "title": "PUJA",
+    "ourServices": "OUR SERVICES",
+    "price": "Puja Price",
+    "open": "Open Puja"
+  },
+  "coreValue": {
+    "title": "OUR CORE VALUE",
+
+    "faqs": [
+      {
+        "q": "Who can perform Baglamukhi Anushthan?",
+        "a": "Anyone facing challenges in life such as legal issues, personal struggles, financial problems, or those seeking spiritual growth can perform Baglamukhi Anushthan. It is open to all devotees who seek Maa Baglamukhi’s blessings."
+      },
+      {
+        "q": "When should I perform Baglamukhi Anushthan?",
+        "a": "It is best performed during Navratri, Gupt Navratri, or on astrologically favorable days. However, it can also be performed during difficult phases of life."
+      },
+      {
+        "q": "What are the benefits of Baglamukhi Anushthan?",
+        "a": "It helps in victory over enemies, success in legal matters, removal of negativity, mental peace, protection from evil forces, and spiritual strength."
+      },
+      {
+        "q": "Is it necessary to perform the ritual at a specific time?",
+        "a": "Yes. Performing the anushthan during an auspicious muhurat and correct mantra timing significantly increases its effectiveness. It should always be done under expert guidance."
+      }
+    ],
+
+    "helpCard": {
+      "titleLine1": "We're Here",
+      "titleLine2": "To Help",
+      "description": "Need assistance? We are here to provide guidance, spiritual support, and complete help for your puja and anushthan needs.",
+      "button": "Contact Us"
+    }
+  }
+}

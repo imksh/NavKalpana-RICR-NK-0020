@@ -1,0 +1,3 @@
+const uploadMultipleToCloudinary = (multipleImages) =>{
+    
+}

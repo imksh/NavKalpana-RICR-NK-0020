@@ -1,0 +1,206 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+/* ========================= */
+/*        ROOT THEME         */
+/* ========================= */
+
+:root {
+  /* ===== BRAND ===== */
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+
+  --color-secondary: #6366f1;
+  --color-secondary-hover: #5458e6;
+
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  /* ===== BACKGROUND ===== */
+  --bg-main: #f9fafb;
+  --bg-surface: #ffffff;
+  --bg-muted: #f3f4f6;
+  --bg-gradient: linear-gradient(135deg, #4f46e5, #2563eb);
+
+  /* ===== TEXT ===== */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --text-inverse: #ffffff;
+
+  /* ===== BORDER ===== */
+  --border-color: #e5e7eb;
+  --border-focus: #4f46e5;
+
+  /* ===== CARD ===== */
+  --card-bg: #ffffff;
+  --card-hover: #f3f4f6;
+
+  /* ===== SHADOW ===== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.12);
+
+  /* ===== RADIUS ===== */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* ===== TRANSITION ===== */
+  --transition-fast: 0.2s ease-in-out;
+  --transition-normal: 0.3s ease;
+}
+
+/* ========================= */
+/*        DARK MODE          */
+/* ========================= */
+
+[data-theme="dark"] {
+  --bg-main: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-muted: #334155;
+  --bg-gradient: linear-gradient(135deg, #312e81, #1e3a8a);
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-inverse: #0f172a;
+
+  --border-color: #334155;
+
+  --card-bg: #1e293b;
+  --card-hover: #273549;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
+/* ========================= */
+/*        GLOBAL BASE        */
+/* ========================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  transition:
+    background var(--transition-normal),
+    color var(--transition-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+/* ========================= */
+/*        SELECTION          */
+/* ========================= */
+
+::selection {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* ========================= */
+/*        SCROLLBAR          */
+/* ========================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 10px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
+}
+
+/* Optional utility */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========================= */
+/*        UTILITIES          */
+/* ========================= */
+
+.bg-surface {
+  background: var(--bg-surface);
+}
+
+.bg-card {
+  background: var(--card-bg);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.border-default {
+  border: 1px solid var(--border-color);
+}
+
+.shadow-card {
+  box-shadow: var(--shadow-md);
+}
+
+.gradient-bg {
+  background: var(--bg-gradient);
+}
+
+.focus-ring:focus {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* ========================= */
+/*        ANIMATIONS         */
+/* ========================= */
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* Smooth theme transitions */
+* {
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
