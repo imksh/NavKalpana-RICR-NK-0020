@@ -8,7 +8,7 @@ dotenv.config();
 await mongoose.connect(process.env.MONGO_URI);
 console.log("MongoDB Connected");
 
-const seedCourses = async () => {
+export const seedCourses = async () => {
   try {
     await Course.deleteMany();
 
@@ -26,6 +26,7 @@ const seedCourses = async () => {
           en: "Full Stack Web Development",
           hi: "फुल स्टैक वेब डेवलपमेंट"
         },
+        slug:"fsd",
         description: {
           en: "Master MERN stack with real-world projects.",
           hi: "रियल वर्ल्ड प्रोजेक्ट्स के साथ MERN स्टैक सीखें।"
@@ -46,6 +47,7 @@ const seedCourses = async () => {
           en: "Data Structures & Algorithms",
           hi: "डेटा स्ट्रक्चर और एल्गोरिदम"
         },
+        slug:"dsa",
         description: {
           en: "Strengthen problem-solving skills for interviews.",
           hi: "इंटरव्यू के लिए प्रॉब्लम सॉल्विंग स्किल मजबूत करें।"
@@ -66,6 +68,7 @@ const seedCourses = async () => {
           en: "Introduction to Programming",
           hi: "प्रोग्रामिंग का परिचय"
         },
+        slug:"introduction-to-programming",
         description: {
           en: "Perfect beginner course to start coding.",
           hi: "कोडिंग शुरू करने के लिए बेहतरीन शुरुआती कोर्स।"

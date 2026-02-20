@@ -40,4 +40,6 @@ const assignmentSubmissionSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-export default mongoose.model("AssignmentSubmission", assignmentSubmissionSchema);
+const AssignmentSubmission= mongoose.model("AssignmentSubmission", assignmentSubmissionSchema);
+
+export default AssignmentSubmission;

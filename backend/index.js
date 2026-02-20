@@ -13,6 +13,8 @@ import publicRouter from "./src/routers/public.route.js";
 import adminRouter from "./src/routers/admin.route.js";
 import studentRouter from "./src/routers/student.route.js";
 import instructorRouter from "./src/routers/instructor.route.js";
+import courseRouter from "./src/routers/course.route.js";
+import jobRouter from "./src/routers/job.route.js";
 
 const app = express();
 
@@ -20,7 +22,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173","http://10.62.251.71:5173"],
+    origin: ["http://localhost:5173", "http://10.62.251.71:5173"],
     credentials: true,
   }),
 );
@@ -36,6 +38,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/instructor", instructorRouter);
+app.use("/api/course", courseRouter);
+app.use("/api/jobs", jobRouter);
 
 //home route
 app.get("/", (req, res) => {

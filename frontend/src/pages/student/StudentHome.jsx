@@ -9,10 +9,16 @@ import { SiQuizlet } from "react-icons/si";
 import { useAuthStore } from "../../store/useAuthStore";
 import LearningHeatmap from "../../components/student/LearningHeatmap";
 import FloatingEmojis from "../../components/FloatingEmojis";
+import { useStudentStore } from "../../store/useStudentStore";
+import { useEffect } from "react";
 
 const StudentHome = () => {
   const { user } = useAuthStore();
-  
+  const { stats, fetchStats } = useStudentStore();
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-12 md:pt-32 pb-16">
@@ -38,33 +44,27 @@ const StudentHome = () => {
         <StatCard
           icon={<FiCheckCircle />}
           title="Assignments"
-          value="12 / 15"
+          value={`${stats.submittedAssignments || 0} / ${stats.totalAssignments || 0}`}
           color="text-(--color-success)"
         />
 
         <StatCard
           icon={<FiAward />}
           title="Skills Acquired"
-          value="8 / 12"
+          value={`${stats.skillsAcquired || 0} / ${stats.totalSkills || 0}`}
           color="text-(--color-accent)"
         />
 
         <StatCard
           icon={<SiQuizlet />}
           title="Quizzes"
-          value="10 / 12"
+          value={`${stats.attemptedQuizzes || 0} / ${stats.totalQuizzes || 0}`}
           color="text-(--color-warning)"
         />
       </section>
 
       <section className="mb-12">
-        <LearningHeatmap
-          data={[
-            { date: "2026-02-18", count: 3 },
-            { date: "2026-02-17", count: 1 },
-            { date: "2026-02-15", count: 2 },
-          ]}
-        />
+        <LearningHeatmap />
       </section>
 
       {/* ================= CHART + CALENDAR ================= */}

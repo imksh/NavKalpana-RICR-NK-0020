@@ -1,8 +1,22 @@
 import HeatMap from "@uiw/react-heat-map";
+import { useEffect } from "react";
 import { useMemo, useState } from "react";
 import { FiCalendar } from "react-icons/fi";
+import api from "../../config/api";
 
-const LearningHeatmap = ({ data = [], streak = 7 }) => {
+const LearningHeatmap = () => {
+  const [data, setData] = useState([]);
+  const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    const fetch = async () => {
+      const res = await api.get("/student/learning-activity");
+      setData(res.data.activity);
+      setStreak(res.data.streak);
+    };
+    fetch();
+  }, []);
+
   /* ============================= */
   /*       TRANSFORM DATA          */
   /* ============================= */

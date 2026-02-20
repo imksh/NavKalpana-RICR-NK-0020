@@ -9,7 +9,7 @@ dotenv.config();
 await mongoose.connect(process.env.MONGO_URI);
 console.log("MongoDB Connected");
 
-const seedLearningActivity = async () => {
+export const seedLearningActivity = async () => {
   try {
     await LearningActivity.deleteMany();
 

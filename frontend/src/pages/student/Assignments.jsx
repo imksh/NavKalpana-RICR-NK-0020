@@ -1,37 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import api from '../../config/api';
 
 const Assignments = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
 
-  const assignments = [
-    {
-      id: 1,
-      title: "Build React Todo App",
-      course: "Full Stack Development",
-      deadline: "2026-02-25T23:59:59",
-      status: "Pending",
-      marks: null,
-    },
-    {
-      id: 2,
-      title: "Implement Binary Search",
-      course: "Data Structures",
-      deadline: "2026-02-20T23:59:59",
-      status: "Submitted",
-      marks: null,
-    },
-    {
-      id: 3,
-      title: "Create REST API",
-      course: "Backend Development",
-      deadline: "2026-02-18T23:59:59",
-      status: "Evaluated",
-      marks: 90,
-    },
-  ];
+  const [assignments, setAssignments] = useState([]);
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      const res = await api.get("/student/assignments");
+      setAssignments(res.data);
+    };
+    fetchAssignments();
+  }, []);
 
   const filteredAssignments =
     filter === "all"
@@ -116,7 +101,7 @@ const Assignments = () => {
 
             {/* OPEN BUTTON */}
             <button
-              onClick={() => navigate(`/student/assignments/${assignment.id}`)}
+              onClick={() => navigate(`/student/assignments/${assignment._id}`)}
               className="mt-5 w-full py-2 rounded-xl bg-(--color-primary) text-white hover:bg-(--color-primary-hover)"
             >
               Open Assignment

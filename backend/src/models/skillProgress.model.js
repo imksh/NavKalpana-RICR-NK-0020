@@ -3,22 +3,22 @@ import mongoose from "mongoose";
 const skillProgressSchema = new mongoose.Schema({
   studentId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
   },
 
   skillName: {
-    type: String
+    type: String,
   },
 
   acquiredFromCourse: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Course"
+    ref: "Course",
   },
 
   acquiredAt: {
-    type: Date
-  }
-
+    type: Date,
+  },
 });
 
-export default mongoose.model("SkillProgress", skillProgressSchema);
+const SkillProgress = mongoose.model("SkillProgress", skillProgressSchema);
+export default SkillProgress;
