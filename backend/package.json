@@ -18,7 +18,8 @@
     "seed:lessons": "node ./src/seeders/seedLessons.js",
     "seed:modules": "node ./src/seeders/seedModules.js",
     "seed:quizzes": "node ./src/seeders/seedQuizzes.js",
-    "seed:skillProgress": "node ./src/seeders/seedSkillProgress.js"
+    "seed:skillProgress": "node ./src/seeders/seedSkillProgress.js",
+    "seed:jobs": "node ./src/seeders/seedJobs.js"
   },
   "author": "Karan Kumar",
   "license": "ISC",

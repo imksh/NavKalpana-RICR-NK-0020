@@ -2,36 +2,47 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiBookOpen, FiUser, FiArrowRight } from "react-icons/fi";
 import { motion } from "framer-motion";
+import api from "../../config/api";
+import useUiStore from "../../store/useUiStore";
 
 const MyCourses = () => {
   const navigate = useNavigate();
+  const { lang } = useUiStore();
   const [courses, setCourses] = useState([]);
 
-  // Replace with API call
   useEffect(() => {
-    setCourses([
-      {
-        id: 1,
-        slug: "fsd",
-        title: "Full Stack Web Development",
-        instructor: "Rohit Sharma",
-        thumbnail: "https://placehold.co/600x400",
-        progress: 65,
-        attendance: 88,
-        skills: ["React", "Node", "MongoDB"],
-      },
-      {
-        id: 2,
-        slug:"dsa",
-        title: "Data Structures & Algorithms",
-        instructor: "Anjali Verma",
-        thumbnail: "https://placehold.co/600x400",
-        progress: 40,
-        attendance: 92,
-        skills: ["Arrays", "Trees", "Graphs"],
-      },
-    ]);
+    const fetch = async () => {
+      const res = await api.get("/student/courses");
+      setCourses(res.data);
+    };
+    fetch();
   }, []);
+
+  // Replace with API call
+  // useEffect(() => {
+  //   setCourses([
+  //     {
+  //       id: 1,
+  //       slug: "fsd",
+  //       title: "Full Stack Web Development",
+  //       instructor: "Rohit Sharma",
+  //       thumbnail: "https://placehold.co/600x400",
+  //       progress: 65,
+  //       attendance: 88,
+  //       skills: ["React", "Node", "MongoDB"],
+  //     },
+  //     {
+  //       id: 2,
+  //       slug: "dsa",
+  //       title: "Data Structures & Algorithms",
+  //       instructor: "Anjali Verma",
+  //       thumbnail: "https://placehold.co/600x400",
+  //       progress: 40,
+  //       attendance: 92,
+  //       skills: ["Arrays", "Trees", "Graphs"],
+  //     },
+  //   ]);
+  // }, []);
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
@@ -60,12 +71,14 @@ const MyCourses = () => {
 
             <div className="p-6">
               {/* TITLE */}
-              <h3 className="text-xl font-semibold mb-2">{course.title}</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                {course.title[lang]}
+              </h3>
 
               {/* INSTRUCTOR */}
               <div className="flex items-center gap-2 text-(--text-secondary) text-sm mb-4">
                 <FiUser size={14} />
-                {course.instructor}
+                {course.instructor.name}
               </div>
 
               {/* PROGRESS BAR */}
@@ -87,7 +100,7 @@ const MyCourses = () => {
               <div className="text-sm mb-4 text-(--text-secondary)">
                 Attendance:
                 <span className="text-(--color-success) font-medium ml-1">
-                  {course.attendance}%
+                  {course.attendancePercent}%
                 </span>
               </div>
 
@@ -105,7 +118,11 @@ const MyCourses = () => {
 
               {/* CONTINUE BUTTON */}
               <button
-                onClick={() => navigate(`/student/courses/${course.slug}`)}
+                onClick={() =>
+                  navigate(`/student/courses/${course.slug}`, {
+                    state: course,
+                  })
+                }
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-(--color-primary) text-white hover:bg-(--color-primary-hover) transition-all"
               >
                 Continue Learning <FiArrowRight />

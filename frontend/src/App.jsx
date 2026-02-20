@@ -32,7 +32,6 @@ import Login from "./pages/Login";
 import AdminHome from "./pages/admin/AdminHome";
 import MyCourses from "./pages/student/MyCourses";
 import CoursePage from "./pages/student/CoursePage";
-import ModulePage from "./pages/student/ModulePage";
 import AssignmentPage from "./pages/student/AssignmentPage";
 import Assignments from "./pages/student/Assignments";
 import QuizPage from "./pages/student/QuizPage";
@@ -45,7 +44,8 @@ import StudentProgress from "./pages/student/StudentProgress";
 import StudentTutor from "./pages/student/StudentTutor";
 import FloatingAskAI from "./components/student/FloatingAskAI";
 import StudentProfile from "./pages/student/StudentProfile";
-import useLenis from './hooks/useLenis';
+import useLenis from "./hooks/useLenis";
+import LessonPage from "./pages/student/LessonPage";
 
 const App = () => {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
@@ -177,9 +177,9 @@ const App = () => {
         />
 
         <Route
-          path="/student/courses/:course/:module"
+          path="/student/courses/:course/:slug"
           element={
-            user?.role === "student" ? <ModulePage /> : <Navigate to="/login" />
+            user?.role === "student" ? <LessonPage /> : <Navigate to="/login" />
           }
         />
 

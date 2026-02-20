@@ -194,7 +194,7 @@ const StudentHeader = () => {
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
                 >
-                  {t("header.profile")}
+                  {t("header.attendance")}
                 </button>
 
                 <button

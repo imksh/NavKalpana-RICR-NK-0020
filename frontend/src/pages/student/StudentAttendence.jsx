@@ -1,72 +1,82 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CourseAttendanceCard from "../../components/student/CourseAttendanceCard";
 import AttendanceHeatmap from "../../components/student/AttendanceHeatmap";
+import api from "../../config/api";
 
 const StudentAttendance = () => {
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [courseAttendance, setCourseAttendance] = useState([]);
+  const [streak, setStreak] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const attendanceData = [
-    { date: "2026-02-01", status: "Present" },
-    { date: "2026-02-02", status: "Absent" },
-    { date: "2026-02-03", status: "Present" },
-    { date: "2026-02-04", status: "Present" }
-  ];
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        const res = await api.get("/student/attendance");
 
-  const courseAttendance = [
-    { name: "Full Stack Development", present: 18, total: 22 },
-    { name: "Data Structures", present: 12, total: 20 },
-    { name: "Operating Systems", present: 16, total: 18 }
-  ];
-
-  const totalClasses = attendanceData.length;
-  const presentDays = attendanceData.filter(
-    (a) => a.status === "Present"
-  ).length;
-
-  const attendancePercent = Math.round(
-    (presentDays / totalClasses) * 100
-  );
-
-  // 🔥 Streak calculation
-  const streak = useMemo(() => {
-    let count = 0;
-
-    for (let i = attendanceData.length - 1; i >= 0; i--) {
-      if (attendanceData[i].status === "Present") {
-        count++;
-      } else {
-        break;
+        setAttendanceData(res.data.dailyAttendance || []);
+        setCourseAttendance(res.data.courseAttendance || []);
+        setStreak(res.data.streak || 0);
+      } catch (error) {
+        console.log("Error fetching attendance:", error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    return count;
+    fetchAttendance();
+  }, []);
+
+  /* ===== Derived Stats ===== */
+
+  const totalClasses = attendanceData?.length || 0;
+
+  const presentDays = useMemo(() => {
+    return attendanceData.filter(
+      (a) => a.status === "Present"
+    ).length;
   }, [attendanceData]);
 
+  const attendancePercent = totalClasses
+    ? Math.round((presentDays / totalClasses) * 100)
+    : 0;
+
+  if (loading) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center">
+        Loading attendance...
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16 space-y-10">
+    <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-20">
 
-      {/* TITLE */}
-      <h1 className="text-3xl font-semibold">
-        Attendance
-      </h1>
+      {/* ===== HEADER ===== */}
+      <div className="mb-10">
+        <h1 className="text-3xl font-semibold mb-2">
+          Attendance Overview
+        </h1>
+        <p className="text-(--text-secondary)">
+          Track your class consistency and eligibility.
+        </p>
+      </div>
 
-      {/* OVERALL + STREAK GRID */}
-      <div className="grid md:grid-cols-2 gap-8">
+      {/* ===== TOP SUMMARY GRID ===== */}
+      <div className="grid md:grid-cols-3 gap-6 mb-10">
 
-        {/* OVERALL CARD */}
-        <div className="bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl">
-
-          <h2 className="text-lg font-medium mb-4">
+        {/* Overall */}
+        <div className="bg-(--card-bg) border border-(--border-color) p-6 rounded-3xl">
+          <h3 className="text-sm text-(--text-secondary) mb-2">
             Overall Attendance
-          </h2>
+          </h3>
+          <p className="text-3xl font-bold">
+            {attendancePercent}%
+          </p>
 
-          <div className="flex justify-between mb-2 text-sm">
-            <span>Attendance Percentage</span>
-            <span>{attendancePercent}%</span>
-          </div>
-
-          <div className="w-full h-3 bg-(--bg-muted) rounded-full">
+          <div className="w-full h-2 bg-(--bg-muted) rounded-full mt-4">
             <div
-              className={`h-3 rounded-full ${
+              className={`h-2 rounded-full ${
                 attendancePercent >= 75
                   ? "bg-(--color-success)"
                   : "bg-(--color-danger)"
@@ -74,55 +84,65 @@ const StudentAttendance = () => {
               style={{ width: `${attendancePercent}%` }}
             />
           </div>
-
-          <p className="mt-3 text-(--text-secondary) text-sm">
-            Present: {presentDays} / {totalClasses} Classes
-          </p>
-
         </div>
 
-        {/* STREAK CARD */}
-        <div className="bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl flex flex-col justify-center">
+        {/* Present Days */}
+        <div className="bg-(--card-bg) border border-(--border-color) p-6 rounded-3xl">
+          <h3 className="text-sm text-(--text-secondary) mb-2">
+            Present Days
+          </h3>
+          <p className="text-3xl font-bold">
+            {presentDays}
+          </p>
+          <p className="text-(--text-secondary) text-sm mt-2">
+            out of {totalClasses} classes
+          </p>
+        </div>
 
-          <h2 className="text-lg font-medium mb-3">
-            Attendance Streak
-          </h2>
-
-          <p className="text-4xl font-bold text-(--color-primary)">
+        {/* Streak */}
+        <div className="bg-(--card-bg) border border-(--border-color) p-6 rounded-3xl">
+          <h3 className="text-sm text-(--text-secondary) mb-2">
+            Current Streak
+          </h3>
+          <p className="text-3xl font-bold text-(--color-primary)">
             🔥 {streak} Days
           </p>
-
-          <p className="text-(--text-secondary) text-sm mt-2">
-            Keep maintaining consistency!
-          </p>
-
         </div>
+
       </div>
 
-      {/* LOW WARNING */}
-      {attendancePercent < 75 && (
-        <div className="p-4 rounded-xl bg-(--color-danger) text-white">
-          ⚠ Your attendance is below 75%. You may not be eligible for exams.
+      {/* Warning */}
+      {attendancePercent > 0 && attendancePercent < 75 && (
+        <div className="mb-10 p-4 rounded-xl bg-(--color-danger) text-white">
+          ⚠ Attendance below 75%. Improve consistency.
         </div>
       )}
 
-      {/* HEATMAP */}
-      <AttendanceHeatmap data={attendanceData} />
+      {/* ===== HEATMAP ===== */}
+      <div className="mb-14">
+        <AttendanceHeatmap data={attendanceData} />
+      </div>
 
-      {/* COURSE-WISE ATTENDANCE */}
+      {/* ===== COURSE-WISE ===== */}
       <div>
         <h2 className="text-xl font-semibold mb-6">
           Course-wise Attendance
         </h2>
 
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {courseAttendance.map((course, index) => (
-            <CourseAttendanceCard
-              key={index}
-              course={course}
-            />
-          ))}
-        </div>
+        {courseAttendance.length === 0 ? (
+          <p className="text-(--text-secondary)">
+            No course attendance data available.
+          </p>
+        ) : (
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {courseAttendance.map((course) => (
+              <CourseAttendanceCard
+                key={course._id}
+                course={course}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
     </div>

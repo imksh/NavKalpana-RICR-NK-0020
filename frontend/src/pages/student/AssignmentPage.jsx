@@ -1,40 +1,95 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiUpload, FiLink } from "react-icons/fi";
+import { useParams } from "react-router-dom";
+import api from "../../config/api";
 
 const AssignmentPage = () => {
-  const assignment = {
-    title: "Build a React Todo App",
-    description:
-      "Create a fully functional Todo application using React. Implement add, delete and mark complete functionality.",
-    deadline: "2026-02-25T23:59:59",
-    maxMarks: 100
-  };
+  const { id } = useParams();
+
+  const [assignment, setAssignment] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [textSubmission, setTextSubmission] = useState("");
   const [externalLink, setExternalLink] = useState("");
   const [file, setFile] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
+
+  const [status, setStatus] = useState("Pending");
   const [marks, setMarks] = useState(null);
-  const [feedback, setFeedback] = useState("");
+  const [feedback, setFeedback] = useState(null);
 
-  const deadlineDate = new Date(assignment.deadline);
-  const isLate = new Date() > deadlineDate;
+  /* ================= FETCH ASSIGNMENT ================= */
 
-  const handleSubmit = () => {
+  useEffect(() => {
+    const fetchAssignment = async () => {
+      try {
+        const res = await api.get(`/student/assignments/${id}`);
+        setAssignment(res.data);
+        setStatus(res.data.status);
+        setMarks(res.data.marks);
+        setFeedback(res.data.feedback);
+      } catch (error) {
+        console.log("Error fetching assignment:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssignment();
+  }, [id]);
+
+  /* ================= SUBMIT ASSIGNMENT ================= */
+
+  const handleSubmit = async () => {
     if (!textSubmission && !externalLink && !file) {
       alert("Please submit at least one format.");
       return;
     }
 
-    setSubmitted(true);
+    try {
+      const formData = new FormData();
 
-    // Dummy evaluation
-    setTimeout(() => {
-      setMarks(85);
-      setFeedback("Good implementation. Improve UI responsiveness.");
-    }, 1500);
+      if (textSubmission) {
+        formData.append("submissionType", "text");
+        formData.append("content", textSubmission);
+      }
+
+      if (externalLink) {
+        formData.append("submissionType", "link");
+        formData.append("content", externalLink);
+      }
+
+      if (file) {
+        formData.append("submissionType", "file");
+        formData.append("file", file);
+      }
+
+      await api.post(`/student/assignments/${id}/submit`, formData);
+
+      setStatus("Submitted");
+    } catch (error) {
+      console.log("Submission error:", error);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center">
+        Loading assignment...
+      </div>
+    );
+  }
+
+  if (!assignment) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center">
+        Assignment not found
+      </div>
+    );
+  }
+
+  const deadlineDate = new Date(assignment.deadline);
+  const isLate = new Date() > deadlineDate;
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
@@ -49,18 +104,18 @@ const AssignmentPage = () => {
           Deadline: {deadlineDate.toLocaleString()}
         </p>
 
-        <div className={`mt-3 inline-block px-4 py-1 rounded-full text-sm ${
-          submitted
-            ? "bg-(--color-success) text-white"
-            : isLate
-            ? "bg-(--color-danger) text-white"
-            : "bg-(--color-accent) text-white"
-        }`}>
-          {submitted
-            ? "Submitted"
-            : isLate
-            ? "Late Submission"
-            : "Pending"}
+        <div
+          className={`mt-3 inline-block px-4 py-1 rounded-full text-sm ${
+            status === "Evaluated"
+              ? "bg-(--color-success) text-white"
+              : status === "Submitted"
+              ? "bg-(--color-warning) text-white"
+              : isLate
+              ? "bg-(--color-danger) text-white"
+              : "bg-(--color-accent) text-white"
+          }`}
+        >
+          {status}
         </div>
       </div>
 
@@ -73,14 +128,13 @@ const AssignmentPage = () => {
       </div>
 
       {/* SUBMISSION SECTION */}
-      {!submitted && (
+      {status === "Pending" && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl space-y-6"
         >
-
-          {/* TEXT SUBMISSION */}
+          {/* TEXT */}
           <div>
             <label className="font-medium">Text Submission</label>
             <textarea
@@ -88,11 +142,11 @@ const AssignmentPage = () => {
               onChange={(e) => setTextSubmission(e.target.value)}
               rows={4}
               className="w-full mt-2 p-3 rounded-xl border border-(--border-color) bg-(--bg-muted)"
-              placeholder="Write your explanation or paste code..."
+              placeholder="Write explanation or paste code..."
             />
           </div>
 
-          {/* LINK SUBMISSION */}
+          {/* LINK */}
           <div>
             <label className="font-medium">External Link</label>
             <div className="flex mt-2 gap-2">
@@ -102,12 +156,12 @@ const AssignmentPage = () => {
                 value={externalLink}
                 onChange={(e) => setExternalLink(e.target.value)}
                 className="flex-1 p-3 rounded-xl border border-(--border-color) bg-(--bg-muted)"
-                placeholder="GitHub / Live Demo Link"
+                placeholder="GitHub / Live Demo"
               />
             </div>
           </div>
 
-          {/* FILE UPLOAD */}
+          {/* FILE */}
           <div>
             <label className="font-medium">Upload File</label>
             <div className="mt-2 flex items-center gap-3">
@@ -128,11 +182,10 @@ const AssignmentPage = () => {
         </motion.div>
       )}
 
-      {/* EVALUATION */}
-      {submitted && (
+      {/* EVALUATION SECTION */}
+      {status !== "Pending" && (
         <div className="mt-10 bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl">
-
-          {marks !== null ? (
+          {status === "Evaluated" ? (
             <>
               <h3 className="font-semibold mb-3">Evaluation</h3>
 
@@ -152,10 +205,8 @@ const AssignmentPage = () => {
               Submission received. Awaiting evaluation.
             </p>
           )}
-
         </div>
       )}
-
     </div>
   );
 };

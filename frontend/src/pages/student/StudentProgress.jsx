@@ -5,29 +5,41 @@ import {
   FiBookOpen,
   FiActivity,
 } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import api from "../../config/api";
 
 const StudentProgress = () => {
-  // Demo data (replace with API later)
-  const overallProgress = 68;
+  const [data, setData] = useState(null);
 
-  const courseProgress = [
-    { name: "Full Stack Development", progress: 75 },
-    { name: "Data Structures", progress: 60 },
-    { name: "Machine Learning", progress: 45 },
-  ];
+  useEffect(() => {
+    const fetch = async () => {
+      const res = await api.get("/student/progress");
+      setData(res.data);
+    };
+    fetch();
+  }, []);
 
-  const skills = [
-    "React",
-    "Node.js",
-    "MongoDB",
-    "Problem Solving",
-    "REST APIs",
-  ];
+  if (!data) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center">
+        Loading progress...
+      </div>
+    );
+  }
+
+  const {
+    overallProgress,
+    courseProgress,
+    avgQuizScore,
+    avgAssignmentScore,
+    skills,
+    insight,
+  } = data;
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
 
-      {/* PAGE TITLE */}
+      {/* TITLE */}
       <div className="mb-12">
         <h1 className="text-3xl font-semibold mb-3">
           Progress Analytics
@@ -37,7 +49,7 @@ const StudentProgress = () => {
         </p>
       </div>
 
-      {/* ================= OVERALL PROGRESS ================= */}
+      {/* OVERALL */}
       <div className="bg-(--card-bg) border border-(--border-color) p-8 rounded-3xl mb-10">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium flex items-center gap-2">
@@ -59,7 +71,7 @@ const StudentProgress = () => {
         </div>
       </div>
 
-      {/* ================= COURSE-WISE PROGRESS ================= */}
+      {/* COURSE PROGRESS */}
       <div className="bg-(--card-bg) border border-(--border-color) p-8 rounded-3xl mb-10">
         <h2 className="text-lg font-medium mb-6 flex items-center gap-2">
           <FiBookOpen />
@@ -67,8 +79,8 @@ const StudentProgress = () => {
         </h2>
 
         <div className="space-y-6">
-          {courseProgress.map((course, index) => (
-            <div key={index}>
+          {courseProgress.map((course) => (
+            <div key={course._id}>
               <div className="flex justify-between mb-2">
                 <span>{course.name}</span>
                 <span>{course.progress}%</span>
@@ -76,7 +88,7 @@ const StudentProgress = () => {
 
               <div className="w-full h-3 bg-(--bg-muted) rounded-full">
                 <div
-                  className="h-3 bg-(--color-accent) rounded-full transition-all"
+                  className="h-3 bg-(--color-accent) rounded-full"
                   style={{ width: `${course.progress}%` }}
                 />
               </div>
@@ -85,44 +97,30 @@ const StudentProgress = () => {
         </div>
       </div>
 
-      {/* ================= PERFORMANCE GRID ================= */}
+      {/* QUIZ + ASSIGNMENT */}
       <div className="grid md:grid-cols-2 gap-8 mb-10">
-
-        {/* Quiz Performance */}
         <div className="bg-(--card-bg) border border-(--border-color) p-8 rounded-3xl">
           <h2 className="text-lg font-medium mb-4 flex items-center gap-2">
             <FiActivity />
             Quiz Performance
           </h2>
-
-          <p className="text-(--text-secondary) mb-3">
-            Average Score
-          </p>
-
           <div className="text-4xl font-semibold text-(--color-success)">
-            82%
+            {avgQuizScore}%
           </div>
         </div>
 
-        {/* Assignment Performance */}
         <div className="bg-(--card-bg) border border-(--border-color) p-8 rounded-3xl">
           <h2 className="text-lg font-medium mb-4 flex items-center gap-2">
             <FiAward />
             Assignment Performance
           </h2>
-
-          <p className="text-(--text-secondary) mb-3">
-            Average Score
-          </p>
-
           <div className="text-4xl font-semibold text-(--color-primary)">
-            76%
+            {avgAssignmentScore}%
           </div>
         </div>
-
       </div>
 
-      {/* ================= SKILLS ACQUIRED ================= */}
+      {/* SKILLS */}
       <div className="bg-(--card-bg) border border-(--border-color) p-8 rounded-3xl mb-10">
         <h2 className="text-lg font-medium mb-6">
           Skills Acquired
@@ -140,16 +138,13 @@ const StudentProgress = () => {
         </div>
       </div>
 
-      {/* ================= AI INSIGHTS ================= */}
+      {/* AI INSIGHT */}
       <div className="bg-(--card-bg) border border-(--border-color) p-8 rounded-3xl">
         <h2 className="text-lg font-medium mb-4">
           AI Learning Insight
         </h2>
-
         <p className="text-(--text-secondary)">
-          You are performing strong in quizzes but your assignment
-          submission consistency can improve. Focus on completing
-          Machine Learning modules to increase overall progress by 12%.
+          {insight}
         </p>
       </div>
 

@@ -1,24 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import api from "../../config/api";
 
 const StudentJobPage = () => {
-  const { jobId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
+  const [job, setJob] = useState(null);
   const [resume, setResume] = useState(null);
   const [coverLetter, setCoverLetter] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Dummy job (replace with API fetch)
-  const job = {
-    title: "Frontend Developer Intern",
-    company: "Infosys",
-    location: "Remote",
-    type: "Internship",
-    stipend: "₹15,000/month",
-    skills: ["React", "JavaScript"],
-    deadline: "2026-03-15"
-  };
+  /* ================= FETCH JOB ================= */
+  useEffect(() => {
+    const fetch = async () => {
+      const res = await api.get(`/jobs/${id}`);
+      setJob(res.data);
+    };
+    fetch();
+  }, [id]);
 
   const handleSubmit = async () => {
     if (!resume) {
@@ -26,28 +26,38 @@ const StudentJobPage = () => {
       return;
     }
 
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    // 🔥 Replace with backend API
-    setTimeout(() => {
-      setLoading(false);
+      const formData = new FormData();
+      formData.append("jobId", jobId);
+      formData.append("resume", resume);
+      formData.append("coverLetter", coverLetter);
+
+      await api.post("/job/apply", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       alert("Application Submitted Successfully 🎉");
       navigate("/student/jobs");
-    }, 1200);
+    } catch (error) {
+      alert(error.response?.data?.message || "Error applying");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (!job) return <div>Loading...</div>;
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
-
       <h1 className="text-3xl font-semibold mb-10">
         Apply for {job.title}
       </h1>
 
       <div className="grid md:grid-cols-3 gap-10">
-
         {/* LEFT - JOB DETAILS */}
-        <div className="md:col-span-1 bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl shadow-sm">
-
+        <div className="md:col-span-1 bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl">
           <h3 className="text-lg font-semibold mb-3">
             {job.company}
           </h3>
@@ -56,73 +66,50 @@ const StudentJobPage = () => {
             {job.location} • {job.type}
           </p>
 
-          <div className="mb-4">
-            <p className="text-sm font-medium">
-              Compensation:
-            </p>
-            <p className="text-(--color-success)">
-              {job.stipend}
-            </p>
-          </div>
-
-          <div className="mb-4">
-            <p className="text-sm font-medium">
-              Required Skills:
-            </p>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {job.skills.map((skill, index) => (
-                <span
-                  key={index}
-                  className="text-xs px-3 py-1 bg-(--bg-muted) rounded-full"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <p className="text-sm text-(--text-muted)">
-            Deadline: {job.deadline}
+          <p className="text-(--color-success) mb-4">
+            {job.stipend || job.salary}
           </p>
+
+          <div className="flex flex-wrap gap-2">
+            {job.skills?.map((skill, index) => (
+              <span
+                key={index}
+                className="text-xs px-3 py-1 bg-(--bg-muted) rounded-full"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* RIGHT - APPLY FORM */}
-        <div className="md:col-span-2 bg-(--card-bg) border border-(--border-color) p-8 rounded-2xl shadow-sm">
-
-          {/* Resume Upload */}
+        <div className="md:col-span-2 bg-(--card-bg) border border-(--border-color) p-8 rounded-2xl">
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">
+            <label className="block mb-2 text-sm">
               Upload Resume (PDF)
             </label>
 
             <input
               type="file"
               accept=".pdf"
-              onChange={(e) =>
-                setResume(e.target.files[0])
-              }
+              onChange={(e) => setResume(e.target.files[0])}
               className="w-full border border-(--border-color) rounded-xl p-3 bg-(--bg-main)"
             />
           </div>
 
-          {/* Cover Letter */}
           <div className="mb-8">
-            <label className="block text-sm font-medium mb-2">
+            <label className="block mb-2 text-sm">
               Cover Letter
             </label>
 
             <textarea
               rows="6"
               value={coverLetter}
-              onChange={(e) =>
-                setCoverLetter(e.target.value)
-              }
-              placeholder="Write why you are suitable for this role..."
+              onChange={(e) => setCoverLetter(e.target.value)}
               className="w-full border border-(--border-color) rounded-xl p-4 bg-(--bg-main)"
             />
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-4">
             <button
               onClick={() => navigate(-1)}
@@ -134,15 +121,13 @@ const StudentJobPage = () => {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="px-6 py-3 rounded-xl bg-(--color-primary) text-white hover:opacity-90"
+              className="px-6 py-3 rounded-xl bg-(--color-primary) text-white"
             >
               {loading ? "Submitting..." : "Submit Application"}
             </button>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 };
