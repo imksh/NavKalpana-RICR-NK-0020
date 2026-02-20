@@ -19,6 +19,7 @@ export const signup = async (req, res, next) => {
     const lowerEmail = email.toLowerCase();
 
     const existingUser = await User.findOne({ email: lowerEmail });
+    
     if (existingUser) {
       return res.status(409).json({ message: "User already exists" });
     }

@@ -1,8 +1,7 @@
 import { create } from "zustand";
-import i18n from "../utils/i18n";
+import i18n from "../config/i18n";
 import api from "../config/api";
 import { toast } from "react-hot-toast";
-import { imageConfig } from "../assets/data/imageConfig";
 
 const useUiStore = create((set, get) => ({
   mobileOpen: false,
@@ -11,9 +10,17 @@ const useUiStore = create((set, get) => ({
   loading: false,
   isUploading: false,
   newNotification: false,
+  isModal: false,
 
   lang: localStorage.getItem("lang") || "hi",
-  
+
+  closeAll: () => {
+    set({ mobileOpen: false, openLang: false, openProfile: false });
+  },
+
+  setIsModal: (val) => {
+    set({ isModal: val });
+  },
 
   setMobileOpen: (val) => {
     set({ mobileOpen: val });

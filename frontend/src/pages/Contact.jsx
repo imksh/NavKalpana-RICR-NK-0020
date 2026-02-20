@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 const Contact = () => {
+  const { t } = useTranslation();
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -16,7 +19,6 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(form);
-    // later connect to backend
   };
 
   return (
@@ -29,12 +31,11 @@ const Contact = () => {
           transition={{ duration: 0.5 }}
           className="text-4xl md:text-5xl font-bold"
         >
-          Get in Touch
+          {t("contact.title")}
         </motion.h1>
 
         <p className="mt-6 max-w-2xl mx-auto text-lg text-[var(--text-secondary)]">
-          Have questions, suggestions, or partnership ideas? We'd love to hear
-          from you.
+          {t("contact.subtitle")}
         </p>
       </section>
 
@@ -48,12 +49,14 @@ const Contact = () => {
             transition={{ duration: 0.5 }}
             className="bg-[var(--card-bg)] p-10 rounded-3xl shadow-lg border border-[var(--border-color)] order-1 md:order-2 "
           >
-            <h2 className="text-2xl font-semibold mb-6">Send a Message</h2>
+            <h2 className="text-2xl font-semibold mb-6">
+              {t("contact.sendMessage")}
+            </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm mb-2 text-[var(--text-secondary)]">
-                  Full Name
+                  {t("contact.fullName")}
                 </label>
                 <input
                   type="text"
@@ -67,7 +70,7 @@ const Contact = () => {
 
               <div>
                 <label className="block text-sm mb-2 text-[var(--text-secondary)]">
-                  Email Address
+                  {t("contact.email")}
                 </label>
                 <input
                   type="email"
@@ -81,7 +84,7 @@ const Contact = () => {
 
               <div>
                 <label className="block text-sm mb-2 text-[var(--text-secondary)]">
-                  Message
+                  {t("contact.message")}
                 </label>
                 <textarea
                   name="message"
@@ -97,7 +100,7 @@ const Contact = () => {
                 type="submit"
                 className="w-full py-3 rounded-xl bg-[var(--color-primary)] text-white font-semibold hover:bg-[var(--color-primary-hover)] transition-all"
               >
-                Send Message
+                {t("contact.sendButton")}
               </button>
             </form>
           </motion.div>
@@ -111,24 +114,24 @@ const Contact = () => {
           >
             <InfoItem
               icon={<FiMail size={22} />}
-              title="Email"
+              title={t("contact.emailTitle")}
               desc="support@gradify.com"
             />
 
             <InfoItem
               icon={<FiPhone size={22} />}
-              title="Phone"
+              title={t("contact.phoneTitle")}
               desc="+91 98765 43210"
             />
 
             <InfoItem
               icon={<FiMapPin size={22} />}
-              title="Location"
+              title={t("contact.locationTitle")}
               desc="India"
             />
 
             <div className="bg-[var(--bg-muted)] rounded-2xl h-40 flex items-center justify-center text-[var(--text-muted)]">
-              Map Preview
+              {t("contact.mapPreview")}
             </div>
           </motion.div>
         </div>

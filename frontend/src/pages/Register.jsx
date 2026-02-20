@@ -2,17 +2,19 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
+import { useTranslation } from "react-i18next";
 
 const Register = () => {
   const navigate = useNavigate();
   const { signup, isLoading } = useAuthStore();
+  const { t } = useTranslation();
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     password: "",
-    role: "student"
+    role: "student",
   });
 
   const handleChange = (e) => {
@@ -25,27 +27,25 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)] px-6 py-20" >
-
+    <div className="min-h-[90dvh] flex items-center justify-center bg-(--bg-main) px-3 md:px-6 py-20">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-lg bg-[var(--card-bg)] shadow-lg rounded-3xl p-10 border border-[var(--border-color)]"
+        className="w-full max-w-lg bg-(--card-bg) shadow-lg rounded-3xl p-10 border border-(--border-color)"
       >
-        <h2 className="text-3xl font-semibold text-center mb-6">
-          Create Your Account
+        <h2 className="text-2xl md:text-3xl font-semibold text-center mb-6">
+          {t("register.title")}
         </h2>
 
-        <p className="text-center text-[var(--text-secondary)] mb-8">
-          Join Gradify and start learning smarter today.
+        <p className="text-center text-(--text-secondary) mb-8">
+          {t("register.subtitle")}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
           {/* Name */}
           <InputField
-            label="Full Name"
+            label={t("register.fullName")}
             name="name"
             type="text"
             value={form.name}
@@ -55,7 +55,7 @@ const Register = () => {
 
           {/* Email */}
           <InputField
-            label="Email Address"
+            label={t("register.email")}
             name="email"
             type="email"
             value={form.email}
@@ -65,7 +65,7 @@ const Register = () => {
 
           {/* Phone */}
           <InputField
-            label="Phone Number"
+            label={t("register.phone")}
             name="phone"
             type="tel"
             value={form.phone}
@@ -75,7 +75,7 @@ const Register = () => {
 
           {/* Password */}
           <InputField
-            label="Password"
+            label={t("register.password")}
             name="password"
             type="password"
             value={form.password}
@@ -84,7 +84,7 @@ const Register = () => {
           />
 
           {/* Role Select */}
-          <div>
+          {/* <div>
             <label className="block text-sm mb-2 text-[var(--text-secondary)]">
               Role
             </label>
@@ -97,7 +97,7 @@ const Register = () => {
               <option value="student">Student</option>
               <option value="instructor">Instructor</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Submit */}
           <button
@@ -105,18 +105,17 @@ const Register = () => {
             disabled={isLoading}
             className="w-full py-3 rounded-xl bg-[var(--color-primary)] text-white font-semibold hover:bg-[var(--color-primary-hover)] transition-all disabled:opacity-60"
           >
-            {isLoading ? "Creating Account..." : "Register"}
+            {isLoading ? t("register.loading") : t("register.button")}
           </button>
-
         </form>
 
         <p className="text-center text-sm text-[var(--text-muted)] mt-6">
-          Already have an account?{" "}
+          {t("register.haveAccount")}
           <span
             onClick={() => navigate("/login")}
             className="text-[var(--color-primary)] cursor-pointer hover:underline"
           >
-            Login
+            {" "}{t("register.login")}
           </span>
         </p>
       </motion.div>

@@ -8,10 +8,13 @@ import { useAuthStore } from "../store/useAuthStore";
 import useUiStore from "../store/useUiStore";
 import { FiSun, FiMoon } from "react-icons/fi";
 import { useThemeStore } from "../store/useThemeStore";
+import { useTranslation } from "react-i18next";
+import ChangeLanguage from "./ChangeLanguage";
 
 const Header = () => {
+  const { t } = useTranslation();
   const { user, logout } = useAuthStore();
-  const { mobileOpen, setMobileOpen } = useUiStore();
+  const { mobileOpen, setMobileOpen, closeAll } = useUiStore();
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollY = useRef(0);
   const { theme, toggleTheme } = useThemeStore();
@@ -76,39 +79,32 @@ const Header = () => {
       <div className="flex justify-between items-center bg-[var(--color-primary)] rounded-3xl px-6 py-3 shadow-md">
         {/* LOGO */}
         <Link to="/" className="flex items-center">
-          <img
+          {/* <img
             src={logo}
             alt="Gradify"
             className="w-20 object-contain cursor-pointer"
-          />
-          <p className="text-2xl font-bold text-white">Gradify</p>
+          /> */}
+          <p className="text-2xl font-bold text-white">{t("header.brand")}</p>
         </Link>
 
         {/* DESKTOP MENU */}
         <div className="hidden md:flex items-center gap-6 text-white font-medium">
-          <Link
-            to="/"
-            className={location === "/" ? "text-emerald-300" : ""}
-          >
-            Home
+          <Link to="/" className={location === "/" ? "text-emerald-300" : ""}>
+            {t("header.home")}
           </Link>
 
           <Link
             to="/about"
-            className={
-              location === "/about" ? "text-emerald-300" : ""
-            }
+            className={location === "/about" ? "text-emerald-300" : ""}
           >
-            About
+            {t("header.about")}
           </Link>
 
           <Link
             to="/contact"
-            className={
-              location === "/contact" ? "text-emerald-300" : ""
-            }
+            className={location === "/contact" ? "text-emerald-300" : ""}
           >
-            Contact
+            {t("header.contact")}
           </Link>
 
           {!user ? (
@@ -117,14 +113,14 @@ const Header = () => {
                 onClick={() => navigate("/login")}
                 className="hover:text-emerald-300"
               >
-                Login
+                {t("header.login")}
               </button>
 
               <button
                 onClick={() => navigate("/register")}
                 className="bg-[var(--color-accent)] px-4 py-2 rounded-lg hover:opacity-90"
               >
-                Register
+                {t("header.register")}
               </button>
             </>
           ) : (
@@ -133,17 +129,19 @@ const Header = () => {
                 onClick={handleDashboard}
                 className="hover:text-emerald-300"
               >
-                Dashboard
+                {t("header.dashboard")}
               </button>
 
               <button
                 onClick={logout}
                 className="bg-red-500 px-4 py-2 rounded-lg hover:opacity-90"
               >
-                Logout
+                {t("header.logout")}
               </button>
             </>
           )}
+
+          <ChangeLanguage />
 
           <button
             onClick={toggleTheme}
@@ -177,15 +175,16 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -40 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden mt-3 bg-[var(--color-primary)] rounded-2xl p-4 flex flex-col gap-3 text-white"
+            className="md:hidden mt-3 bg-(--color-primary) rounded-2xl p-4 flex flex-col text-white"
           >
             <button
               onClick={() => {
                 navigate("/");
                 setMobileOpen(false);
               }}
+              className="w-full text-left p-2 hover:bg-(--bg-muted)"
             >
-              Home
+              {t("header.home")}
             </button>
 
             <button
@@ -193,8 +192,9 @@ const Header = () => {
                 navigate("/about");
                 setMobileOpen(false);
               }}
+              className="w-full text-left p-2 hover:bg-(--bg-muted)"
             >
-              About
+              {t("header.about")}
             </button>
 
             <button
@@ -202,68 +202,47 @@ const Header = () => {
                 navigate("/contact");
                 setMobileOpen(false);
               }}
+              className="w-full text-left p-2 hover:bg-(--bg-muted)"
             >
-              Contact
+              {t("header.contact")}
             </button>
 
-            {!user ? (
-              <>
-                <button
-                  onClick={() => {
-                    navigate("/login");
-                    setMobileOpen(false);
-                  }}
-                >
-                  Login
-                </button>
+            <button
+              onClick={() => {
+                navigate("/login");
+                setMobileOpen(false);
+              }}
+              className="w-full text-left p-2 hover:bg-(--bg-muted)"
+            >
+              {t("header.login")}
+            </button>
 
-                <button
-                  onClick={() => {
-                    navigate("/register");
-                    setMobileOpen(false);
-                  }}
-                >
-                  Register
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => {
-                    handleDashboard();
-                    setMobileOpen(false);
-                  }}
-                >
-                  Dashboard
-                </button>
+            <button
+              onClick={() => {
+                navigate("/register");
+                setMobileOpen(false);
+              }}
+              className="w-full text-left p-2 hover:bg-(--bg-muted)"
+            >
+              {t("header.register")}
+            </button>
 
-                <button
-                  onClick={() => {
-                    logout();
-                    setMobileOpen(false);
-                  }}
-                  className="text-red-400"
-                >
-                  Logout
-                </button>
-              </>
-            )}
             <button
               onClick={() => {
                 toggleTheme();
+                closeAll();
                 setMobileOpen(false);
               }}
-              className="flex items-center gap-2"
+              className="w-full text-left p-2 hover:bg-(--bg-muted) flex gap-2 items-center"
             >
-              {theme === "dark" ? (
-                <>
-                  <FiSun /> Light Mode
-                </>
-              ) : (
-                <>
-                  <FiMoon /> Dark Mode
-                </>
-              )}
+              <div className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+                {theme === "dark" ? (
+                  <FiSun className="text-yellow-300" />
+                ) : (
+                  <FiMoon />
+                )}
+              </div>
+              {theme === "dark" ? "Light Mode" : "Dark Mode"}
             </button>
           </motion.div>
         )}

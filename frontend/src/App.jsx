@@ -26,14 +26,32 @@ import InstructorHome from "./pages/instructor/InstructorHome";
 import StudentHome from "./pages/student/StudentHome";
 
 import api from "./config/api";
-import i18n from "./utils/i18n";
+import i18n from "./config/i18n";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import AdminHome from "./pages/admin/AdminHome";
+import MyCourses from "./pages/student/MyCourses";
+import CoursePage from "./pages/student/CoursePage";
+import ModulePage from "./pages/student/ModulePage";
+import AssignmentPage from "./pages/student/AssignmentPage";
+import Assignments from "./pages/student/Assignments";
+import QuizPage from "./pages/student/QuizPage";
+import Quizzes from "./pages/student/Quizzes";
+import StudentAttendence from "./pages/student/StudentAttendence";
+import Alumni from "./pages/Alumni";
+import StudentJobs from "./pages/student/StudentJobs";
+import StudentJobPage from "./pages/student/StudentJobPage";
+import StudentProgress from "./pages/student/StudentProgress";
+import StudentTutor from "./pages/student/StudentTutor";
+import FloatingAskAI from "./components/student/FloatingAskAI";
+import StudentProfile from "./pages/student/StudentProfile";
+import useLenis from './hooks/useLenis';
 
 const App = () => {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
-  const { setShowHeaderMenu, setOpenLang, setOpenProfile } = useUiStore();
+  const { setOpenLang, setOpenProfile, setMobileOpen } = useUiStore();
   const theme = useThemeStore((state) => state.theme);
+  useLenis();
 
   /* ============================= */
   /*        INITIAL LOAD           */
@@ -76,34 +94,24 @@ const App = () => {
   /*        ROLE-BASED HEADER      */
   /* ============================= */
 
-  const renderHeader = () => {
-    if (!user) return <Header />;
-
-    switch (user.role) {
-      case "admin":
-        return <AdminHeader />;
-
-      case "instructor":
-        return <InstructorHeader />;
-
-      case "student":
-        return <StudentHeader />;
-
-      default:
-        return <Header />;
-    }
-  };
-
   return (
     <div
       className="bg-color-gradient overflow-x-hidden min-h-dvh pt-[12dvh]"
       onClick={() => {
-        setShowHeaderMenu(false);
         setOpenLang(false);
         setOpenProfile(false);
+        setMobileOpen(false);
       }}
     >
-      {renderHeader()}
+      {!user ? (
+        <Header />
+      ) : user.role === "admin" ? (
+        <AdminHeader />
+      ) : user.role === "instructor" ? (
+        <InstructorHeader />
+      ) : (
+        <StudentHeader />
+      )}
 
       <ThemeBubble />
 
@@ -113,14 +121,15 @@ const App = () => {
           element={
             !user ? (
               <Landing />
+            ) : user.role === "admin" ? (
+              <AdminHome />
             ) : user.role === "instructor" ? (
               <InstructorHome />
             ) : (
-              <StudentHome />
+              <Navigate to="/student" />
             )
           }
         />
-
         <Route path="/about" element={<About />} />
         <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
         <Route
@@ -130,7 +139,143 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/unsubscribe-success" element={<UnsubscribeSuccess />} />
+        <Route path="/alumini" element={<Alumni />} />
+        <Route path="/student/alumini" element={<Alumni />} />
+
+        <Route
+          path="/student"
+          element={
+            user?.role === "student" ? (
+              <StudentHome />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/student/profile"
+          element={
+            user?.role === "student" ? (
+              <StudentProfile />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/student/courses"
+          element={
+            user?.role === "student" ? <MyCourses /> : <Navigate to="/login" />
+          }
+        />
+        <Route
+          path="/student/courses/:slug"
+          element={
+            user?.role === "student" ? <CoursePage /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/student/courses/:course/:module"
+          element={
+            user?.role === "student" ? <ModulePage /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/student/assignments"
+          element={
+            user?.role === "student" ? (
+              <Assignments />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/student/assignments/:id"
+          element={
+            user?.role === "student" ? (
+              <AssignmentPage />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/student/quizzes"
+          element={
+            user?.role === "student" ? <Quizzes /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/student/quizzes/:id"
+          element={
+            user?.role === "student" ? <QuizPage /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/student/attendance"
+          element={
+            user?.role === "student" ? (
+              <StudentAttendence />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/student/jobs"
+          element={
+            user?.role === "student" ? (
+              <StudentJobs />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/student/jobs/:id"
+          element={
+            user?.role === "student" ? (
+              <StudentJobPage />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/student/progress"
+          element={
+            user?.role === "student" ? (
+              <StudentProgress />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/student/tutor"
+          element={
+            user?.role === "student" ? (
+              <StudentTutor />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
       </Routes>
+
+      {user?.role === "student" && <FloatingAskAI />}
 
       <Footer />
 
