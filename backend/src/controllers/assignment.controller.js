@@ -2,6 +2,7 @@ import Assignment from "../models/assignment.model.js";
 import AssignmentSubmission from "../models/assignmentSubmission.model.js";
 import Enrollment from "../models/enrollment.model.js";
 import Course from "../models/course.model.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const getStudentAssignments = async (req, res, next) => {
   try {
@@ -58,7 +59,6 @@ export const getStudentAssignments = async (req, res, next) => {
   }
 };
 
-
 export const getAssignmentById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -84,11 +84,17 @@ export const getAssignmentById = async (req, res, next) => {
     let status = "Pending";
     let marks = null;
     let feedback = null;
+    let content = null;
+    let file = null;
+    let link = null;
 
     if (submission) {
       status = submission.status;
       marks = submission.marks ?? null;
       feedback = submission.feedback ?? null;
+      content = submission.content ?? null;
+      file = submission.file ?? null;
+      link = submission.link ?? null;
     }
 
     res.status(200).json({
@@ -102,11 +108,90 @@ export const getAssignmentById = async (req, res, next) => {
       status,
       marks,
       feedback,
+      content,
+      file,
+      link,
       submittedAt: submission?.submittedAt || null,
     });
-
   } catch (error) {
     console.log("Error in getAssignmentById:", error);
+    next(error);
+  }
+};
+
+export const submitAssignment = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const studentId = req.user._id;
+    const { content, link } = req.body;
+
+    const assignment = await Assignment.findById(id);
+
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
+
+    /* ===== Prevent duplicate ===== */
+    const existing = await AssignmentSubmission.findOne({
+      assignmentId: id,
+      studentId,
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        message: "Already submitted",
+      });
+    }
+
+    /* ===== Validate at least one ===== */
+    if (!content && !link && !req.file) {
+      return res.status(400).json({
+        message: "Submit text, link or file",
+      });
+    }
+
+    const isLate = new Date() > new Date(assignment.deadline);
+    const status = isLate ? "Late Submitted" : "Submitted";
+
+    let submissionData = {
+      assignmentId: id,
+      studentId,
+      content: content || null,
+      link: link || null,
+      isLate,
+      status,
+    };
+
+    /* ===== FILE UPLOAD ===== */
+    if (req.file) {
+      const uploadResult = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: "raw",
+            folder: "assignments",
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          },
+        );
+
+        stream.end(req.file.buffer);
+      });
+
+      submissionData.file = {
+        url: uploadResult.secure_url,
+        publicId: uploadResult.public_id,
+      };
+    }
+
+    const submission = await AssignmentSubmission.create(submissionData);
+
+    res.status(201).json({
+      message: "Submitted successfully",
+      status: submission.status,
+    });
+  } catch (error) {
     next(error);
   }
 };

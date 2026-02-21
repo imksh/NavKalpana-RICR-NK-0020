@@ -1,13 +1,26 @@
-import { motion, AnimatePresence } from "motion/react";
-import { FiX, FiMail, FiLock, FiHash } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiX, FiMail, FiLock, FiHash, FiLoader } from "react-icons/fi";
 import { useState } from "react";
-import { FiLoader } from "react-icons/fi";
 import { toast } from "react-hot-toast";
-import api from "../../config/api";
+import api from "../../../config/api";
+import useUiStore from "../../store/useUiStore";
+import { useEffect } from "react";
+import CloseButton from "../CloseButton";
 
-const ResetPasswordModal = ({ onClose }) => {
-  const [step, setStep] = useState(1); 
+const ResetPasswordModal = ({ isOpen, onClose }) => {
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const { setIsModal } = useUiStore();
+
+  useEffect(() => {
+    setIsModal(true);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "auto";
+      setIsModal(false);
+    };
+  }, []);
 
   const [form, setForm] = useState({
     email: "",
@@ -16,11 +29,15 @@ const ResetPasswordModal = ({ onClose }) => {
     confirmPassword: "",
   });
 
+  if (!isOpen) return null;
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const sendOtp = async () => {
+    if (!form.email) return toast.error("Email is required");
+
     try {
       setLoading(true);
       await api.post("/auth/gen-otp", { email: form.email });
@@ -34,6 +51,8 @@ const ResetPasswordModal = ({ onClose }) => {
   };
 
   const verifyOtp = async () => {
+    if (!form.otp) return toast.error("Enter OTP");
+
     try {
       setLoading(true);
       await api.post("/auth/verify-otp", {
@@ -50,6 +69,14 @@ const ResetPasswordModal = ({ onClose }) => {
   };
 
   const changePassword = async () => {
+    if (!form.newPassword || !form.confirmPassword) {
+      return toast.error("All fields required");
+    }
+
+    if (form.newPassword.length < 6) {
+      return toast.error("Password must be at least 6 characters");
+    }
+
     if (form.newPassword !== form.confirmPassword) {
       return toast.error("Passwords do not match");
     }
@@ -68,60 +95,59 @@ const ResetPasswordModal = ({ onClose }) => {
 
   return (
     <AnimatePresence>
+      {/* Overlay */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 bg-black/40 z-80 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
       />
 
+      {/* Modal */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 30 }}
+        initial={{ opacity: 0, scale: 0.95, y: 30 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 30 }}
-        transition={{ duration: 0.3 }}
-        className="fixed z-90 inset-0 flex items-center justify-center px-4"
+        exit={{ opacity: 0, scale: 0.95, y: 30 }}
+        transition={{ duration: 0.25 }}
+        className="fixed inset-0 flex items-center justify-center px-4 z-50"
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 relative"
+          className="w-full max-w-md bg-(--card-bg) border border-(--border-color) rounded-3xl p-8 relative shadow-lg"
         >
-          {/* CLOSE */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <FiX size={20} />
-          </button>
+          {/* Close */}
+          <div className="absolute top-4 right-4">
+            <CloseButton onClose={onClose} />
+          </div>
 
-          {/* HEADER */}
-          <div className="text-center mb-6">
-            <h2 className="text-xl font-semibold">Change Password</h2>
-            <p className="text-sm text-gray-500">
-              Secure your admin account
+          {/* Header */}
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-semibold mb-1">Reset Password</h2>
+            <p className="text-sm text-(--text-secondary)">
+              Secure your account
             </p>
           </div>
 
-          {/* STEP 1: EMAIL */}
+          {/* Step 1 - Email */}
           {step === 1 && (
             <div className="space-y-4">
-              <div className="flex items-center gap-3 border rounded-xl p-3">
-                <FiMail className="text-gray-400" />
+              <div className="flex items-center gap-3 border border-(--border-color) rounded-xl px-4 py-3 bg-(--bg-main)">
+                <FiMail className="text-(--text-muted)" />
                 <input
                   type="email"
                   name="email"
-                  placeholder="Email"
+                  placeholder="Enter your email"
                   value={form.email}
                   onChange={handleChange}
-                  className="grow outline-none"
+                  className="flex-1 bg-transparent outline-none"
                 />
               </div>
 
               <button
                 onClick={sendOtp}
                 disabled={loading}
-                className="w-full py-2 rounded-xl bg-(--primary) text-white"
+                className="w-full py-3 rounded-xl bg-(--color-primary) text-white hover:opacity-90"
               >
                 {loading ? (
                   <FiLoader className="animate-spin mx-auto" />
@@ -132,25 +158,25 @@ const ResetPasswordModal = ({ onClose }) => {
             </div>
           )}
 
-          {/* STEP 2: OTP */}
+          {/* Step 2 - OTP */}
           {step === 2 && (
             <div className="space-y-4">
-              <div className="flex items-center gap-3 border rounded-xl p-3">
-                <FiHash className="text-gray-400" />
+              <div className="flex items-center gap-3 border border-(--border-color) rounded-xl px-4 py-3 bg-(--bg-main)">
+                <FiHash className="text-(--text-muted)" />
                 <input
                   type="text"
                   name="otp"
                   placeholder="Enter OTP"
                   value={form.otp}
                   onChange={handleChange}
-                  className="grow outline-none"
+                  className="flex-1 bg-transparent outline-none"
                 />
               </div>
 
               <button
                 onClick={verifyOtp}
                 disabled={loading}
-                className="w-full py-2 rounded-xl bg-(--primary) text-white"
+                className="w-full py-3 rounded-xl bg-(--color-primary) text-white hover:opacity-90"
               >
                 {loading ? (
                   <FiLoader className="animate-spin mx-auto" />
@@ -161,37 +187,37 @@ const ResetPasswordModal = ({ onClose }) => {
             </div>
           )}
 
-          {/* STEP 3: PASSWORDS */}
+          {/* Step 3 - New Password */}
           {step === 3 && (
             <div className="space-y-4">
-              <div className="flex items-center gap-3 border rounded-xl p-3">
-                <FiLock className="text-gray-400" />
+              <div className="flex items-center gap-3 border border-(--border-color) rounded-xl px-4 py-3 bg-(--bg-main)">
+                <FiLock className="text-(--text-muted)" />
                 <input
                   type="password"
                   name="newPassword"
                   placeholder="New Password"
                   value={form.newPassword}
                   onChange={handleChange}
-                  className="grow outline-none"
+                  className="flex-1 bg-transparent outline-none"
                 />
               </div>
 
-              <div className="flex items-center gap-3 border rounded-xl p-3">
-                <FiLock className="text-gray-400" />
+              <div className="flex items-center gap-3 border border-(--border-color) rounded-xl px-4 py-3 bg-(--bg-main)">
+                <FiLock className="text-(--text-muted)" />
                 <input
                   type="password"
                   name="confirmPassword"
                   placeholder="Confirm Password"
                   value={form.confirmPassword}
                   onChange={handleChange}
-                  className="grow outline-none"
+                  className="flex-1 bg-transparent outline-none"
                 />
               </div>
 
               <button
                 onClick={changePassword}
                 disabled={loading}
-                className="w-full py-2 rounded-xl bg-(--primary) text-white cursor-pointer"
+                className="w-full py-3 rounded-xl bg-(--color-primary) text-white hover:opacity-90"
               >
                 {loading ? (
                   <FiLoader className="animate-spin mx-auto" />

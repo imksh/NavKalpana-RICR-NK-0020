@@ -37,7 +37,7 @@ const Assignments = () => {
   };
 
   return (
-    <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
+    <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-3 md:px-16 pt-20 md:pt-32 pb-16">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 gap-4">
         <h1 className="text-3xl font-semibold">Assignments</h1>
@@ -48,7 +48,7 @@ const Assignments = () => {
             <button
               key={type}
               onClick={() => setFilter(type)}
-              className={`px-3 md:px-4 py-2 rounded-xl text-sm ${
+              className={`px-2 md:px-4 py-2 rounded-xl text-sm ${
                 filter === type
                   ? "bg-(--color-primary) text-white"
                   : "bg-(--bg-muted)"

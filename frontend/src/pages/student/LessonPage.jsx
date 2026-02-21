@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../config/api";
 import useUiStore from "../../store/useUiStore";
+import { LuClipboard } from "react-icons/lu";
+import toast from "react-hot-toast";
 
 const LessonPage = () => {
   const { course, slug } = useParams();
@@ -147,8 +149,20 @@ const LessonPage = () => {
             {/* Code */}
             {lesson.codeExample && (
               <div>
-                <h3 className="font-semibold mb-2">Example Code</h3>
+                <h3 className="font-semibold mb-2">Code</h3>
                 <pre className="bg-black text-green-400 p-4 rounded-xl overflow-x-auto text-sm">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(lesson.codeExample);
+                      toast.success("Code copied to clipboard!");
+                    }}
+                    className="float-right text-white hover:text-(--color-primary) transition cursor-pointer"
+                    title="Copy"
+                  >
+                    <LuClipboard className="text-lg" />
+                  </motion.button>
                   <code>{lesson.codeExample}</code>
                 </pre>
               </div>

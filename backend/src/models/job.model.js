@@ -13,13 +13,24 @@ const jobSchema = new mongoose.Schema(
     stipend: String,
     salary: String,
     deadline: Date,
+    status: {
+      type: String,
+      enum: ["Open", "Closed"],
+      default: "Open",
+    },
+    hiredStudents: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     description: String,
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Job = mongoose.model("Job", jobSchema);
