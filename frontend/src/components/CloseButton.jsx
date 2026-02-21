@@ -9,7 +9,7 @@ const CloseButton = ({ onClose }) => {
       transition={{ duration: 0.2 }}
       whileTap={{ scale: 0.9 }}
       onClick={onClose}
-      className="p-2 hover:bg-gray-100 rounded-lg cursor-pointer hover:shadow hover:text-red-500"
+      className="p-2 hover:bg-(--bg-muted) rounded-lg cursor-pointer hover:shadow hover:text-red-500"
     >
       <IoClose size={20} />
     </motion.button>

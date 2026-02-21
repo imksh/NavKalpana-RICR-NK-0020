@@ -1,9 +1,19 @@
 import express from "express";
-import { subscribeNewsletter, unsubscribe } from '../controllers/newsletter.controller.js';
-import { sendMessage } from '../controllers/message.controller.js';
-import { trackVisitor } from '../controllers/public.controller.js';
-import { contactLimiter, newsletterLimiter, trackLimiter } from "../middlewares/rateLimit.middleware.js";
-
+import {
+  subscribeNewsletter,
+  unsubscribe,
+} from "../controllers/newsletter.controller.js";
+import { sendMessage } from "../controllers/message.controller.js";
+import { trackVisitor } from "../controllers/public.controller.js";
+import {
+  contactLimiter,
+  newsletterLimiter,
+  trackLimiter,
+} from "../middlewares/rateLimit.middleware.js";
+import {
+  getAllAlumni,
+  getAlumniStats,
+} from "../controllers/alumni.controller.js";
 
 const router = express.Router();
 
@@ -16,5 +26,8 @@ router.post("/message", contactLimiter, sendMessage);
 
 //Public
 router.post("/track", trackLimiter, trackVisitor);
+
+router.get("/alumni", getAllAlumni);
+router.get("/alumni/stats", getAlumniStats);
 
 export default router;

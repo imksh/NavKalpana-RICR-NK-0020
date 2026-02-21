@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../config/api";
+import { toast } from "react-hot-toast";
 
 const StudentJobPage = () => {
   const { id } = useParams();
@@ -22,7 +23,7 @@ const StudentJobPage = () => {
 
   const handleSubmit = async () => {
     if (!resume) {
-      alert("Please upload your resume");
+      toast.error("Please upload your resume");
       return;
     }
 
@@ -30,18 +31,18 @@ const StudentJobPage = () => {
       setLoading(true);
 
       const formData = new FormData();
-      formData.append("jobId", jobId);
+      formData.append("jobId", id);
       formData.append("resume", resume);
       formData.append("coverLetter", coverLetter);
 
-      await api.post("/job/apply", formData, {
+      await api.post(`/jobs/${id}/apply`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert("Application Submitted Successfully 🎉");
+      toast.success("Application Submitted Successfully 🎉");
       navigate("/student/jobs");
     } catch (error) {
-      alert(error.response?.data?.message || "Error applying");
+      toast.error(error.response?.data?.message || "Error applying");
     } finally {
       setLoading(false);
     }
@@ -51,19 +52,24 @@ const StudentJobPage = () => {
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
-      <h1 className="text-3xl font-semibold mb-10">
-        Apply for {job.title}
-      </h1>
+      <h1 className="text-3xl font-semibold mb-10">Apply for {job.title}</h1>
 
       <div className="grid md:grid-cols-3 gap-10">
         {/* LEFT - JOB DETAILS */}
         <div className="md:col-span-1 bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl">
-          <h3 className="text-lg font-semibold mb-3">
-            {job.company}
-          </h3>
+          <h3 className="text-lg font-semibold mb-3">{job.company}</h3>
 
           <p className="text-(--text-secondary) text-sm mb-4">
             {job.location} • {job.type}
+          </p>
+
+          <p className="text-(--text-secondary) text-sm mb-4">
+            {job.description.split("\n").map((line, index) => (
+              <span key={index}>
+                {line}
+                <br />
+              </span>
+            ))}
           </p>
 
           <p className="text-(--color-success) mb-4">
@@ -80,33 +86,83 @@ const StudentJobPage = () => {
               </span>
             ))}
           </div>
+
+          <div className="flex mt-6 mb-2 gap-4 items-center">
+            <h4 className="font-medium ">Application Deadline:</h4>
+            <p className="text-sm text-(--text-secondary)">
+              {new Date(job.deadline).toLocaleDateString()}
+            </p>
+          </div>
+
+          {job.status === "close" && (
+            <div className="text-xs bg-(--color-danger) px-4 py-1 rounded-2xl my-2 w-fit">
+              Closed
+            </div>
+          )}
+
+          {job.hasApplied && (
+            <>
+              <h4 className="font-medium mb-2">Your Application:</h4>
+
+              <p className="mb-1">
+                <span className="font-medium">Status:</span>{" "}
+                <span
+                  className={`font-medium ${
+                    job.applicationStatus === "Accepted"
+                      ? "text-(--color-success)"
+                      : job.applicationStatus === "Rejected"
+                        ? "text-(--color-error)"
+                        : "text-(--color-primary)"
+                  }`}
+                >
+                  {job.applicationStatus}
+                </span>
+              </p>
+
+              <p className="mb-1">
+                <p className="font-medium">Cover Letter:</p>{" "}
+                <p className="text-(--text-secondary) text-sm mb-4">
+                  {job.coverLetter || "N/A"}
+                </p>
+              </p>
+
+              {job.resume && (
+                <a
+                  href={job.resume}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-(--color-primary) underline text-sm"
+                >
+                  View Uploaded Resume
+                </a>
+              )}
+            </>
+          )}
         </div>
 
         {/* RIGHT - APPLY FORM */}
         <div className="md:col-span-2 bg-(--card-bg) border border-(--border-color) p-8 rounded-2xl">
           <div className="mb-6">
-            <label className="block mb-2 text-sm">
-              Upload Resume (PDF)
-            </label>
+            <label className="block mb-2 text-sm">Upload Resume (PDF)</label>
 
             <input
               type="file"
               accept=".pdf"
               onChange={(e) => setResume(e.target.files[0])}
-              className="w-full border border-(--border-color) rounded-xl p-3 bg-(--bg-main)"
+              className="w-full border border-(--border-color) rounded-xl p-3 bg-(--bg-main) disabled:cursor-not-allowed"
+              disabled={job.hasApplied || job.status === "close"}
             />
           </div>
 
           <div className="mb-8">
-            <label className="block mb-2 text-sm">
-              Cover Letter
-            </label>
+            <label className="block mb-2 text-sm">Cover Letter</label>
 
             <textarea
               rows="6"
               value={coverLetter}
               onChange={(e) => setCoverLetter(e.target.value)}
-              className="w-full border border-(--border-color) rounded-xl p-4 bg-(--bg-main)"
+              className="w-full border border-(--border-color) rounded-xl p-4 bg-(--bg-main) disabled:cursor-not-allowed "
+              disabled={job.hasApplied || job.status === "close"}
             />
           </div>
 
@@ -120,10 +176,14 @@ const StudentJobPage = () => {
 
             <button
               onClick={handleSubmit}
-              disabled={loading}
-              className="px-6 py-3 rounded-xl bg-(--color-primary) text-white"
+              disabled={loading || job.hasApplied || job.status === "close"}
+              className="px-6 py-3 rounded-xl bg-(--color-primary) text-white disabled:bg-slate-400 disabled:cursor-not-allowed"
             >
-              {loading ? "Submitting..." : "Submit Application"}
+              {loading
+                ? "Submitting..."
+                : job.status === "close"
+                  ? "Job Closed"
+                  : "Submit Application"}
             </button>
           </div>
         </div>
