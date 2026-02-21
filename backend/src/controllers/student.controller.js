@@ -2,9 +2,12 @@ import Assignment from "../models/assignment.model.js";
 import Enrollment from "../models/enrollment.model.js";
 import AssignmentSubmission from "../models/assignmentSubmission.model.js";
 import Quiz from "../models/quiz.model.js";
-import QuizResult from "../models/quiz.model.js";
+import QuizResult from "../models/quizResult.model.js";
 import Course from "../models/course.model.js";
 import LearningActivity from "../models/learningActivity.model.js";
+import Attendance from "../models/attendance.model.js";
+import User from "../models/user.model.js";
+import Event from "../models/event.model.js";
 
 export const stats = async (req, res, next) => {
   try {
@@ -17,8 +20,6 @@ export const stats = async (req, res, next) => {
     const courseIds = enrollments.map((e) => e.courseId._id);
     const enrolledCourses = enrollments.map((e) => e.courseId);
 
-    /* ================= ASSIGNMENTS ================= */
-
     const assignments = await Assignment.find({
       courseId: { $in: courseIds },
     });
@@ -28,7 +29,6 @@ export const stats = async (req, res, next) => {
     const assignmentSubmissions = await AssignmentSubmission.find({
       studentId: user._id,
       assignmentId: { $in: assignments.map((a) => a._id) },
-      status: "Evaluated",
     });
 
     const submittedAssignments = assignmentSubmissions.length;
@@ -42,8 +42,6 @@ export const stats = async (req, res, next) => {
             ) / assignmentSubmissions.length,
           )
         : 0;
-
-    /* ================= QUIZZES ================= */
 
     const quizzes = await Quiz.find({
       courseId: { $in: courseIds },
@@ -103,6 +101,43 @@ export const stats = async (req, res, next) => {
 
     const streak = calculateStreak(activityDates.map((d) => d._id));
 
+    const attendanceRecords = await Attendance.find({
+      studentId: user._id,
+      courseId: { $in: courseIds },
+    });
+
+    const totalClasses = attendanceRecords.length;
+
+    const presentCount = attendanceRecords.filter(
+      (a) => a.status === "Present",
+    ).length;
+
+    const attendancePercent =
+      totalClasses > 0 ? Math.round((presentCount / totalClasses) * 100) : 0;
+
+    let courseCompletionPercent = 0;
+
+    if (enrollments.length > 0) {
+      const totalCourses = enrollments.length;
+
+      const completedCourses = enrollments.filter(
+        (e) =>
+          e.courseId.totalLessons > 0 &&
+          user.completedLessonsCount >= e.courseId.totalLessons,
+      ).length;
+
+      courseCompletionPercent = Math.round(
+        (completedCourses / totalCourses) * 100,
+      );
+    }
+
+    const overallScore = calculateOverallScore({
+      avgAssignmentMarks,
+      avgQuizScore,
+      attendancePercent,
+      courseCompletionPercent,
+    });
+
     /* ================= RESPONSE ================= */
 
     res.status(200).json({
@@ -118,6 +153,9 @@ export const stats = async (req, res, next) => {
       longestStreak,
       streak,
       enrolledCourses,
+      overallScore,
+      attendancePercent,
+      courseCompletionPercent,
     });
   } catch (error) {
     console.log("Error in stats:", error);
@@ -250,6 +288,222 @@ export const getStudentProgress = async (req, res, next) => {
   }
 };
 
+export const getUpcomingEvents = async (req, res, next) => {
+  try {
+    const now = new Date();
+
+    const events = await Event.find({
+      isActive: true,
+      startDate: { $gte: now },
+    })
+      .sort({ startDate: 1 })
+      .limit(10);
+
+    res.status(200).json(events);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getEvents = async (req, res, next) => {
+  try {
+    const events = await Event.find({}).sort({ startDate: -1 });
+    console.log(events);
+
+    res.status(200).json(events);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const leaderboard = async (req, res, next) => {
+  try {
+    const currentUserId = req.user._id.toString();
+
+    const students = await User.aggregate([
+      { $match: { role: "student", isActive: true } },
+
+      /* ================= QUIZ AVG ================= */
+      {
+        $lookup: {
+          from: "quizresults",
+          localField: "_id",
+          foreignField: "studentId",
+          as: "quizResults",
+        },
+      },
+      {
+        $addFields: {
+          avgQuizScore: {
+            $cond: [
+              { $gt: [{ $size: "$quizResults" }, 0] },
+              { $avg: "$quizResults.scorePercent" },
+              0,
+            ],
+          },
+        },
+      },
+
+      /* ================= ASSIGNMENT AVG ================= */
+      {
+        $lookup: {
+          from: "assignmentsubmissions",
+          localField: "_id",
+          foreignField: "studentId",
+          as: "assignmentSubmissions",
+        },
+      },
+      {
+        $addFields: {
+          avgAssignmentMarks: {
+            $cond: [
+              { $gt: [{ $size: "$assignmentSubmissions" }, 0] },
+              { $avg: "$assignmentSubmissions.marks" },
+              0,
+            ],
+          },
+        },
+      },
+
+      /* ================= ATTENDANCE ================= */
+      {
+        $lookup: {
+          from: "attendances",
+          localField: "_id",
+          foreignField: "studentId",
+          as: "attendanceRecords",
+        },
+      },
+      {
+        $addFields: {
+          attendancePercent: {
+            $cond: [
+              { $gt: [{ $size: "$attendanceRecords" }, 0] },
+              {
+                $multiply: [
+                  {
+                    $divide: [
+                      {
+                        $size: {
+                          $filter: {
+                            input: "$attendanceRecords",
+                            as: "a",
+                            cond: { $eq: ["$$a.status", "Present"] },
+                          },
+                        },
+                      },
+                      { $size: "$attendanceRecords" },
+                    ],
+                  },
+                  100,
+                ],
+              },
+              0,
+            ],
+          },
+        },
+      },
+
+      /* ================= COURSE COMPLETION ================= */
+      {
+        $lookup: {
+          from: "enrollments",
+          localField: "_id",
+          foreignField: "studentId",
+          as: "enrollments",
+        },
+      },
+      {
+        $addFields: {
+          courseCompletionPercent: {
+            $cond: [
+              { $gt: [{ $size: "$enrollments" }, 0] },
+              {
+                $multiply: [
+                  {
+                    $divide: [
+                      {
+                        $size: {
+                          $filter: {
+                            input: "$enrollments",
+                            as: "e",
+                            cond: {
+                              $gte: [{ $size: "$$e.completedLessons" }, 1],
+                            },
+                          },
+                        },
+                      },
+                      { $size: "$enrollments" },
+                    ],
+                  },
+                  100,
+                ],
+              },
+              0,
+            ],
+          },
+        },
+      },
+
+      /* ================= FINAL SCORE ================= */
+      {
+        $addFields: {
+          score: {
+            $round: [
+              {
+                $add: [
+                  { $multiply: ["$avgAssignmentMarks", 0.4] },
+                  { $multiply: ["$avgQuizScore", 0.4] },
+                  { $multiply: ["$attendancePercent", 0.1] },
+                  { $multiply: ["$courseCompletionPercent", 0.1] },
+                ],
+              },
+              0,
+            ],
+          },
+        },
+      },
+
+      { $sort: { score: -1 } },
+
+      {
+        $project: {
+          name: 1,
+          photo: 1,
+          score: 1,
+        },
+      },
+    ]);
+
+    /* ================= RANKING ================= */
+    const ranked = students.map((student, index) => ({
+      ...student,
+      rank: index + 1,
+    }));
+
+    const top5 = ranked.slice(0, 5);
+
+    const currentUser = ranked.find((s) => s._id.toString() === currentUserId);
+
+    const isInTop5 = top5.some((s) => s._id.toString() === currentUserId);
+
+    let response;
+
+    if (isInTop5) {
+      response = top5;
+    } else if (currentUser) {
+      response = [...top5, currentUser];
+    } else {
+      response = top5;
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 //helpers
 
 const calculateStreak = (dates) => {
@@ -306,4 +560,18 @@ const calculateLongestStreak = (dateStrings) => {
   }
 
   return longest;
+};
+
+const calculateOverallScore = ({
+  avgAssignmentMarks = 0,
+  avgQuizScore = 0,
+  attendancePercent = 0,
+  courseCompletionPercent = 0,
+}) => {
+  return Math.round(
+    avgAssignmentMarks * 0.4 +
+      avgQuizScore * 0.4 +
+      attendancePercent * 0.1 +
+      courseCompletionPercent * 0.1,
+  );
 };

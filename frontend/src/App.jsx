@@ -41,11 +41,12 @@ import Alumni from "./pages/Alumni";
 import StudentJobs from "./pages/student/StudentJobs";
 import StudentJobPage from "./pages/student/StudentJobPage";
 import StudentProgress from "./pages/student/StudentProgress";
-import StudentTutor from "./pages/student/StudentTutor";
+import StudentSupport from "./pages/student/StudentSupport";
 import FloatingAskAI from "./components/student/FloatingAskAI";
 import StudentProfile from "./pages/student/StudentProfile";
 import useLenis from "./hooks/useLenis";
 import LessonPage from "./pages/student/LessonPage";
+import StudentNotifications from "./pages/student/StudentNotifications";
 
 const App = () => {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
@@ -96,7 +97,7 @@ const App = () => {
 
   return (
     <div
-      className="bg-color-gradient overflow-x-hidden min-h-dvh pt-[12dvh]"
+      className="overflow-x-hidden min-h-dvh pt-[12dvh] hide-scrollbar"
       onClick={() => {
         setOpenLang(false);
         setOpenProfile(false);
@@ -264,10 +265,21 @@ const App = () => {
         />
 
         <Route
-          path="/student/tutor"
+          path="/student/support"
           element={
             user?.role === "student" ? (
-              <StudentTutor />
+              <StudentSupport />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/student/notifications"
+          element={
+            user?.role === "student" ? (
+              <StudentNotifications />
             ) : (
               <Navigate to="/login" />
             )
@@ -279,7 +291,7 @@ const App = () => {
 
       <Footer />
 
-      <Toaster />
+      <Toaster position="top-right" />
     </div>
   );
 };
