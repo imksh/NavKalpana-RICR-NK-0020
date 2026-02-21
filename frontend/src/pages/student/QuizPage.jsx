@@ -1,44 +1,58 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import api from "../../config/api";
+import QuizResultPage from "../../components/student/QuizResult";
 
 const QuizPage = () => {
-  const quiz = {
-    title: "React Fundamentals Quiz",
-    duration: 60, // seconds
-    questions: [
-      {
-        questionText: "What is React?",
-        options: [
-          { text: "Library", isCorrect: true },
-          { text: "Database", isCorrect: false },
-          { text: "Server", isCorrect: false },
-        ],
-        explanation: "React is a JavaScript library.",
-      },
-      {
-        questionText: "What is JSX?",
-        options: [
-          { text: "JavaScript Extension", isCorrect: true },
-          { text: "JSON format", isCorrect: false },
-        ],
-        explanation: "JSX is syntax extension for JavaScript.",
-      },
-    ],
-  };
+  const { id } = useParams();
 
+  const [quiz, setQuiz] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [timeLeft, setTimeLeft] = useState(quiz.duration);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [alreadyAttempted, setAlreadyAttempted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  /* ================= FETCH QUIZ ================= */
   useEffect(() => {
-    if (timeLeft <= 0 || submitted) return;
+    const fetchQuiz = async () => {
+      try {
+        const res = await api.get(`/student/quizzes/${id}`);
+
+        // 🔥 If already attempted → render result
+        if (res.data.alreadyAttempted) {
+          setAlreadyAttempted(true);
+          return;
+        }
+
+        setQuiz(res.data);
+        setTimeLeft(res.data.duration);
+      } catch (error) {
+        console.log("Error fetching quiz:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuiz();
+  }, [id]);
+
+  /* ================= TIMER ================= */
+  useEffect(() => {
+    if (!quiz || submitted || alreadyAttempted) return;
+
+    if (timeLeft <= 0) {
+      handleSubmit();
+      return;
+    }
 
     const timer = setTimeout(() => {
-      setTimeLeft(timeLeft - 1);
+      setTimeLeft((prev) => prev - 1);
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [timeLeft, submitted]);
+  }, [timeLeft, quiz, submitted, alreadyAttempted]);
 
   const handleSelect = (optionIndex) => {
     setAnswers({
@@ -47,59 +61,41 @@ const QuizPage = () => {
     });
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  /* ================= SUBMIT ================= */
+  const handleSubmit = async () => {
+    try {
+      await api.post("/student/quizzes/submit", {
+        quizId: quiz._id,
+        answers,
+      });
+
+      setSubmitted(true); // 🔥 switch to result view
+    } catch (error) {
+      console.log("Submit error:", error);
+    }
   };
 
-  const calculateScore = () => {
-    let correct = 0;
-    quiz.questions.forEach((q, index) => {
-      const selected = answers[index];
-      if (q.options[selected]?.isCorrect) {
-        correct++;
-      }
-    });
-
-    return Math.round((correct / quiz.questions.length) * 100);
-  };
-
-  if (submitted || timeLeft === 0) {
-    const score = calculateScore();
-
+  /* ================= LOADING ================= */
+  if (loading) {
     return (
-      <div className="min-h-dvh flex flex-col justify-center items-center bg-(--bg-main) text-(--text-primary) px-6 md:px-16">
-        <h1 className="text-3xl font-semibold mb-4">Quiz Completed</h1>
-
-        <p className="text-xl text-(--color-success)">Your Score: {score}%</p>
-
-        <div className="w-full mt-8">
-          {quiz.questions.map((q, index) => (
-            <div
-              key={index}
-              className="mb-4 p-4 bg-(--card-bg) border border-(--border-color) rounded-xl"
-            >
-              <p className="font-medium">
-                Q{index + 1}. {q.questionText}
-              </p>
-
-              <p className="text-sm mt-2">
-                Correct Answer: {q.options.find((o) => o.isCorrect)?.text}
-              </p>
-
-              <p className="text-xs text-(--text-secondary) mt-1">
-                {q.explanation}
-              </p>
-            </div>
-          ))}
-        </div>
+      <div className="min-h-dvh flex items-center justify-center">
+        Loading quiz...
       </div>
     );
   }
+
+  /* ================= RESULT VIEW ================= */
+  if (alreadyAttempted || submitted) {
+    return <QuizResultPage quizId={id} />;
+  }
+
+  if (!quiz) return null;
 
   const question = quiz.questions[currentIndex];
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
+      {/* HEADER */}
       <div className="flex justify-between mb-6">
         <h1 className="text-2xl font-semibold">{quiz.title}</h1>
 
@@ -108,6 +104,7 @@ const QuizPage = () => {
         </div>
       </div>
 
+      {/* PROGRESS BAR */}
       <div className="mb-6">
         <div className="flex justify-between text-sm mb-2">
           <span>
@@ -128,6 +125,7 @@ const QuizPage = () => {
         </div>
       </div>
 
+      {/* QUESTION CARD */}
       <div className="bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl">
         <h2 className="text-lg font-medium mb-4">
           Q{currentIndex + 1}. {question.questionText}
@@ -144,7 +142,7 @@ const QuizPage = () => {
                   : "border-(--border-color)"
               }`}
             >
-              {option.text}
+              {option}
             </button>
           ))}
         </div>

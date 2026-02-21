@@ -12,7 +12,7 @@ export const getStudentCourse = async (req, res, next) => {
       path: "courseId",
       populate: {
         path: "instructor",
-        select: "name email role",
+        select: "name email role bio phone photo skillsAcquired",
       },
     });
 
@@ -44,7 +44,7 @@ export const getCourse = async (req, res, next) => {
 
     const course = await Course.findOne({ slug }).populate(
       "instructor",
-      "name email role",
+      "name email role bio phone photo skillsAcquired",
     );
 
     if (!course) {

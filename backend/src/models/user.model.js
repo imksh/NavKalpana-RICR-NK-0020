@@ -26,6 +26,16 @@ const userSchema = new mongoose.Schema(
       publicId: String,
     },
 
+    phone: {
+      type: String,
+      default: "",
+    },
+    
+    bio: {
+      type: String,
+      default: "",
+    },
+
     // ===== Role =====
     role: {
       type: String,

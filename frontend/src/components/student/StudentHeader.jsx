@@ -13,24 +13,16 @@ import ChangeLanguage from "../ChangeLanguage";
 
 const StudentHeader = () => {
   const { t } = useTranslation();
+
   const { user, logout } = useAuthStore();
-  const {
-    mobileOpen,
-    setMobileOpen,
-    closeAll,
-    openProfile,
-    setOpenProfile,
-    lang,
-    setOpenLang,
-    openLang,
-    setLang,
-  } = useUiStore();
+  const { mobileOpen, setMobileOpen, closeAll, openProfile, setOpenProfile } =
+    useUiStore();
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollY = useRef(0);
   const { theme, toggleTheme } = useThemeStore();
 
   const navigate = useNavigate();
-  const location = useLocation().pathname;
+  const location = useLocation();
 
   /* ============================= */
   /*      HIDE HEADER ON SCROLL    */
@@ -53,32 +45,6 @@ const StudentHeader = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  /* ============================= */
-  /*     NAVIGATION HELPERS        */
-  /* ============================= */
-
-  const handleDashboard = () => {
-    if (!user) return navigate("/");
-
-    switch (user.role) {
-      case "student":
-        navigate("/student");
-        break;
-      case "instructor":
-        navigate("/instructor");
-        break;
-      case "admin":
-        navigate("/admin");
-        break;
-      default:
-        navigate("/");
-    }
-  };
-
-  /* ============================= */
-  /*           RENDER              */
-  /* ============================= */
-
   return (
     <motion.header
       initial={{ y: -100 }}
@@ -87,6 +53,7 @@ const StudentHeader = () => {
       className="fixed top-0 left-0 w-full z-50 px-4 md:px-16 pt-4 backdrop-blur-md items-center"
       onClick={(e) => {
         e.stopPropagation();
+        setOpenProfile(false);
       }}
     >
       <div className="flex justify-between items-center bg-(--color-primary) rounded-3xl px-6 py-3 shadow-md text-white ">
@@ -100,12 +67,15 @@ const StudentHeader = () => {
           <p className="text-2xl font-bold text-white">{t("header.brand")}</p>
         </Link>
 
-        <div className="hidden md:flex items-center gap-5 absolute left-[50%] -translate-x-[50%] h-full">
+        <div
+          className={`hidden md:flex items-center gap-5 lg:absolute lg:left-[50%] lg:-translate-x-[50%] h-full  `}
+        >
           <button
             onClick={() => {
               navigate("/student");
               setMobileOpen(false);
             }}
+            className={`${location.pathname === "/student" ? "text-(--color-primary-hover)" : "text-white"} cursor-pointer hover:text-(--color-primary-hover) transition font-semibold`}
           >
             {t("header.home")}
           </button>
@@ -115,33 +85,50 @@ const StudentHeader = () => {
               navigate("/student/courses");
               setMobileOpen(false);
             }}
+            className={`${location.pathname === "/student/courses" ? "text-(--color-primary-hover)" : "text-white"} cursor-pointer hover:text-(--color-primary-hover) transition font-semibold`}
           >
             {t("header.course")}
           </button>
 
           <button
             onClick={() => {
-              navigate("/student/tutor");
+              navigate("/student/support");
               setMobileOpen(false);
             }}
+            className={`${location.pathname === "/student/support" ? "text-(--color-primary-hover)" : "text-white"} cursor-pointer hover:text-(--color-primary-hover) transition font-semibold`}
           >
-            {t("header.tutor")}
+            {t("header.support")}
           </button>
         </div>
 
-        <div className="flex items-center gap-5 relative  ml-auto md:ml-0">
+        <div className="flex items-center lg:gap-3 relative  ml-auto md:ml-0">
           {/* Notification */}
-          <button className="relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition mr-4">
-            <FiBell />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-(--color-danger) rounded-full"></span>
-          </button>
+          <motion.button
+            initial={{ scale: 1 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => navigate("/student/notifications")}
+            className="relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition mr-4 cursor-pointer group duration-500"
+          >
+            <motion.div
+              initial={{ scale: 1 }}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.2 }}
+              className="group-hover:rotate-45 "
+            >
+              <FiBell />
+            </motion.div>
+            <span className="absolute top-0 right-0 w-2 h-2 bg-(--color-danger) rounded-full "></span>
+          </motion.button>
 
           {/* Profile */}
           <div className="hidden md:block relative">
             <button
               onClick={() => setOpenProfile(!openProfile)}
-              className="flex items-center gap-3 bg-white/10 px-3 py-2 rounded-xl hover:bg-white/20 transition"
+              className="flex items-center gap-3 bg-white/10 px-3 py-2 rounded-xl hover:bg-white/20 transition cursor-pointer"
               onMouseEnter={() => setOpenProfile(true)}
+              onMouseLeave={() => setOpenProfile(false)}
             >
               <div className="w-8 h-8 !bg-white text-(--color-primary) font-bold rounded-full flex items-center justify-center">
                 {user?.name?.charAt(0)}
@@ -151,113 +138,121 @@ const StudentHeader = () => {
               </span>
             </button>
 
-            {openProfile && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute right-0 mt-3 w-48 bg-(--card-bg) text-(--text-primary) rounded-xl shadow-lg border border-(--border-color)"
-                onMouseEnter={() => setOpenProfile(true)}
-                onMouseLeave={() => closeAll()}
-              >
-                <button
-                  onClick={() => {
-                    navigate("/student/profile");
+            <AnimatePresence mode="wait">
+              {openProfile && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute right-0 mt-3 w-48 bg-(--card-bg) text-(--text-primary) rounded-xl shadow-lg border border-(--border-color)"
+                  onMouseEnter={() => {
+                    setOpenProfile(true);
+                  }}
+                  onMouseLeave={() => {
                     closeAll();
                   }}
-                  className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
                 >
-                  {t("header.profile")}
-                </button>
+                  <button
+                    onClick={() => {
+                      navigate("/student/profile");
+                      closeAll();
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                  >
+                    {t("header.profile")}
+                  </button>
 
-                <button
-                  onClick={() => {
-                    navigate("/student/assignments");
-                    closeAll();
-                  }}
-                  className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
-                >
-                  {t("header.assignments")}
-                </button>
-                <button
-                  onClick={() => {
-                    navigate("/student/quizzes");
-                    closeAll();
-                  }}
-                  className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
-                >
-                  {t("header.quizzes")}
-                </button>
-                <button
-                  onClick={() => {
-                    navigate("/student/attendance");
-                    closeAll();
-                  }}
-                  className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
-                >
-                  {t("header.attendance")}
-                </button>
+                  <button
+                    onClick={() => {
+                      navigate("/student/assignments");
+                      closeAll();
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                  >
+                    {t("header.assignments")}
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate("/student/quizzes");
+                      closeAll();
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                  >
+                    {t("header.quizzes")}
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate("/student/attendance");
+                      closeAll();
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                  >
+                    {t("header.attendance")}
+                  </button>
 
-                <button
-                  onClick={() => {
-                    navigate("/student/progress");
-                    closeAll();
-                  }}
-                  className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
-                >
-                  {t("header.progress")}
-                </button>
+                  <button
+                    onClick={() => {
+                      navigate("/student/progress");
+                      closeAll();
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                  >
+                    {t("header.progress")}
+                  </button>
 
-                <button
-                  onClick={() => {
-                    navigate("/student/jobs");
-                    closeAll();
-                  }}
-                  className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
-                >
-                  {t("header.jobs")}
-                </button>
+                  <button
+                    onClick={() => {
+                      navigate("/student/jobs");
+                      closeAll();
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                  >
+                    {t("header.jobs")}
+                  </button>
 
-                <button
-                  onClick={() => {
-                    navigate("/student/alumini");
-                    closeAll();
-                  }}
-                  className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
-                >
-                  {t("header.alumini")}
-                </button>
+                  <button
+                    onClick={() => {
+                      navigate("/student/alumini");
+                      closeAll();
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                  >
+                    {t("header.alumini")}
+                  </button>
 
-                <button
-                  onClick={toggleTheme}
-                  className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) flex gap-2 items-center"
-                >
-                  {theme === "dark"
-                    ? t("header.lightMode")
-                    : t("header.darkMode")}
-                  <div className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
-                    {theme === "dark" ? (
-                      <FiSun className="text-yellow-300" />
-                    ) : (
-                      <FiMoon />
-                    )}
+                  <button
+                    onClick={toggleTheme}
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) flex gap-2 items-center"
+                  >
+                    {theme === "dark"
+                      ? t("header.lightMode")
+                      : t("header.darkMode")}
+                    <div className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+                      {theme === "dark" ? (
+                        <FiSun className="text-yellow-300" />
+                      ) : (
+                        <FiMoon />
+                      )}
+                    </div>
+                  </button>
+
+                  <div className="w-full text-left p-2 hover:bg-(--bg-muted) flex gap-2 items-center">
+                    <ChangeLanguage />
                   </div>
-                </button>
 
-                <div className="w-full text-left p-2 hover:bg-(--bg-muted) flex gap-2 items-center">
-                  <ChangeLanguage />
-                </div>
-
-                <button
-                  onClick={() => {
-                    logout();
-                    closeAll();
-                  }}
-                  className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) flex items-center gap-2 text-(--color-danger)"
-                >
-                  <FiLogOut /> {t("header.logout")}
-                </button>
-              </motion.div>
-            )}
+                  <button
+                    onClick={() => {
+                      logout();
+                      closeAll();
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) flex items-center gap-2 text-(--color-danger)"
+                  >
+                    <FiLogOut /> {t("header.logout")}
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
