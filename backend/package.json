@@ -20,7 +20,9 @@
     "seed:modules": "node ./src/seeders/seedModules.js",
     "seed:quizzes": "node ./src/seeders/seedQuizzes.js",
     "seed:skillProgress": "node ./src/seeders/seedSkillProgress.js",
-    "seed:jobs": "node ./src/seeders/seedJobs.js"
+    "seed:jobs": "node ./src/seeders/seedJobs.js",
+    "seed:alumni": "node ./src/seeders/seedAlumni.js",
+    "seed:events": "node ./src/seeders/seedEvents.js"
   },
   "author": "Karan Kumar",
   "license": "ISC",

@@ -20,6 +20,7 @@ const FloatingEmojis = () => {
       <AnimatePresence mode="wait">
         <motion.span
           key={emoji}
+          drag
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -30, opacity: 0 }}
