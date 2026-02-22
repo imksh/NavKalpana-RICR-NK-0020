@@ -1,11 +1,17 @@
 import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis } from "recharts";
+import { motion } from "motion/react";
 
 const ActivityChart = ({ data = [] }) => {
   const sorted = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
 
   return (
     <div className="bg-(--card-bg) py-4 rounded-2xl w-full h-full outline-none">
-      <div className="w-full h-40 outline-none">
+      <motion.div
+        whileTap={{ scale: 0.95 }}
+        whileHover={{ x: [-10, 0, 10, 0] }}
+        transition={{ duration: 0.2 }}
+        className="w-full h-40 outline-none"
+      >
         <ResponsiveContainer
           width="100%"
           height="100%"
@@ -44,7 +50,7 @@ const ActivityChart = ({ data = [] }) => {
             />
           </AreaChart>
         </ResponsiveContainer>
-      </div>
+      </motion.div>
     </div>
   );
 };

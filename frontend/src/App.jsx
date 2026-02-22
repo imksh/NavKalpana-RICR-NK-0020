@@ -47,12 +47,18 @@ import StudentProfile from "./pages/student/StudentProfile";
 import useLenis from "./hooks/useLenis";
 import LessonPage from "./pages/student/LessonPage";
 import StudentNotifications from "./pages/student/StudentNotifications";
+import ProtectedRoute from "./components/Layout/ProtectedRoute";
+import AdminLayout from "./components/Layout/AdminLayout";
+import InstructorLayout from "./components/Layout/InstructorLayout";
+import PublicLayout from "./components/Layout/PublicLayout";
+import StudentLayout from "./components/Layout/StudentLayout";
+import Courses from "./pages/Courses";
 
 const App = () => {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
   const { setOpenLang, setOpenProfile, setMobileOpen } = useUiStore();
   const theme = useThemeStore((state) => state.theme);
-  useLenis();
+  // useLenis();
 
   /* ============================= */
   /*        INITIAL LOAD           */
@@ -104,7 +110,7 @@ const App = () => {
         setMobileOpen(false);
       }}
     >
-      {!user ? (
+      {/* {!user ? (
         <Header />
       ) : user.role === "admin" ? (
         <AdminHeader />
@@ -112,12 +118,9 @@ const App = () => {
         <InstructorHeader />
       ) : (
         <StudentHeader />
-      )}
+      )} */}
 
-      <ThemeBubble />
-
-      <Routes>
-        <Route
+      {/* <Route
           path="/"
           element={
             !user ? (
@@ -130,166 +133,105 @@ const App = () => {
               <Navigate to="/student" />
             )
           }
-        />
-        <Route path="/about" element={<About />} />
-        <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-        <Route
-          path="/register"
-          element={user ? <Navigate to="/" /> : <Register />}
-        />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-        <Route path="/unsubscribe-success" element={<UnsubscribeSuccess />} />
-        <Route path="/alumini" element={<Alumni />} />
-        <Route path="/student/alumini" element={<Alumni />} />
+        /> */}
+
+      <ThemeBubble />
+
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route
+            path="/"
+            element={
+              !user ? (
+                <Landing />
+              ) : user.role === "admin" ? (
+                <Navigate to="/admin" />
+              ) : user.role === "instructor" ? (
+                <Navigate to="/instructor" />
+              ) : (
+                <Navigate to="/student" />
+              )
+            }
+          />
+          <Route path="/about" element={<About />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/" /> : <Login />}
+          />
+          <Route
+            path="/register"
+            element={user ? <Navigate to="/" /> : <Register />}
+          />
+          <Route path="/contact" element={<Contact />} />
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsAndConditions />}
+          />
+          <Route path="/unsubscribe-success" element={<UnsubscribeSuccess />} />
+          <Route path="/alumini" element={<Alumni />} />
+        </Route>
 
         <Route
-          path="/student"
           element={
-            user?.role === "student" ? (
-              <StudentHome />
-            ) : (
-              <Navigate to="/login" />
-            )
+            <ProtectedRoute role="student">
+              <StudentLayout />
+            </ProtectedRoute>
           }
-        />
+        >
+          <Route path="/student" element={<StudentHome />} />
+          <Route path="/student/profile" element={<StudentProfile />} />
+          <Route path="/student/courses" element={<MyCourses />} />
+          <Route path="/student/support" element={<StudentSupport />} />
+          <Route path="/student/alumni" element={<Alumni />} />
+          <Route
+            path="/student/notifications"
+            element={<StudentNotifications />}
+          />
+          <Route path="/student/courses/:slug" element={<CoursePage />} />
+
+          <Route
+            path="/student/courses/:course/:slug"
+            element={<LessonPage />}
+          />
+
+          <Route path="/student/assignments" element={<Assignments />} />
+
+          <Route path="/student/assignments/:id" element={<AssignmentPage />} />
+
+          <Route path="/student/quizzes" element={<Quizzes />} />
+
+          <Route path="/student/quizzes/:id" element={<QuizPage />} />
+
+          <Route path="/student/attendance" element={<StudentAttendence />} />
+
+          <Route path="/student/jobs" element={<StudentJobs />} />
+
+          <Route path="/student/jobs/:id" element={<StudentJobPage />} />
+
+          <Route path="/student/progress" element={<StudentProgress />} />
+        </Route>
 
         <Route
-          path="/student/profile"
           element={
-            user?.role === "student" ? (
-              <StudentProfile />
-            ) : (
-              <Navigate to="/login" />
-            )
+            <ProtectedRoute role="admin">
+              <AdminLayout />
+            </ProtectedRoute>
           }
-        />
-        <Route
-          path="/student/courses"
-          element={
-            user?.role === "student" ? <MyCourses /> : <Navigate to="/login" />
-          }
-        />
-        <Route
-          path="/student/courses/:slug"
-          element={
-            user?.role === "student" ? <CoursePage /> : <Navigate to="/login" />
-          }
-        />
+        >
+          <Route path="/admin" element={<AdminHome />} />
+        </Route>
 
         <Route
-          path="/student/courses/:course/:slug"
           element={
-            user?.role === "student" ? <LessonPage /> : <Navigate to="/login" />
+            <ProtectedRoute role="instructor">
+              <InstructorLayout />
+            </ProtectedRoute>
           }
-        />
-
-        <Route
-          path="/student/assignments"
-          element={
-            user?.role === "student" ? (
-              <Assignments />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        <Route
-          path="/student/assignments/:id"
-          element={
-            user?.role === "student" ? (
-              <AssignmentPage />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        <Route
-          path="/student/quizzes"
-          element={
-            user?.role === "student" ? <Quizzes /> : <Navigate to="/login" />
-          }
-        />
-
-        <Route
-          path="/student/quizzes/:id"
-          element={
-            user?.role === "student" ? <QuizPage /> : <Navigate to="/login" />
-          }
-        />
-
-        <Route
-          path="/student/attendance"
-          element={
-            user?.role === "student" ? (
-              <StudentAttendence />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        <Route
-          path="/student/jobs"
-          element={
-            user?.role === "student" ? (
-              <StudentJobs />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        <Route
-          path="/student/jobs/:id"
-          element={
-            user?.role === "student" ? (
-              <StudentJobPage />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        <Route
-          path="/student/progress"
-          element={
-            user?.role === "student" ? (
-              <StudentProgress />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        <Route
-          path="/student/support"
-          element={
-            user?.role === "student" ? (
-              <StudentSupport />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        <Route
-          path="/student/notifications"
-          element={
-            user?.role === "student" ? (
-              <StudentNotifications />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
+        >
+          <Route path="/instructor" element={<InstructorHome />} />
+        </Route>
       </Routes>
-
-      {user?.role === "student" && <FloatingAskAI />}
-
-      <Footer />
 
       <Toaster position="top-right" />
     </div>

@@ -7,14 +7,18 @@ import {
   FiUsers,
   FiBook,
   FiBarChart2,
-  FiShield
+  FiShield,
 } from "react-icons/fi";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useThemeStore } from "../../store/useThemeStore";
 import useUiStore from "../../store/useUiStore";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+const _MotionRef = motion;
 
 const AdminHeader = () => {
+  const { t } = useTranslation();
   const { user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const { openProfile, setOpenProfile, closeAll } = useUiStore();
@@ -31,48 +35,44 @@ const AdminHeader = () => {
       >
         {/* ================= LEFT SIDE ================= */}
         <div className="flex items-center gap-6">
-
           <div className="flex items-center gap-3">
             <FiShield className="text-yellow-300" />
             <h1 className="text-xl font-semibold">
-              Admin Control Panel
+              {t("components.adminHeader.title")}
             </h1>
           </div>
 
           <span className="hidden md:block text-xs bg-yellow-400 text-black px-3 py-1 rounded-full font-semibold">
-            SUPER ADMIN
+            {t("components.adminHeader.role")}
           </span>
 
           {/* QUICK NAV */}
           <div className="hidden md:flex items-center gap-5 text-sm">
-
             <button
               onClick={() => navigate("/admin/users")}
               className="flex items-center gap-2 hover:text-emerald-300 transition"
             >
-              <FiUsers size={16} /> Users
+              <FiUsers size={16} /> {t("components.adminHeader.users")}
             </button>
 
             <button
               onClick={() => navigate("/admin/courses")}
               className="flex items-center gap-2 hover:text-emerald-300 transition"
             >
-              <FiBook size={16} /> Courses
+              <FiBook size={16} /> {t("components.adminHeader.courses")}
             </button>
 
             <button
               onClick={() => navigate("/admin/reports")}
               className="flex items-center gap-2 hover:text-emerald-300 transition"
             >
-              <FiBarChart2 size={16} /> Reports
+              <FiBarChart2 size={16} /> {t("components.adminHeader.reports")}
             </button>
-
           </div>
         </div>
 
         {/* ================= RIGHT SIDE ================= */}
         <div className="flex items-center gap-5 relative">
-
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
@@ -119,7 +119,7 @@ const AdminHeader = () => {
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
                 >
-                  Admin Profile
+                  {t("components.adminHeader.adminProfile")}
                 </button>
 
                 <button
@@ -129,7 +129,7 @@ const AdminHeader = () => {
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
                 >
-                  Platform Settings
+                  {t("components.adminHeader.platformSettings")}
                 </button>
 
                 <button
@@ -139,12 +139,11 @@ const AdminHeader = () => {
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) flex items-center gap-2 text-(--color-danger)"
                 >
-                  <FiLogOut /> Logout
+                  <FiLogOut /> {t("components.adminHeader.logout")}
                 </button>
               </motion.div>
             )}
           </div>
-
         </div>
       </div>
     </header>

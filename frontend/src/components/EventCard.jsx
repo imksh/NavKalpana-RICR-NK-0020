@@ -1,6 +1,11 @@
 import React from "react";
+import { motion } from "motion/react";
+import { useTranslation } from "react-i18next";
+
+const _MotionRef = motion;
 
 const EventCard = ({ upcommingEvents }) => {
+  const { t } = useTranslation();
   return (
     <div className="grid md:grid-cols-2 gap-4">
       {upcommingEvents.map((event) => {
@@ -8,7 +13,10 @@ const EventCard = ({ upcommingEvents }) => {
         const end = event.endDate ? new Date(event.endDate) : null;
 
         return (
-          <div
+          <motion.div
+            whileTap={{ scale: 0.95 }}
+            whileHover={{ y: -5 }}
+            transition={{ duration: 0.2 }}
             key={event._id}
             className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-5 shadow-sm hover:shadow-md transition"
           >
@@ -19,7 +27,7 @@ const EventCard = ({ upcommingEvents }) => {
               </h3>
 
               <span
-                className={`text-xs px-3 py-1 rounded-full ${
+                className={`text-xs px-3 py-1 rounded-full capitalize ${
                   event.eventType === "exam"
                     ? "bg-red-100 text-red-600"
                     : event.eventType === "assignment"
@@ -27,7 +35,7 @@ const EventCard = ({ upcommingEvents }) => {
                       : "bg-blue-100 text-blue-600"
                 }`}
               >
-                {event.eventType}
+                {event.eventType.replaceAll("_", " ")}
               </span>
             </div>
 
@@ -44,11 +52,11 @@ const EventCard = ({ upcommingEvents }) => {
 
             {/* Priority */}
             {event.priority === 1 && (
-              <div className="mt-3 text-xs font-medium text-(--color-primary)">
-                High Priority
+              <div className="mt-3 text-xs font-medium text-(--color-success)">
+                {t("components.eventCard.highPriority")}
               </div>
             )}
-          </div>
+          </motion.div>
         );
       })}
     </div>

@@ -13,9 +13,9 @@ export const seedCourses = async () => {
     await Course.deleteMany();
 
     // Get instructor
-    const instructor = await User.findOne({ role: "instructor" });
+    const instructor = await User.find({ role: "instructor" });
 
-    if (!instructor) {
+    if (!instructor || instructor.length === 0) {
       console.log("No instructor found. Seed users first.");
       process.exit();
     }
@@ -24,14 +24,14 @@ export const seedCourses = async () => {
       {
         title: {
           en: "Full Stack Web Development",
-          hi: "फुल स्टैक वेब डेवलपमेंट"
+          hi: "फुल स्टैक वेब डेवलपमेंट",
         },
-        slug:"fsd",
+        slug: "fsd",
         description: {
           en: "Master MERN stack with real-world projects.",
-          hi: "रियल वर्ल्ड प्रोजेक्ट्स के साथ MERN स्टैक सीखें।"
+          hi: "रियल वर्ल्ड प्रोजेक्ट्स के साथ MERN स्टैक सीखें।",
         },
-        instructor: instructor._id,
+        instructor: instructor[0]._id,
         thumbnail: "https://placehold.co/600x400?text=FullStack",
         totalModules: 4,
         totalLessons: 18,
@@ -40,19 +40,19 @@ export const seedCourses = async () => {
         estimatedDurationMinutes: 1200,
         difficultyLevel: "Intermediate",
         isPublished: true,
-        isActive: true
+        isActive: true,
       },
       {
         title: {
           en: "Data Structures & Algorithms",
-          hi: "डेटा स्ट्रक्चर और एल्गोरिदम"
+          hi: "डेटा स्ट्रक्चर और एल्गोरिदम",
         },
-        slug:"dsa",
+        slug: "dsa",
         description: {
           en: "Strengthen problem-solving skills for interviews.",
-          hi: "इंटरव्यू के लिए प्रॉब्लम सॉल्विंग स्किल मजबूत करें।"
+          hi: "इंटरव्यू के लिए प्रॉब्लम सॉल्विंग स्किल मजबूत करें।",
         },
-        instructor: instructor._id,
+        instructor: instructor[1]._id,
         thumbnail: "https://placehold.co/600x400?text=DSA",
         totalModules: 6,
         totalLessons: 30,
@@ -61,19 +61,19 @@ export const seedCourses = async () => {
         estimatedDurationMinutes: 1500,
         difficultyLevel: "Advanced",
         isPublished: true,
-        isActive: true
+        isActive: true,
       },
       {
         title: {
           en: "Introduction to Programming",
-          hi: "प्रोग्रामिंग का परिचय"
+          hi: "प्रोग्रामिंग का परिचय",
         },
-        slug:"introduction-to-programming",
+        slug: "introduction-to-programming",
         description: {
           en: "Perfect beginner course to start coding.",
-          hi: "कोडिंग शुरू करने के लिए बेहतरीन शुरुआती कोर्स।"
+          hi: "कोडिंग शुरू करने के लिए बेहतरीन शुरुआती कोर्स।",
         },
-        instructor: instructor._id,
+        instructor: instructor[2]._id,
         thumbnail: "https://placehold.co/600x400?text=Programming",
         totalModules: 3,
         totalLessons: 12,
@@ -82,8 +82,8 @@ export const seedCourses = async () => {
         estimatedDurationMinutes: 600,
         difficultyLevel: "Beginner",
         isPublished: true,
-        isActive: true
-      }
+        isActive: true,
+      },
     ]);
 
     console.log("Courses seeded successfully");

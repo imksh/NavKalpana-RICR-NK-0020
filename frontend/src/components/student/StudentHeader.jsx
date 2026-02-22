@@ -3,13 +3,22 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoCloseSharp } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import logo from "../../assets/images/logo.png";
-import { FiBell, FiSun, FiMoon, FiLogOut } from "react-icons/fi";
+import {
+  FiBell,
+  FiSun,
+  FiMoon,
+  FiLogOut,
+  FiFileText,
+  FiCheckSquare,
+  FiTrendingUp,
+  FiBookOpen,
+} from "react-icons/fi";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useThemeStore } from "../../store/useThemeStore";
 import useUiStore from "../../store/useUiStore";
 import { useTranslation } from "react-i18next";
 import ChangeLanguage from "../ChangeLanguage";
+import api from "../../config/api";
 
 const StudentHeader = () => {
   const { t } = useTranslation();
@@ -23,6 +32,57 @@ const StudentHeader = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  /* ============================= */
+  /*      CONTEXTUAL DATA          */
+  /* ============================= */
+  const [contextData, setContextData] = useState({
+    pendingAssignments: 0,
+    upcomingQuizzes: 0,
+    overallScore: 0,
+    notificationCount: 0,
+  });
+
+  useEffect(() => {
+    const fetchContextData = async () => {
+      try {
+        const [assignmentsRes, quizzesRes, statsRes] = await Promise.all([
+          api.get("/student/assignments").catch(() => ({ data: [] })),
+          api.get("/student/quizzes").catch(() => ({ data: [] })),
+          api.get("/student/stats").catch(() => ({ data: {} })),
+        ]);
+
+        const assignments = assignmentsRes.data || [];
+        const quizzes = quizzesRes.data || [];
+        const stats = statsRes.data || {};
+
+        const pending = assignments.filter(
+          (a) => a.status === "Pending",
+        ).length;
+
+        const upcoming = quizzes.filter((q) => {
+          const dueDate = new Date(q.dueDate);
+          return dueDate > new Date() && !q.completed;
+        }).length;
+
+        const overallScore = stats.overallScore || 0;
+        const notificationCount = pending + upcoming;
+
+        setContextData({
+          pendingAssignments: pending,
+          upcomingQuizzes: upcoming,
+          overallScore,
+          notificationCount,
+        });
+      } catch (error) {
+        console.log("Error fetching context data:", error);
+      }
+    };
+
+    fetchContextData();
+    const interval = setInterval(fetchContextData, 60000); // Refresh every minute
+    return () => clearInterval(interval);
+  }, []);
 
   /* ============================= */
   /*      HIDE HEADER ON SCROLL    */
@@ -43,7 +103,7 @@ const StudentHeader = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [setMobileOpen]);
 
   return (
     <motion.header
@@ -58,13 +118,13 @@ const StudentHeader = () => {
     >
       <div className="flex justify-between items-center bg-(--color-primary) rounded-3xl px-6 py-3 shadow-md text-white ">
         {/* LOGO */}
-        <Link to="/student" className="flex items-center">
-          {/* <img
-            src={logo}
-            alt="Gradify"
-            className="w-20 object-contain cursor-pointer"
-          /> */}
-          <p className="text-2xl font-bold text-white">{t("header.brand")}</p>
+        <Link to="/student" className="flex items-center gap-2 group">
+          <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
+            <FiBookOpen className="text-white" size={20} />
+          </div>
+          <p className="text-2xl font-bold text-white hidden sm:block">
+            {t("header.brand")}
+          </p>
         </Link>
 
         <div
@@ -75,7 +135,7 @@ const StudentHeader = () => {
               navigate("/student");
               setMobileOpen(false);
             }}
-            className={`${location.pathname === "/student" ? "text-(--color-primary-hover)" : "text-white"} cursor-pointer hover:text-(--color-primary-hover) transition font-semibold`}
+            className={`${location.pathname === "/student" ? "text-(--color-primary-text)" : "text-white"} cursor-pointer hover:text-(--color-primary-text) transition font-semibold`}
           >
             {t("header.home")}
           </button>
@@ -85,7 +145,7 @@ const StudentHeader = () => {
               navigate("/student/courses");
               setMobileOpen(false);
             }}
-            className={`${location.pathname === "/student/courses" ? "text-(--color-primary-hover)" : "text-white"} cursor-pointer hover:text-(--color-primary-hover) transition font-semibold`}
+            className={`${location.pathname === "/student/courses" ? "text-(--color-primary-text)" : "text-white"} cursor-pointer hover:text-(--color-primary-text) transition font-semibold`}
           >
             {t("header.course")}
           </button>
@@ -95,7 +155,7 @@ const StudentHeader = () => {
               navigate("/student/support");
               setMobileOpen(false);
             }}
-            className={`${location.pathname === "/student/support" ? "text-(--color-primary-hover)" : "text-white"} cursor-pointer hover:text-(--color-primary-hover) transition font-semibold`}
+            className={`${location.pathname === "/student/support" ? "text-(--color-primary-text)" : "text-white"} cursor-pointer hover:text-(--color-primary-text) transition font-semibold`}
           >
             {t("header.support")}
           </button>
@@ -115,11 +175,17 @@ const StudentHeader = () => {
               initial={{ scale: 1 }}
               whileHover={{ scale: 1.1 }}
               transition={{ duration: 0.2 }}
-              className="group-hover:rotate-45 "
+              className="group-hover:rotate-12 transition-transform"
             >
               <FiBell />
             </motion.div>
-            <span className="absolute top-0 right-0 w-2 h-2 bg-(--color-danger) rounded-full "></span>
+            {contextData.notificationCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-xs rounded-full flex items-center justify-center font-semibold">
+                {contextData.notificationCount > 9
+                  ? "9+"
+                  : contextData.notificationCount}
+              </span>
+            )}
           </motion.button>
 
           {/* Profile */}
@@ -130,9 +196,17 @@ const StudentHeader = () => {
               onMouseEnter={() => setOpenProfile(true)}
               onMouseLeave={() => setOpenProfile(false)}
             >
-              <div className="w-8 h-8 !bg-white text-(--color-primary) font-bold rounded-full flex items-center justify-center">
-                {user?.name?.charAt(0)}
-              </div>
+              {user?.photo?.url ? (
+                <img
+                  src={user?.photo?.url}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full object-cover border border-white/50"
+                />
+              ) : (
+                <div className="w-8 h-8 bg-white! text-(--color-primary) font-bold rounded-full flex items-center justify-center">
+                  {user?.name?.charAt(0)}
+                </div>
+              )}
               <span className="hidden md:block text-sm font-medium text-white">
                 {user?.name}
               </span>
@@ -145,7 +219,7 @@ const StudentHeader = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.5 }}
-                  className="absolute right-0 mt-3 w-48 bg-(--card-bg) text-(--text-primary) rounded-xl shadow-lg border border-(--border-color)"
+                  className="absolute right-0 mt-3 w-72 bg-(--card-bg) text-(--text-primary) rounded-xl shadow-lg border border-(--border-color)"
                   onMouseEnter={() => {
                     setOpenProfile(true);
                   }}
@@ -153,12 +227,47 @@ const StudentHeader = () => {
                     closeAll();
                   }}
                 >
+                  {/* Quick Stats */}
+                  <div className="bg-(--bg-surface) p-4 border-b border-(--border-color)">
+                    <p className="text-xs text-(--text-muted) mb-3">
+                      Quick Overview
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="bg-(--bg-muted) rounded-lg p-2 text-center">
+                        <FiFileText className="mx-auto mb-1 text-orange-500" />
+                        <p className="text-lg font-bold">
+                          {contextData.pendingAssignments}
+                        </p>
+                        <p className="text-[10px] text-(--text-muted)">
+                          Pending
+                        </p>
+                      </div>
+                      <div className="bg-(--bg-muted) rounded-lg p-2 text-center">
+                        <FiCheckSquare className="mx-auto mb-1 text-blue-500" />
+                        <p className="text-lg font-bold">
+                          {contextData.upcomingQuizzes}
+                        </p>
+                        <p className="text-[10px] text-(--text-muted)">
+                          Quizzes
+                        </p>
+                      </div>
+                      <div className="bg-(--bg-muted) rounded-lg p-2 text-center">
+                        <FiTrendingUp className="mx-auto mb-1 text-green-500" />
+                        <p className="text-lg font-bold">
+                          {contextData.overallScore}%
+                        </p>
+                        <p className="text-[10px] text-(--text-muted)">Score</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu Items */}
                   <button
                     onClick={() => {
                       navigate("/student/profile");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.profile")}
                   </button>
@@ -168,7 +277,7 @@ const StudentHeader = () => {
                       navigate("/student/assignments");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.assignments")}
                   </button>
@@ -177,7 +286,7 @@ const StudentHeader = () => {
                       navigate("/student/quizzes");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.quizzes")}
                   </button>
@@ -186,7 +295,7 @@ const StudentHeader = () => {
                       navigate("/student/attendance");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.attendance")}
                   </button>
@@ -196,7 +305,7 @@ const StudentHeader = () => {
                       navigate("/student/progress");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.progress")}
                   </button>
@@ -206,47 +315,51 @@ const StudentHeader = () => {
                       navigate("/student/jobs");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.jobs")}
                   </button>
 
                   <button
                     onClick={() => {
-                      navigate("/student/alumini");
+                      navigate("/student/alumni");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
                   >
-                    {t("header.alumini")}
+                    {t("header.alumni")}
                   </button>
+
+                  <div className="border-t border-(--border-color)"></div>
 
                   <button
                     onClick={toggleTheme}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) flex gap-2 items-center"
+                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) flex gap-2 items-center transition"
                   >
                     {theme === "dark"
                       ? t("header.lightMode")
                       : t("header.darkMode")}
-                    <div className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+                    <div className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition ml-auto">
                       {theme === "dark" ? (
-                        <FiSun className="text-yellow-300" />
+                        <FiSun className="text-yellow-400" />
                       ) : (
                         <FiMoon />
                       )}
                     </div>
                   </button>
 
-                  <div className="w-full text-left p-2 hover:bg-(--bg-muted) flex gap-2 items-center">
+                  <div className="w-full text-left p-2 px-4 hover:bg-(--bg-muted) flex gap-2 items-center transition">
                     <ChangeLanguage />
                   </div>
+
+                  <div className="border-t border-(--border-color)"></div>
 
                   <button
                     onClick={() => {
                       logout();
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) flex items-center gap-2 text-(--color-danger)"
+                    className="w-full text-left px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 text-red-600 transition"
                   >
                     <FiLogOut /> {t("header.logout")}
                   </button>
@@ -276,15 +389,43 @@ const StudentHeader = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -40 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden mt-3 bg-(--color-primary) rounded-2xl p-4 flex flex-col text-white"
+            className="md:hidden mt-3 bg-(--color-primary) rounded-2xl p-4 flex flex-col text-white shadow-lg"
           >
+            {/* Mobile Quick Stats */}
+            <div className="bg-white/10 rounded-lg p-3 mb-4">
+              <p className="text-xs text-white/70 mb-2">Quick Overview</p>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-white/10 rounded-lg p-2 text-center">
+                  <FiFileText className="mx-auto mb-1 text-orange-300" />
+                  <p className="text-lg font-bold">
+                    {contextData.pendingAssignments}
+                  </p>
+                  <p className="text-[10px] text-white/70">Pending</p>
+                </div>
+                <div className="bg-white/10 rounded-lg p-2 text-center">
+                  <FiCheckSquare className="mx-auto mb-1 text-blue-300" />
+                  <p className="text-lg font-bold">
+                    {contextData.upcomingQuizzes}
+                  </p>
+                  <p className="text-[10px] text-white/70">Quizzes</p>
+                </div>
+                <div className="bg-white/10 rounded-lg p-2 text-center">
+                  <FiTrendingUp className="mx-auto mb-1 text-green-300" />
+                  <p className="text-lg font-bold">
+                    {contextData.overallScore}%
+                  </p>
+                  <p className="text-[10px] text-white/70">Score</p>
+                </div>
+              </div>
+            </div>
+
             <button
               onClick={() => {
                 navigate("/student/profile");
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-2 hover:bg-(--bg-muted)"
+              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.profile")}
             </button>
@@ -295,7 +436,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-2 hover:bg-(--bg-muted)"
+              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.assignments")}
             </button>
@@ -305,7 +446,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-2 hover:bg-(--bg-muted)"
+              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.quizzes")}
             </button>
@@ -315,7 +456,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-2 hover:bg-(--bg-muted)"
+              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.attendance")}
             </button>
@@ -326,7 +467,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-2 hover:bg-(--bg-muted)"
+              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.progress")}
             </button>
@@ -337,21 +478,23 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-2 hover:bg-(--bg-muted)"
+              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.jobs")}
             </button>
 
             <button
               onClick={() => {
-                navigate("/student/alumini");
+                navigate("/student/alumni");
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-2 hover:bg-(--bg-muted)"
+              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
             >
-              {t("header.alumini")}
+              {t("header.alumni")}
             </button>
+
+            <div className="border-t border-white/20 my-2"></div>
 
             <button
               onClick={() => {
@@ -359,7 +502,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-2 hover:bg-(--bg-muted) flex gap-2 items-center"
+              className="w-full text-left p-3 hover:bg-white/10 rounded-lg flex gap-2 items-center transition"
             >
               <div className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
                 {theme === "dark" ? (
@@ -371,7 +514,11 @@ const StudentHeader = () => {
               {theme === "dark" ? t("header.lightMode") : t("header.darkMode")}
             </button>
 
-            <ChangeLanguage />
+            <div className="p-3">
+              <ChangeLanguage />
+            </div>
+
+            <div className="border-t border-white/20 my-2"></div>
 
             <button
               onClick={() => {
@@ -379,7 +526,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-2 hover:bg-(--bg-muted) flex items-center gap-2 text-(--color-danger)"
+              className="w-full text-left p-3 hover:bg-red-500/20 rounded-lg flex items-center gap-2 text-red-200 transition"
             >
               <FiLogOut /> {t("header.logout")}
             </button>

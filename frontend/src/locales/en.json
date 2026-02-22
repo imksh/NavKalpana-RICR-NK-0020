@@ -9,7 +9,7 @@
     "assignments":"Assignments",
     "quizzes":"Quizzes",
     "jobs":"Jobs & Internships",
-    "alumini":"Alumini",
+    "alumni":"Alumni",
     "progress":"Progress & Tracking",
     "about": "About",
     "contact": "Contact",
@@ -18,7 +18,13 @@
     "dashboard": "Dashboard",
     "logout": "Logout",
     "lightMode": "Light Mode",
-    "darkMode": "Dark Mode"
+    "darkMode": "Dark Mode",
+    "courses": "Courses",
+    "search": "Search",
+    "toggleTheme": "Toggle theme",
+    "settings": "Settings",
+    "toggleMenu": "Toggle menu",
+    "searchPlaceholder": "Search for courses..."
   },
    "login": {
     "title": "Welcome Back",
@@ -29,7 +35,27 @@
     "button": "Login",
     "loading": "Logging in...",
     "noAccount": "Don’t have an account?",
-    "register": "Register"
+    "register": "Register",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "rememberMe": "Remember me",
+    "orContinueWith": "Or continue with",
+    "hero": {
+      "badge": "🎓 Welcome to Gradify",
+      "title1": "Transform Your",
+      "title2": "Learning Journey",
+      "description": "Advance your career with thousands of students and professionals through our comprehensive learning platform."
+    },
+    "stats": {
+      "activeStudents": "Active Students",
+      "successRate": "Success Rate",
+      "secure": "Secure",
+      "dataProtection": "Data Protection"
+    },
+    "trust": {
+      "sslSecured": "SSL Secured",
+      "verifiedPlatform": "Verified Platform"
+    }
   },
   "register": {
     "title": "Create Your Account",
@@ -44,7 +70,46 @@
     "button": "Register",
     "loading": "Creating Account...",
     "haveAccount": "Already have an account?",
-    "login": "Login"
+    "login": "Login",
+    "namePlaceholder": "Enter your full name",
+    "emailPlaceholder": "Enter your email",
+    "phonePlaceholder": "Enter your phone number",
+    "passwordPlaceholder": "Create a strong password",
+    "roleLabel": "I want to register as",
+    "orSignUpWith": "Or sign up with",
+    "hero": {
+      "badge": "🚀 Start Your Journey",
+      "title1": "Join",
+      "title2": "Gradify",
+      "title3": "Today",
+      "description": "Create your free account and unlock access to world-class courses, expert instructors, and a thriving learning community."
+    },
+    "stats": {
+      "studentsEnrolled": "Students Enrolled",
+      "expertInstructors": "Expert Instructors",
+      "successRate": "Success Rate"
+    },
+    "features": {
+      "courses": "Access to 1000+ courses",
+      "experts": "Learn from industry experts",
+      "certified": "Get certified upon completion",
+      "lifetime": "Lifetime access to materials"
+    },
+    "passwordStrength": {
+      "label": "Password strength:",
+      "veryWeak": "Very Weak",
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong",
+      "veryStrong": "Very Strong"
+    },
+    "terms": {
+      "text": "I agree to the",
+      "service": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy"
+    }
   },
   "contact": {
     "title": "Get in Touch",
@@ -52,12 +117,51 @@
     "sendMessage": "Send a Message",
     "fullName": "Full Name",
     "email": "Email Address",
+    "subject": "Subject",
     "message": "Message",
     "sendButton": "Send Message",
     "emailTitle": "Email",
     "phoneTitle": "Phone",
     "locationTitle": "Location",
-    "mapPreview": "Map Preview"
+    "mapPreview": "Map Preview",
+    "emailSubdesc": "We'll respond within 24 hours",
+    "phoneSubdesc": "Mon-Fri, 9 AM - 6 PM IST",
+    "locationSubdesc": "Visit us at our office",
+    "officeHoursTitle": "Office Hours",
+    "officeHours": {
+      "weekdays": "Monday - Friday",
+      "weekdaysTimes": "9:00 AM - 6:00 PM",
+      "saturday": "Saturday",
+      "saturdayTimes": "10:00 AM - 4:00 PM",
+      "sunday": "Sunday",
+      "closed": "Closed"
+    },
+    "followUs": "Follow Us",
+    "topicLabel": "What can we help you with?",
+    "topics": {
+      "general": "General Inquiry",
+      "support": "Technical Support",
+      "enrollment": "Enrollment",
+      "partnership": "Partnership"
+    },
+    "namePlaceholder": "Enter your full name",
+    "emailPlaceholder": "Enter your email",
+    "subjectPlaceholder": "Brief subject of your message",
+    "messagePlaceholder": "Tell us more about your inquiry...",
+    "messageHint": "Write a detailed message",
+    "sending": "Sending...",
+    "successMessage": "Message sent successfully! We'll get back to you soon.",
+    "errorMessage": "Failed to send message. Please try again.",
+    "faqTitle": "Frequently Asked Questions",
+    "faqSubtitle": "Quick answers to common questions",
+    "faqs": {
+      "q1": "How long does it take to get a response?",
+      "a1": "We typically respond within 24 hours during business days.",
+      "q2": "Can I schedule a call?",
+      "a2": "Yes! Include your preferred time in the message and we'll arrange a call.",
+      "q3": "Do you offer live chat support?",
+      "a3": "Live chat is available for enrolled students from 9 AM to 6 PM IST."
+    }
   },
   "about": {
     "title": "About Gradify",
@@ -88,6 +192,1232 @@
 
     "ctaTitle": "Ready to Experience Smart Learning?",
     "ctaButton": "Join Gradify Today",
-    "devHeader":"Meet The Developers"
+    "devHeader":"Meet The Developers",
+    "storyBadge": "🚀 Our Story",
+    "stats": {
+      "activeStudents": "Active Students",
+      "coursesAvailable": "Courses Available",
+      "successRate": "Success Rate",
+      "countriesReached": "Countries Reached"
+    },
+    "coreValues": {
+      "title": "Our Core Values",
+      "subtitle": "These principles guide everything we do at Gradify",
+      "cards": {
+        "studentCentric": {
+          "title": "Student-Centric",
+          "desc": "Every decision we make prioritizes student success and learning experience."
+        },
+        "innovation": {
+          "title": "Innovation",
+          "desc": "We continuously evolve our platform with cutting-edge technology and pedagogy."
+        },
+        "quality": {
+          "title": "Quality",
+          "desc": "We maintain the highest standards in content, instruction, and support."
+        },
+        "excellence": {
+          "title": "Excellence",
+          "desc": "We strive for excellence in everything we do, from courses to customer service."
+        }
+      }
+    },
+    "journey": {
+      "title": "Our Journey",
+      "subtitle": "Milestones that shaped Gradify",
+      "items": {
+        "founded": {
+          "title": "Founded",
+          "desc": "Gradify was born with a vision to democratize education"
+        },
+        "first1000": {
+          "title": "First 1000 Students",
+          "desc": "Reached our first milestone of serving 1000 students"
+        },
+        "globalExpansion": {
+          "title": "Global Expansion",
+          "desc": "Expanded to 50+ countries worldwide"
+        },
+        "awardRecognition": {
+          "title": "Award Recognition",
+          "desc": "Recognized as Best EdTech Platform of the Year"
+        }
+      }
+    },
+    "leadership": {
+      "title": "Meet Our Leadership",
+      "subtitle": "The minds behind Gradify's success",
+      "members": {
+        "sarah": {
+          "role": "CEO & Co-Founder",
+          "bio": "10+ years in EdTech"
+        },
+        "michael": {
+          "role": "CTO & Co-Founder",
+          "bio": "Former Google Engineer"
+        },
+        "priya": {
+          "role": "Head of Curriculum",
+          "bio": "PhD in Education"
+        },
+        "david": {
+          "role": "Head of Design",
+          "bio": "Award-winning UX Designer"
+        }
+      }
+    },
+    "techSubtitle": "Built with modern technologies for optimal performance and scalability",
+    "ctaSubtitle": "Join thousands of learners who are already transforming their careers with Gradify",
+    "exploreCourses": "Explore Courses"
+  },
+  "landing": {
+    "badge": "Trusted by modern learning teams",
+    "heroTitle": "Build better learning outcomes with",
+    "heroTitleHighlight": "one intelligent platform",
+    "heroSubtitle": "Gradify combines structured LMS workflows, real-time analytics, and an AI tutor to help students learn faster and institutions run smarter.",
+    "getStarted": "Get Started",
+    "explore": "Explore Platform",
+    "pill1": "AI-powered tutoring",
+    "pill2": "Live progress visibility",
+    "pill3": "Role-based workflows",
+    "dashboardAlt": "Gradify dashboard preview",
+    "featuresTitle": "Purpose-built for institutions that care about outcomes",
+    "featuresSubtitle": "From course delivery to placement readiness, Gradify unifies every core academic workflow in a clean, scalable interface.",
+    "rolesTitle": "Designed for students, instructors, and admins",
+    "rolesSubtitle": "Every workflow is optimized for the role using it, so teams move faster with less friction and better clarity.",
+    "rolesPoint1": "Students receive clear next steps and personalized support.",
+    "rolesPoint2": "Instructors monitor class health and intervene early.",
+    "rolesPoint3": "Admins get institute-level visibility and control.",
+    "stats": {
+      "lessonsCompleted": "Lessons Completed",
+      "activeLearners": "Active Learners",
+      "partnerInstructors": "Partner Instructors",
+      "studentSatisfaction": "Student Satisfaction"
+    },
+    "miniKpis": {
+      "weeklyCompletion": "Weekly completion",
+      "assignmentOnTime": "Assignment on-time",
+      "avgAttendance": "Avg. attendance",
+      "activeLearners": "Active learners"
+    },
+    "featureCards": {
+      "learningPaths": {
+        "title": "Learning Paths",
+        "desc": "Curriculum-first modules with assignments and quizzes designed for measurable outcomes."
+      },
+      "liveAnalytics": {
+        "title": "Live Analytics",
+        "desc": "Track attendance, grades, skill growth, and learning velocity from one dashboard."
+      },
+      "aiTutor": {
+        "title": "AI Tutor",
+        "desc": "Context-aware support for doubts, revision planning, and personalized recommendations."
+      },
+      "careerLayer": {
+        "title": "Career Layer",
+        "desc": "Jobs, alumni opportunities, and application workflows integrated into the platform."
+      },
+      "unifiedCommunication": {
+        "title": "Unified Communication",
+        "desc": "In-platform conversations, updates, and nudges that keep everyone aligned."
+      },
+      "roleBasedAccess": {
+        "title": "Role-based Access",
+        "desc": "Secure admin, instructor, and student workflows with controlled visibility and actions."
+      }
+    },
+    "workflow": {
+      "createStructuredCourses": {
+        "title": "Create structured courses",
+        "desc": "Design modules, lessons, assignments, and quizzes with clear progression."
+      },
+      "trackLearnerMomentum": {
+        "title": "Track learner momentum",
+        "desc": "Monitor completion, attendance trends, and performance signals in real time."
+      },
+      "improveWithInsights": {
+        "title": "Improve with insights",
+        "desc": "Use AI and analytics to close gaps and improve outcomes continuously."
+      }
+    },
+    "testimonials": {
+      "items": {
+        "aman": {
+          "text": "Gradify gave our institute a clean and scalable digital learning workflow in weeks.",
+          "role": "Academic Coordinator"
+        },
+        "sneha": {
+          "text": "The AI tutor and progress analytics improved student confidence and class performance.",
+          "role": "Senior Instructor"
+        },
+        "rohit": {
+          "text": "I finally know what to study next every day. The dashboard keeps me focused.",
+          "role": "Computer Science Student"
+        }
+      }
+    },
+    "faqs": {
+      "q1": {
+        "q": "Who is Gradify for?",
+        "a": "Gradify is built for institutes and training teams managing students, instructors, and outcomes at scale."
+      },
+      "q2": {
+        "q": "Does it support both academic and career growth?",
+        "a": "Yes. Alongside LMS workflows, Gradify includes alumni and job modules to support career readiness."
+      },
+      "q3": {
+        "q": "Can students get personalized help?",
+        "a": "Yes. The built-in AI tutor provides instant, context-aware guidance and learning suggestions."
+      }
+    },
+    "step": "Step {{number}}",
+    "testimonialsTitle": "What teams say after switching to Gradify",
+    "faqTitle": "Frequently asked questions",
+    "ctaTitle": "Ready to modernize your learning experience?",
+    "ctaSubtitle": "Launch Gradify for your institution and give students a faster, more personalized journey from enrollment to outcomes.",
+    "ctaButton": "Start Learning Today"
+  },
+  "footer": {
+    "newsletter": {
+      "title": "Stay Updated",
+      "subtitle": "Get the latest courses, tips, and news from Gradify delivered to your inbox every week.",
+      "placeholder": "Enter your email",
+      "button": "Subscribe",
+      "success": "Subscribed!"
+    },
+    "brandDesc": "Empowering learners with AI-powered education. Learn smarter, grow faster, succeed together.",
+    "products": {
+      "courses": "Courses",
+      "instructors": "For Instructors",
+      "enterprise": "Enterprise",
+      "mobileApp": "Mobile App",
+      "pricing": "Pricing"
+    },
+    "company": {
+      "about": "About Us",
+      "blog": "Blog",
+      "careers": "Careers",
+      "press": "Press Kit",
+      "partner": "Become a Partner"
+    },
+    "support": {
+      "contact": "Contact Us",
+      "help": "Help Center",
+      "faq": "FAQ",
+      "community": "Community",
+      "status": "System Status"
+    },
+    "contact": {
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Location",
+      "city": "San Francisco, CA",
+      "country": "United States"
+    },
+    "legal": {
+      "terms": "Terms & Conditions",
+      "privacy": "Privacy Policy",
+      "cookies": "Cookie Policy",
+      "disclaimer": "Disclaimer"
+    },
+    "copyright": "© {{year}} Gradify. All rights reserved. Made with",
+    "withLove": "for learners worldwide."
+  },
+  "studentJobs": {
+    "loading": "Loading jobs...",
+    "title": "Jobs & Internships",
+    "subtitle": "Explore opportunities matching your skills and interests",
+    "stats": {
+      "total": "Total Jobs",
+      "applied": "Applied",
+      "bookmarked": "Bookmarked",
+      "open": "Open Positions"
+    },
+    "searchPlaceholder": "Search jobs, companies, locations, or skills...",
+    "showing": "Showing {{filtered}} of {{total}}",
+    "filters": {
+      "all": "All",
+      "internship": "Internship",
+      "fullTime": "Full-Time",
+      "applied": "Applied",
+      "bookmarked": "Bookmarked"
+    },
+    "empty": {
+      "title": "No jobs found",
+      "adjust": "Try adjusting your search or filters",
+      "noJobs": "No jobs available at the moment"
+    },
+    "applied": "Applied",
+    "expired": "Expired",
+    "due": "Due {{date}}",
+    "closed": "Position Closed",
+    "applicationStatus": "Application Status",
+    "stipend": "Stipend",
+    "salary": "Salary",
+    "buttons": {
+      "viewApplication": "View Application",
+      "applyNow": "Apply Now",
+      "viewDetails": "View Details"
+    }
+  },
+  "studentJobPage": {
+    "loading": "Loading...",
+    "applyFor": "Apply for {{title}}",
+    "deadline": "Application Deadline",
+    "closed": "Closed",
+    "yourApplication": "Your Application:",
+    "status": "Status",
+    "coverLetter": "Cover Letter",
+    "na": "N/A",
+    "viewResume": "View Uploaded Resume",
+    "uploadResume": "Upload Resume (PDF)",
+    "cancel": "Cancel",
+    "submitting": "Submitting...",
+    "jobClosed": "Job Closed",
+    "submitApplication": "Submit Application",
+    "toast": {
+      "uploadResume": "Please upload your resume",
+      "submitted": "Application Submitted Successfully 🎉",
+      "error": "Error applying"
+    }
+  },
+  "studentHome": {
+    "badge": "Student Dashboard",
+    "subtitle": "Here’s a complete view of your progress, activity, and upcoming opportunities.",
+    "greetings": {
+      "morning": "Good Morning",
+      "afternoon": "Good Afternoon",
+      "evening": "Good Evening",
+      "night": "Good Night"
+    },
+    "stats": {
+      "overallScore": "Overall Score",
+      "assignments": "Assignments",
+      "skills": "Skills Acquired",
+      "quizzes": "Quizzes"
+    },
+    "learningConsistency": {
+      "title": "Learning Consistency",
+      "subtitle": "Daily study footprint and streak quality"
+    },
+    "weeklyActivity": {
+      "title": "Weekly Learning Activity",
+      "subtitle": "Last 7 days performance trend"
+    },
+    "eventsCalendar": {
+      "title": "Events Calendar",
+      "subtitle": "Plan ahead and stay on schedule"
+    },
+    "upcomingEvents": {
+      "title": "Upcoming Events",
+      "subtitle": "Never miss important academic milestones"
+    },
+    "leaderboard": {
+      "title": "Leaderboard",
+      "subtitle": "Top performers in your cohort"
+    }
+  },
+  "common": {
+    "na": "N/A"
+  },
+  "studentAttendance": {
+    "loading": "Loading attendance...",
+    "badge": "Attendance Insights",
+    "title": "Attendance Overview",
+    "subtitle": "Track your class consistency and eligibility.",
+    "download": "Download Report",
+    "cards": {
+      "overall": "Overall Attendance",
+      "overallSub": "Eligibility benchmark: 75%",
+      "present": "Present Days",
+      "presentSub": "out of {{total}} classes",
+      "streak": "Current Streak",
+      "streakSub": "Consistent attendance momentum"
+    },
+    "alert": "Improve consistency in upcoming classes to stay eligible.",
+    "weekly": {
+      "title": "Weekly Learning Activity",
+      "subtitle": "Recent class attendance trend"
+    },
+    "calendar": {
+      "title": "Attendance Calendar",
+      "subtitle": "Day-wise attendance view"
+    },
+    "heatmap": {
+      "title": "Attendance Heatmap",
+      "subtitle": "Consistency snapshot across sessions"
+    },
+    "byCourse": {
+      "title": "Course-wise Attendance Details",
+      "subtitle": "Detailed breakdown by enrolled courses"
+    },
+    "attendancePercent": "{{percent}}% Attendance",
+    "noData": "No course attendance data available."
+  },
+  "myCourses": {
+    "loading": "Loading courses...",
+    "badge": "Learning Workspace",
+    "title": "My Courses",
+    "subtitle": "Continue your learning journey with clear progress and course insights.",
+    "empty": "No enrolled courses found yet.",
+    "untitled": "Untitled Course",
+    "instructor": "Instructor",
+    "progress": "Progress",
+    "attendance": "Attendance",
+    "completion": "Completion",
+    "continue": "Continue Learning",
+    "more": "+{{count}} more",
+    "top": {
+      "enrolled": "Enrolled",
+      "avgProgress": "Avg Progress",
+      "onTrack": "On Track",
+      "overallScore": "Overall Score"
+    }
+  },
+  "studentProgress": {
+    "loading": "Loading progress...",
+    "badge": "Progress Intelligence",
+    "title": "Progress Analytics",
+    "subtitle": "Track your learning journey, identify weak spots, and improve with data-backed insights.",
+    "notAvailable": "Not available",
+    "attendance": "Attendance",
+    "courseCompletion": "Course Completion",
+    "skillCoverage": "Skill Coverage",
+    "coursePerformance": "Course Performance",
+    "focus": "Focus Recommendation",
+    "currentlyAt": "currently at",
+    "noCourseData": "No course data available.",
+    "aiInsight": "AI Learning Insight",
+    "skills": "Skills Acquired",
+    "skillsRecorded": "{{count}} skill(s) recorded",
+    "skillsOutOf": " out of {{total}} available across your courses",
+    "noSkills": "No acquired skills recorded yet. Complete more lessons and assessments to unlock skills.",
+    "cards": {
+      "overall": "Overall Completion",
+      "quiz": "Quiz Average",
+      "assignment": "Assignment Average",
+      "score": "Overall Score",
+      "scoreSub1": "from weighted performance",
+      "scoreSub2": "blended progress estimate"
+    }
+  },
+  "coursePage": {
+    "badge": "Course Workspace",
+    "progress": "Course Progress",
+    "attendance": "Attendance",
+    "completedLessons": "Completed Lessons",
+    "estimatedDuration": "Estimated Duration",
+    "moduleCompletion": "Module Completion",
+    "moduleCompletionSub": "based on lessons marked complete",
+    "totalModules": "Total Modules",
+    "totalModulesSub": "organized learning sections",
+    "skills": "Skills in Course",
+    "skillsSub": "skills to unlock",
+    "upNext": "Up Next",
+    "loadingModules": "Loading modules...",
+    "lessonsCompleted": "lessons completed",
+    "noLessons": "No lessons available.",
+    "pending": "Pending"
+  },
+  "lessonPage": {
+    "notFound": "Lesson not found.",
+    "backToModule": "Back to Module",
+    "moduleProgress": "Module Progress",
+    "moduleLessons": "Module Lessons",
+    "moduleLessonsSub": "Continue in sequence and complete each lesson for better progress.",
+    "completed": "Completed",
+    "instructor": "Instructor",
+    "objectives": "Learning Objectives",
+    "content": "Lesson Content",
+    "keyConcepts": "Key Concepts",
+    "code": "Code",
+    "codeCopied": "Code copied to clipboard!",
+    "completedBtn": "Completed",
+    "markComplete": "Mark as Complete",
+    "upNext": "Up Next"
+  },
+  "studentNotifications": {
+    "title": "Notifications",
+    "subtitle": "Your latest academic updates"
+  },
+  "assignments": {
+    "loading": "Loading assignments...",
+    "title": "My Assignments",
+    "subtitle": "Track and submit your course assignments",
+    "search": "Search assignments...",
+    "upcoming": "Upcoming Deadlines",
+    "upcomingCount": "You have {{count}} assignment due within 3 days",
+    "showing": "Showing {{filtered}} of {{total}} assignments",
+    "submit": "Submit Assignment",
+    "view": "View Details",
+    "stats": {
+      "total": "Total Assignments",
+      "pending": "Pending",
+      "submitted": "Submitted",
+      "evaluated": "Evaluated",
+      "avgScore": "Avg Score"
+    },
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "submitted": "Submitted",
+      "evaluated": "Evaluated"
+    },
+    "sort": {
+      "deadline": "Sort by Deadline",
+      "title": "Sort by Title",
+      "course": "Sort by Course"
+    },
+    "empty": {
+      "title": "No assignments found",
+      "adjust": "Try adjusting your search or filters",
+      "none": "No assignments available at the moment"
+    }
+  },
+  "quizzes": {
+    "loading": "Loading quizzes...",
+    "title": "My Quizzes",
+    "subtitle": "Test your knowledge and track your progress",
+    "search": "Search quizzes...",
+    "showing": "Showing {{filtered}} of {{total}} quizzes",
+    "questions": "Questions",
+    "mins": "mins",
+    "yourScore": "Your Score",
+    "notAttempted": "Not Attempted Yet",
+    "viewResults": "View Results",
+    "start": "Start Quiz",
+    "stats": {
+      "total": "Total Quizzes",
+      "attempted": "Attempted",
+      "pending": "Pending",
+      "avgScore": "Avg Score",
+      "passRate": "Pass Rate"
+    },
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "attempted": "Attempted",
+      "passed": "Passed",
+      "failed": "Failed"
+    },
+    "sort": {
+      "title": "Sort by Title",
+      "course": "Sort by Course",
+      "score": "Sort by Score",
+      "duration": "Sort by Duration"
+    },
+    "empty": {
+      "title": "No quizzes found",
+      "adjust": "Try adjusting your search or filters",
+      "none": "No quizzes available at the moment"
+    }
+  },
+  "quizPage": {
+    "loading": "Loading quiz...",
+    "assessment": "Assessment",
+    "questions": "questions",
+    "question": "Question",
+    "timeLeft": "Time Left",
+    "answered": "Answered",
+    "avgScore": "Your Avg Score",
+    "progress": "Progress across answered questions",
+    "previous": "Previous",
+    "next": "Next",
+    "submit": "Submit",
+    "navigator": "Question Navigator",
+    "summary": "Quiz Summary",
+    "duration": "Duration",
+    "min": "min",
+    "submitQuiz": "Submit Quiz"
+  },
+  "studentSupport": {
+    "loading": "Loading support data...",
+    "badge": "Support Center",
+    "title": "Student Support",
+    "subtitle": "Get fast help from mentors, schedule focused sessions, and track all your support requests from one place.",
+    "stats": {
+      "totalDoubts": "Total Doubts",
+      "pending": "Pending",
+      "totalSessions": "Total Sessions",
+      "upcoming": "Upcoming"
+    },
+    "actions": {
+      "askDoubt": {
+        "title": "Ask a Doubt",
+        "desc": "Submit your question and get expert help quickly.",
+        "button": "New Doubt"
+      },
+      "bookSession": {
+        "title": "Book Session",
+        "desc": "Schedule a 1-on-1 mentoring session for guided learning.",
+        "button": "Schedule Now"
+      },
+      "tracker": {
+        "title": "My Support Tracker",
+        "desc": "View all your doubts and session requests in one timeline.",
+        "button": "View Tracker"
+      }
+    },
+    "recentDoubts": "Recent Doubts",
+    "upcomingSessions": "Upcoming Sessions",
+    "emptyDoubts": "No doubts yet. Ask your first question!",
+    "emptySessions": "No upcoming sessions. Book your first session!",
+    "emptyCourses": "No courses enrolled yet. Enroll in courses to connect with mentors!",
+    "courseMentors": {
+      "title": "Course Mentors",
+      "subtitle": "Connect with your instructors by course"
+    },
+    "aiMentors": {
+      "title": "AI Mentors",
+      "subtitle": "Get instant help for quick clarifications"
+    },
+    "labels": {
+      "doubts": "doubts",
+      "sessions": "sessions",
+      "resolved": "Resolved",
+      "response": "Response"
+    },
+    "status": {
+      "pending": "Pending",
+      "resolved": "Resolved",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "expertIn": "Expert in {{course}}",
+    "courseInstructor": "Course Instructor",
+    "buttons": {
+      "askDoubt": "Ask Doubt",
+      "bookSession": "Book Session"
+    },
+    "availability": "Availability",
+    "online": "24/7 Online",
+    "startAiChat": "Start AI Chat"
+  },
+  "studentProfile": {
+    "defaultBio": "Gradify student passionate about learning and growth.",
+    "editProfile": "Edit Profile",
+    "currentStreak": "Current Streak",
+    "avgQuiz": "Avg Quiz Score",
+    "avgAssignment": "Avg Assignment",
+    "overallScore": "Overall Score",
+    "bestDays": "Best: {{days}} days",
+    "achievements": {
+      "title": "Achievements",
+      "weekWarriorTitle": "Week Warrior",
+      "weekWarrior": "7-day learning streak",
+      "quizMasterTitle": "Quiz Master",
+      "quizMaster": "80%+ average quiz score",
+      "assignmentProTitle": "Assignment Pro",
+      "assignmentPro": "Completed 10+ assignments",
+      "perfectAttendanceTitle": "Perfect Attendance",
+      "perfectAttendance": "90%+ attendance rate",
+      "keepLearning": "Keep learning to unlock achievements!"
+    },
+    "performanceInsights": "Performance Insights",
+    "attendance": "Attendance",
+    "courseProgress": "Course Progress",
+    "assignments": "Assignments",
+    "quizzes": "Quizzes",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity yet. Start learning!",
+    "skillsAcquired": "Skills Acquired",
+    "skills": "skills",
+    "progress": "Progress",
+    "noSkills": "No skills acquired yet. Complete courses to unlock skills!",
+    "enrolledCourses": "Enrolled Courses",
+    "lessons": "{{count}} lessons",
+    "notEnrolled": "Not enrolled in any courses yet.",
+    "security": "Security",
+    "password": "Password",
+    "updatePassword": "Update your account password",
+    "changePassword": "Change Password",
+    "preferences": "Preferences",
+    "language": "Language",
+    "theme": "Theme",
+    "english": "English",
+    "hindi": "Hindi",
+    "activity": {
+      "assignment": "Assignment",
+      "quiz": "Quiz",
+      "completed": "Completed",
+      "pending": "Pending",
+      "submitted": "Submitted",
+      "evaluated": "Evaluated"
+    }
+  },
+  "studentFooter": {
+    "titles": {
+      "learningStats": "Your Learning Stats",
+      "quickAccess": "Quick Access",
+      "learningResources": "Learning Resources",
+      "supportHelp": "Support & Help",
+      "yourProfile": "Your Profile"
+    },
+    "stats": {
+      "courses": "Courses",
+      "certificates": "Certificates",
+      "progress": "Progress",
+      "learningTime": "Learning Time"
+    },
+    "quickLinks": {
+      "myCourses": "My Courses",
+      "certificates": "Certificates",
+      "analytics": "Analytics",
+      "messages": "Messages",
+      "schedule": "Schedule",
+      "settings": "Settings"
+    },
+    "resources": {
+      "learningPath": "Learning Path",
+      "studyGroups": "Study Groups",
+      "qaForum": "Q&A Forum",
+      "recordedSessions": "Recorded Sessions",
+      "downloadableResources": "Downloadable Resources",
+      "careerGuidance": "Career Guidance"
+    },
+    "support": {
+      "helpCenter": "Help Center",
+      "faq": "FAQ",
+      "contactSupport": "Contact Support",
+      "reportIssue": "Report Issue",
+      "feedback": "Feedback",
+      "communityGuidelines": "Community Guidelines"
+    },
+    "labels": {
+      "name": "Name",
+      "email": "Email",
+      "social": "Social",
+      "studentUser": "Student User"
+    },
+    "bottom": {
+      "terms": "Terms & Conditions",
+      "privacy": "Privacy Policy",
+      "downloadCertificate": "Download Certificate",
+      "shareProfile": "Share Profile",
+      "copyright": "© {{year}} Gradify. Keep learning, keep growing."
+    }
+  },
+  "assignmentPage": {
+    "loading": "Loading assignment...",
+    "notFound": "Assignment not found",
+    "badge": "Assignment Workspace",
+    "course": "Course",
+    "module": "Module",
+    "deadline": "Deadline",
+    "maxMarks": "Max Marks",
+    "timeLeft": "Time Left",
+    "pastDeadline": "Past Deadline",
+    "workload": "Course Workload",
+    "description": "Assignment Description",
+    "submitWork": "Submit Your Work",
+    "textSubmission": "Text Submission",
+    "textPlaceholder": "Write explanation or paste code...",
+    "externalLink": "External Link",
+    "linkPlaceholder": "GitHub / Live Demo",
+    "uploadFile": "Upload File",
+    "selected": "Selected",
+    "checklist": "Submission Checklist",
+    "checkItem1": "Add at least one submission format (text, link, or file)",
+    "checkItem2": "Verify references and links before final submit",
+    "submitting": "Submitting...",
+    "submit": "Submit Assignment",
+    "toast": {
+      "oneFormat": "Please submit at least one format.",
+      "submitted": "Assignment submitted successfully",
+      "failed": "Failed to submit assignment"
+    }
+  },
+  "alumniPage": {
+    "loading": "Loading alumni network...",
+    "hero": {
+      "badge": "🎓 Our Success Stories",
+      "title": "Meet Our",
+      "titleHighlight": "Alumni Network",
+      "subtitle": "Join a thriving community of successful professionals who transformed their careers through Gradify. Our alumni are making an impact at top companies worldwide."
+    },
+    "heroStats": {
+      "totalAlumni": "Total Alumni",
+      "placedStudents": "Placed Students",
+      "topCompanies": "Top Companies",
+      "avgPackage": "Avg Package"
+    },
+    "achievements": {
+      "title": "Alumni Achievements",
+      "cards": {
+        "topPerformers": {
+          "title": "Top Performers",
+          "desc": "Alumni in leadership roles"
+        },
+        "salaryGrowth": {
+          "title": "Salary Growth",
+          "desc": "Average salary increase"
+        },
+        "networkStrength": {
+          "title": "Network Strength",
+          "desc": "Active alumni community"
+        },
+        "jobPlacements": {
+          "title": "Job Placements",
+          "desc": "Placement rate"
+        }
+      }
+    },
+    "successStories": {
+      "title": "Success Stories",
+      "subtitle": "Hear from our alumni about their journey and success after graduating from Gradify",
+      "people": {
+        "sarah": {
+          "role": "Senior Software Engineer",
+          "story": "Gradify's comprehensive curriculum and hands-on projects prepared me exceptionally well for my role at Google. The mentorship program was invaluable."
+        },
+        "michael": {
+          "role": "Full Stack Developer",
+          "story": "The real-world projects and collaborative learning environment at Gradify gave me the confidence to excel in technical interviews and land my dream job."
+        },
+        "priya": {
+          "role": "Data Scientist",
+          "story": "The AI/ML specialization track was exactly what I needed. Within 6 months of graduation, I secured a position at Amazon with a competitive package."
+        }
+      }
+    },
+    "companies": {
+      "title": "Where Our Alumni Work",
+      "subtitle": "Our graduates are thriving at industry-leading companies",
+      "alumniCount": "{{count}} alumni"
+    },
+    "directory": {
+      "title": "Alumni Directory"
+    },
+    "filters": {
+      "searchPlaceholder": "Search by name, company, or role...",
+      "allBatches": "All Batches",
+      "allCompanies": "All Companies"
+    },
+    "batch": "Batch {{year}}",
+    "batchOf": "Batch of {{year}}",
+    "results": "Showing {{filtered}} of {{total}} alumni",
+    "empty": {
+      "title": "No alumni found",
+      "subtitle": "Try adjusting your search or filters"
+    },
+    "connectLinkedIn": "Connect on LinkedIn",
+    "cta": {
+      "title": "Ready to Join Our Alumni Network?",
+      "subtitle": "Start your journey today and become part of a thriving community of successful professionals",
+      "enrollNow": "Enroll Now",
+      "learnMore": "Learn More"
+    }
+  },
+  "coursesPage": {
+    "loading": "Loading courses...",
+    "hero": {
+      "title": "Explore Courses",
+      "subtitle": "Discover world-class courses from expert instructors. Learn new skills and advance your career.",
+      "searchPlaceholder": "Search courses, instructors, topics..."
+    },
+    "filters": {
+      "title": "Filters",
+      "category": "Category",
+      "level": "Level",
+      "price": "Price",
+      "rating": "Rating",
+      "ratingPlus": "{{rating}}+ stars",
+      "allRatings": "All Ratings",
+      "categories": {
+        "all": "All Categories",
+        "web": "Web Development",
+        "mobile": "Mobile Development",
+        "data": "Data Science",
+        "design": "Design",
+        "business": "Business"
+      },
+      "levels": {
+        "all": "All Levels",
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
+      "prices": {
+        "all": "All Prices",
+        "free": "Free",
+        "paid": "Paid"
+      }
+    },
+    "showing": "Showing {{count}} courses",
+    "sort": {
+      "popular": "Most Popular",
+      "rating": "Highest Rated",
+      "newest": "Newest",
+      "priceLow": "Price: Low to High",
+      "priceHigh": "Price: High to Low"
+    },
+    "badges": {
+      "popular": "Popular",
+      "free": "Free"
+    },
+    "byInstructor": "by {{name}}",
+    "viewCourse": "View Course →",
+    "empty": {
+      "title": "No courses found matching your criteria",
+      "reset": "Reset Filters"
+    }
+  },
+  "termsPage": {
+    "hero": {
+      "badge": "📋 Legal Documents",
+      "title": "Terms and Conditions",
+      "subtitle": "Please read these terms and conditions carefully before using Gradify's services",
+      "lastUpdated": "Last Updated:"
+    },
+    "toc": {
+      "title": "Table of Contents"
+    },
+    "sections": {
+      "acceptance": "Acceptance of Terms",
+      "license": "Use License",
+      "account": "User Account",
+      "content": "Course Access & Content",
+      "payment": "Payment & Refunds",
+      "intellectual": "Intellectual Property",
+      "prohibited": "Prohibited Activities",
+      "disclaimer": "Disclaimer",
+      "liability": "Limitations of Liability",
+      "privacy": "Privacy Policy",
+      "changes": "Changes to Terms",
+      "contact": "Contact Us"
+    },
+    "introduction": "Welcome to Gradify. By accessing or using our Learning Management System (LMS), you agree to be bound by these Terms and Conditions. If you disagree with any part of these terms, you may not access our services.",
+    "section1": {
+      "title": "1. Acceptance of Terms",
+      "paragraph1": "By creating an account or using Gradify's services, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions, as well as our Privacy Policy. These terms apply to all users of the platform, including students, instructors, and administrators.",
+      "bullet1": "• You must be at least 18 years old to use our services independently",
+      "bullet2": "• Users under 18 must have parental or guardian consent",
+      "bullet3": "• You agree to provide accurate and complete information during registration",
+      "bullet4": "• You are responsible for maintaining the confidentiality of your account credentials"
+    },
+    "section2": {
+      "title": "2. Use License",
+      "paragraph1": "Gradify grants you a personal, non-exclusive, non-transferable, limited license to access and use our platform and course materials for your personal educational purposes only.",
+      "youMayTitle": "You May:",
+      "youMay1": "✓ Access and view course content enrolled in",
+      "youMay2": "✓ Download materials explicitly marked as downloadable",
+      "youMay3": "✓ Participate in forums and discussions",
+      "youMay4": "✓ Complete assignments and quizzes",
+      "youMayNotTitle": "You May Not:",
+      "youMayNot1": "✗ Share your account credentials with others",
+      "youMayNot2": "✗ Reproduce, distribute, or sell course materials",
+      "youMayNot3": "✗ Use automated tools to scrape content",
+      "youMayNot4": "✗ Modify or create derivative works from our content"
+    },
+    "section3": {
+      "title": "3. User Account",
+      "paragraph1": "To access most features of Gradify, you must register for an account. You are responsible for maintaining the security of your account and password.",
+      "responsibilitiesTitle": "Account Responsibilities:",
+      "responsibility1": "• Use a strong, unique password for your account",
+      "responsibility2": "• Do not share your login credentials with anyone",
+      "responsibility3": "• Notify us immediately of any unauthorized access",
+      "responsibility4": "• Update your information to keep it accurate and current",
+      "responsibility5": "• You are liable for all activities conducted through your account",
+      "terminationTitle": "Account Termination:",
+      "terminationText": "We reserve the right to suspend or terminate your account if you violate these terms, engage in fraudulent activities, or for any other reason at our discretion. You may also request account deletion by contacting our support team."
+    },
+    "section4": {
+      "title": "4. Course Access and Content",
+      "paragraph1": "When you enroll in a course, you gain access to the course materials for the duration specified in the course details. Course access is subject to the following conditions:",
+      "availabilityTitle": "Content Availability",
+      "availabilityText": "Course content is typically available for lifetime access unless otherwise specified. We reserve the right to update or modify content.",
+      "certificatesTitle": "Completion Certificates",
+      "certificatesText": "Certificates are issued upon successful completion of course requirements and assessments as defined by the instructor.",
+      "qualityTitle": "Content Quality:",
+      "qualityText": "While we strive to provide high-quality educational content, we do not guarantee that all courses will meet your expectations or that the information is always current and accurate."
+    },
+    "section5": {
+      "title": "5. Payment and Refunds",
+      "paragraph1": "Certain courses and features on Gradify require payment. All prices are in USD unless otherwise stated and are subject to change without notice.",
+      "paymentTermsTitle": "Payment Terms:",
+      "paymentTerm1": "• All payments are processed securely through our payment partners",
+      "paymentTerm2": "• You must provide accurate billing information",
+      "paymentTerm3": "• Subscription fees are billed in advance",
+      "paymentTerm4": "• Prices are subject to applicable taxes",
+      "refundPolicyTitle": "Refund Policy",
+      "refundPolicyText": "We offer a 30-day money-back guarantee for most courses. To request a refund, you must:",
+      "refundCondition1": "• Request the refund within 30 days of purchase",
+      "refundCondition2": "• Have completed less than 30% of the course",
+      "refundCondition3": "• Provide a valid reason for the refund request",
+      "refundNote": "Refunds are processed within 7-10 business days. Some courses may have different refund policies as specified in the course description."
+    },
+    "section6": {
+      "title": "6. Intellectual Property Rights",
+      "paragraph1": "All content, features, and functionality on Gradify, including but not limited to text, graphics, logos, videos, software, and course materials, are the exclusive property of Gradify or its content suppliers and are protected by international copyright, trademark, and other intellectual property laws.",
+      "courseContentTitle": "Course Content:",
+      "courseContentText": "Instructors retain ownership of their original course content. By uploading content to Gradify, instructors grant us a license to host, display, and distribute their content on our platform.",
+      "userContentTitle": "User-Generated Content:",
+      "userContentText": "By posting comments, questions, or other content on our platform, you grant Gradify a worldwide, non-exclusive, royalty-free license to use, reproduce, and display such content."
+    },
+    "section7": {
+      "title": "7. Prohibited Activities",
+      "paragraph1": "You are prohibited from using Gradify for any unlawful purpose or in any way that could:",
+      "prohibited1": "Violate any applicable laws or regulations",
+      "prohibited2": "Infringe upon the rights of others",
+      "prohibited3": "Harass, abuse, or harm other users",
+      "prohibited4": "Upload viruses or malicious code",
+      "prohibited5": "Attempt to gain unauthorized access to our systems",
+      "prohibited6": "Engage in any form of automated data collection",
+      "prohibited7": "Impersonate another person or entity",
+      "prohibited8": "Share copyrighted materials without permission",
+      "prohibited9": "Manipulate course reviews or ratings",
+      "prohibited10": "Use the platform for commercial purposes without authorization",
+      "warningLabel": "⚠️ Warning:",
+      "warningText": "Violation of these prohibitions may result in immediate account termination and legal action."
+    },
+    "section8": {
+      "title": "8. Disclaimer",
+      "paragraph1": "THE SERVICES AND CONTENT ARE PROVIDED \"AS IS\" AND \"AS AVAILABLE\" WITHOUT ANY WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED.",
+      "paragraph2": "Gradify does not warrant that:",
+      "warrant1": "• The services will be uninterrupted or error-free",
+      "warrant2": "• Defects will be corrected",
+      "warrant3": "• The platform is free of viruses or harmful components",
+      "warrant4": "• The results from using our services will meet your requirements",
+      "warrant5": "• Course content is always accurate, complete, or current",
+      "paragraph3": "You use Gradify at your own risk. We are not responsible for any educational outcomes, career advancement, or other results you may or may not achieve through our platform."
+    },
+    "section9": {
+      "title": "9. Limitations of Liability",
+      "paragraph1": "TO THE MAXIMUM EXTENT PERMITTED BY LAW, GRADIFY SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY.",
+      "limitationTitle": "Limitation Includes:",
+      "limitation1": "• Loss of data or information",
+      "limitation2": "• Loss of business opportunities",
+      "limitation3": "• Cost of substitute services",
+      "limitation4": "• Any damages resulting from your use or inability to use our services",
+      "limitation5": "• Unauthorized access to or alteration of your content",
+      "maxLiabilityLabel": "Maximum Liability:",
+      "maxLiabilityText": "Our total liability to you for any claims arising from your use of Gradify shall not exceed the amount you paid to us in the twelve (12) months preceding the claim."
+    },
+    "section10": {
+      "title": "10. Privacy Policy",
+      "paragraph1": "Your privacy is important to us. Our Privacy Policy explains how we collect, use, and protect your personal information. By using Gradify, you consent to our privacy practices as described in our Privacy Policy.",
+      "dataSecurityTitle": "Data Security",
+      "dataSecurityText": "We use industry-standard security measures to protect your data",
+      "dataUsageTitle": "Data Usage",
+      "dataUsageText": "We only use your data to improve your learning experience",
+      "yourRightsTitle": "Your Rights",
+      "yourRightsText": "You have the right to access, modify, or delete your data"
+    },
+    "section11": {
+      "title": "11. Changes to Terms",
+      "paragraph1": "We reserve the right to modify or replace these Terms and Conditions at any time at our sole discretion. We will provide notice of any material changes by:",
+      "notification1": "• Posting the updated terms on this page",
+      "notification2": "• Updating the \"Last Updated\" date at the top",
+      "notification3": "• Sending email notifications to registered users (for significant changes)",
+      "responsibilityLabel": "Your Responsibility:",
+      "responsibilityText": "It is your responsibility to review these Terms periodically. Your continued use of Gradify after any changes constitutes acceptance of those changes.",
+      "paragraph2": "If you do not agree to the modified terms, you must stop using our services and may request account deletion."
+    },
+    "section12": {
+      "title": "12. Contact Us",
+      "paragraph1": "If you have any questions, concerns, or feedback about these Terms and Conditions, please contact us:",
+      "emailSupportTitle": "Email Support",
+      "generalInquiries": "For general inquiries:",
+      "supportEmail": "support@gradify.com",
+      "legalMatters": "For legal matters:",
+      "legalEmail": "legal@gradify.com",
+      "mailingAddressTitle": "Mailing Address",
+      "address": "Gradify Inc.\n123 Education Street\nSan Francisco, CA 94102\nUnited States",
+      "responseTimeLabel": "Response Time:",
+      "responseTimeText": "We aim to respond to all inquiries within 24-48 hours."
+    },
+    "footer": {
+      "thankYouTitle": "Thank You for Reading",
+      "thankYouText": "By using Gradify, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions.",
+      "understandButton": "I Understand",
+      "printButton": "Print Terms"
+    }
+  },
+  "changePasswordModal": {
+    "title": "Change Password",
+    "subtitle": "Keep your account secure",
+    "placeholders": {
+      "oldPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password"
+    },
+    "button": "Update Password",
+    "updating": "Updating...",
+    "hint": "Use at least 8 characters with uppercase, lowercase, numbers, and symbols for a strong password.",
+    "strength": {
+      "label": "Password Strength",
+      "veryWeak": "Very Weak",
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong",
+      "veryStrong": "Very Strong"
+    },
+    "validation": {
+      "required": "This field is required"
+    },
+    "errors": {
+      "allRequired": "All fields are required",
+      "minLength": "Password must be at least 6 characters",
+      "mismatch": "Passwords do not match",
+      "failed": "Failed to update password"
+    },
+    "success": "Password updated successfully"
+  },
+  "resetPasswordModal": {
+    "title": "Reset Password",
+    "subtitle": "Secure your account",
+    "steps": {
+      "email": "Enter your email address",
+      "verify": "Verify OTP code",
+      "newPassword": "Set new password"
+    },
+    "placeholders": {
+      "email": "Enter your email",
+      "otp": "Enter OTP",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password"
+    },
+    "buttons": {
+      "sendOtp": "Send OTP",
+      "sending": "Sending...",
+      "verifyOtp": "Verify OTP",
+      "verifying": "Verifying...",
+      "changePassword": "Change Password",
+      "changing": "Changing..."
+    },
+    "resendIn": "Resend OTP in",
+    "resendOtp": "Resend OTP",
+    "errors": {
+      "emailRequired": "Email is required",
+      "invalidEmail": "Please enter a valid email address",
+      "otpRequired": "Enter OTP",
+      "allRequired": "All fields required",
+      "minLength": "Password must be at least 6 characters",
+      "mismatch": "Passwords do not match",
+      "otpFailed": "Failed to send OTP",
+      "invalidOtp": "Invalid OTP",
+      "changeFailed": "Password change failed"
+    },
+    "success": {
+      "otpSent": "OTP sent",
+      "otpVerified": "OTP verified",
+      "passwordChanged": "Password changed successfully"
+    }
+  },
+  "studentModals": {
+    "askDoubt": {
+      "title": "Ask a Doubt",
+      "sendingTo": "Sending to",
+      "subjectLabel": "Subject / Topic",
+      "subjectPlaceholder": "React useEffect issue",
+      "doubtLabel": "Describe Your Doubt",
+      "doubtPlaceholder": "Explain your issue in detail...",
+      "submitButton": "Submit Doubt",
+      "submittingButton": "Submitting...",
+      "requiredFields": "Please fill in all required fields",
+      "success": "Doubt submitted successfully!",
+      "error": "Failed to submit doubt. Please try again."
+    },
+    "chat": {
+      "defaultWelcome": "Hi, how can I help you?",
+      "demoResponse": "This is a demo AI response.",
+      "inputPlaceholder": "Ask something...",
+      "sendButton": "Send"
+    },
+    "bookSession": {
+      "title": "Book a Session",
+      "topicLabel": "Session Topic",
+      "topicPlaceholder": "Doubts / Career Guidance",
+      "dateLabel": "Select Date",
+      "timeLabel": "Select Time",
+      "instructorLabel": "Instructor (Optional)",
+      "instructorPlaceholder": "Enter instructor name",
+      "notesLabel": "Notes (Optional)",
+      "notesPlaceholder": "Mention specific doubts...",
+      "confirmButton": "Confirm Booking",
+      "bookingButton": "Booking...",
+      "requiredFields": "Please fill in all required fields",
+      "pastDateError": "Cannot book a session in the past",
+      "success": "Session booked successfully!",
+      "error": "Failed to book session. Please try again."
+    },
+    "editProfile": {
+      "title": "Edit Profile",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "phoneLabel": "Phone",
+      "bioLabel": "Bio",
+      "updatePhoto": "Update Photo",
+      "uploading": "Uploading...",
+      "cancelButton": "Cancel",
+      "saveButton": "Save Changes",
+      "saving": "Saving...",
+      "profileUpdated": "Profile updated",
+      "updateFailed": "Update failed",
+      "photoUpdated": "Profile photo updated",
+      "photoFailed": "Photo upload failed"
+    },
+    "aiTutorSelect": {
+      "title": "Choose Your AI Tutor"
+    },
+    "scoreInfo": {
+      "title": "Overall Score Breakdown",
+      "assignments": "Assignments (40%)",
+      "quizzes": "Quizzes (40%)",
+      "attendance": "Attendance (10%)",
+      "courseCompletion": "Course Completion (10%)",
+      "finalScore": "Final Weighted Score"
+    },
+    "supportTracker": {
+      "title": "Support Tracker",
+      "tabDoubts": "My Doubts",
+      "tabSessions": "My Sessions",
+      "noDoubts": "No doubts submitted yet.",
+      "noDoubtsSubtext": "Ask your instructors for help when you need it.",
+      "noSessions": "No sessions booked yet.",
+      "noSessionsSubtext": "Book one-on-one sessions with your instructors.",
+      "instructorReply": "Instructor Reply:",
+      "notes": "Notes:",
+      "with": "With",
+      "statusAnswered": "Answered",
+      "statusApproved": "Approved",
+      "statusPending": "Pending",
+      "statusRejected": "Rejected",
+      "statusClosed": "Closed",
+      "errorLoading": "Failed to load support data. Please try again.",
+      "retry": "Try Again",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "daysAgo": "days ago",
+      "footerText": "Track all your support activity here."
+    }
+  },
+  "components": {
+    "instructorHeader": {
+      "title": "Instructor Panel",
+      "role": "Educator",
+      "courses": "Courses",
+      "analytics": "Analytics",
+      "myProfile": "My Profile",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "adminHeader": {
+      "title": "Admin Control Panel",
+      "role": "SUPER ADMIN",
+      "users": "Users",
+      "courses": "Courses",
+      "reports": "Reports",
+      "adminProfile": "Admin Profile",
+      "platformSettings": "Platform Settings",
+      "logout": "Logout"
+    },
+    "imageUpload": {
+      "update": "Update"
+    },
+    "eventCard": {
+      "highPriority": "High Priority"
+    }
   }
 }

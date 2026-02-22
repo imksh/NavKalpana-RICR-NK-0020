@@ -7,6 +7,7 @@ import {
   getStudentProgress,
   getUpcomingEvents,
   leaderboard,
+  lessonOpened,
   stats,
 } from "../controllers/student.controller.js";
 import { getStudentCourse } from "../controllers/course.controller.js";
@@ -15,7 +16,10 @@ import {
   getStudentAssignments,
   submitAssignment,
 } from "../controllers/assignment.controller.js";
-import { getStudentAttendance } from "../controllers/attendance.controller.js";
+import {
+  downloadAttendanceReport,
+  getStudentAttendance,
+} from "../controllers/attendance.controller.js";
 import cloudinaryUpload from "../middlewares/cloudinaryUpload.middleware.js";
 import {
   getQuizById,
@@ -23,6 +27,8 @@ import {
   getStudentQuizzes,
   submitQuiz,
 } from "../controllers/quiz.controller.js";
+import { bookSession, getStudentSessions } from "../controllers/session.controller.js";
+import { createDoubt, getStudentDoubts } from "../controllers/doubt.controller.js";
 
 const router = express.Router();
 
@@ -63,5 +69,17 @@ router.get("/leaderboard", protectedRoute, leaderboard);
 router.get("/events/upcoming", protectedRoute, getUpcomingEvents);
 
 router.get("/events", protectedRoute, getEvents);
+
+router.post("/lesson/:id/opened", protectedRoute, lessonOpened);
+
+router.get("/attendance/report", protectedRoute, downloadAttendanceReport);
+
+router.post("/book-session", protectedRoute, bookSession);
+
+router.post("/doubts", protectedRoute, createDoubt);
+
+router.get("/doubts", protectedRoute, getStudentDoubts);
+
+router.get("/sessions", protectedRoute, getStudentSessions);
 
 export default router;

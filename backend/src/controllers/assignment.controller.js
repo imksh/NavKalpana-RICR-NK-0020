@@ -3,6 +3,7 @@ import AssignmentSubmission from "../models/assignmentSubmission.model.js";
 import Enrollment from "../models/enrollment.model.js";
 import Course from "../models/course.model.js";
 import cloudinary from "../config/cloudinary.js";
+import { updateLearningStreak } from "../utils/updateLearningStreak.js";
 
 export const getStudentAssignments = async (req, res, next) => {
   try {
@@ -186,6 +187,18 @@ export const submitAssignment = async (req, res, next) => {
     }
 
     const submission = await AssignmentSubmission.create(submissionData);
+
+    //Streak Address
+    /* ===== CREATE ACTIVITY ===== */
+    await LearningActivity.create({
+      studentId,
+      courseId: assignment.courseId,
+      actionType: "assignment_submitted",
+      referenceId: assignment._id,
+    });
+
+    /* ===== UPDATE STREAK ===== */
+    await updateLearningStreak(studentId);
 
     res.status(201).json({
       message: "Submitted successfully",

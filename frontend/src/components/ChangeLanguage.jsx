@@ -18,9 +18,9 @@ const ChangeLanguage = () => {
           e.stopPropagation();
           setOpenLang(!openLang);
         }}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-(--bg-muted) transition"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-xl  transition"
       >
-        <FiGlobe className="text-white" />
+        <FiGlobe className="" />
         <span className="text-sm font-medium">
           {languages.find((l) => l.code === lang)?.label}
         </span>
@@ -47,7 +47,7 @@ const ChangeLanguage = () => {
                 className={`w-full text-left px-4 py-2 hover:bg-(--bg-muted) transition ${
                   lang === item.code
                     ? "text-(--color-primary) font-medium"
-                    : ""
+                    : "text-(--text-primary)"
                 }`}
               >
                 {item.label}

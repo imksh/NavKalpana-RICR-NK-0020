@@ -1,12 +1,16 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ChatModal from "./ChatModal";
 import { aiTutors } from "../../../assets/data/tutor";
 import { IoClose } from "react-icons/io5";
 import CloseButton from "../../CloseButton";
 import useUiStore from "../../../store/useUiStore";
 
+const _MotionRef = motion;
+
 const AiTutorSelectModal = ({ onClose }) => {
+  const { t } = useTranslation();
   const [selectedTutor, setSelectedTutor] = useState(null);
   const { setIsModal } = useUiStore();
 
@@ -41,7 +45,9 @@ const AiTutorSelectModal = ({ onClose }) => {
                    rounded-3xl px-4 py-8 md:p-8 w-[90%] max-w-3xl shadow-xl max-h-[90vh] overflow-auto hide-scrollbar"
       >
         <div className="flex items-center w-full justify-between mb-6">
-          <h2 className="text-xl font-semibold ">Choose Your AI Tutor</h2>
+          <h2 className="text-xl font-semibold ">
+            {t("studentModals.aiTutorSelect.title")}
+          </h2>
 
           <CloseButton onClose={onClose} />
         </div>

@@ -4,8 +4,12 @@ import { motion } from "motion/react";
 import { FaCamera } from "react-icons/fa";
 import useUiStore from "../store/useUiStore";
 import Loading1 from "./Loading1";
+import { useTranslation } from "react-i18next";
+
+const _MotionRef = motion;
 
 const ImageUpload = ({ id, left }) => {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const { previews, handleImageRemove, handleImageUpload, isUploading } =
     useUiStore();
@@ -43,7 +47,11 @@ const ImageUpload = ({ id, left }) => {
           onClick={() => handleImageUpload(id)}
           disabled={isUploading === id}
         >
-          {isUploading === id ? <Loading1 className="w-20" /> : "Update"}
+          {isUploading === id ? (
+            <Loading1 className="w-20" />
+          ) : (
+            t("components.imageUpload.update")
+          )}
         </motion.button>
       )}
     </div>

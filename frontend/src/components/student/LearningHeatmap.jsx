@@ -67,7 +67,7 @@ const LearningHeatmap = () => {
       {/* HEATMAP */}
 
       <div className="w-full overflow-auto" ref={scrollRef}>
-        <div className="min-w-5xl md:max-w-5xl md:mx-auto ">
+        <div className="min-w-6xl md:max-w-6xl md:mx-auto ">
           <HeatMap
             value={transformedData}
             startDate={start}

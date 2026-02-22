@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { FiUpload, FiLink } from "react-icons/fi";
+import {
+  FiAlertCircle,
+  FiCheckCircle,
+  FiClock,
+  FiFileText,
+  FiLink,
+  FiUpload,
+} from "react-icons/fi";
 import { useParams } from "react-router-dom";
 import api from "../../config/api";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const AssignmentPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
 
   const [assignment, setAssignment] = useState(null);
@@ -19,17 +27,40 @@ const AssignmentPage = () => {
   const [status, setStatus] = useState("Pending");
   const [marks, setMarks] = useState(null);
   const [feedback, setFeedback] = useState(null);
+  const [courseStats, setCourseStats] = useState({
+    total: 0,
+    pending: 0,
+    evaluated: 0,
+  });
 
   /* ================= FETCH ASSIGNMENT ================= */
 
   useEffect(() => {
     const fetchAssignment = async () => {
       try {
-        const res = await api.get(`/student/assignments/${id}`);
-        setAssignment(res.data);
-        setStatus(res.data.status);
-        setMarks(res.data.marks);
-        setFeedback(res.data.feedback);
+        const [detailRes, listRes] = await Promise.all([
+          api.get(`/student/assignments/${id}`),
+          api.get("/student/assignments"),
+        ]);
+
+        const detail = detailRes.data;
+        const allAssignments = listRes.data || [];
+
+        setAssignment(detail);
+        setStatus(detail.status);
+        setMarks(detail.marks);
+        setFeedback(detail.feedback);
+
+        const sameCourse = allAssignments.filter(
+          (item) => item.course === detail.course,
+        );
+        setCourseStats({
+          total: sameCourse.length,
+          pending: sameCourse.filter((item) => item.status === "Pending")
+            .length,
+          evaluated: sameCourse.filter((item) => item.status === "Evaluated")
+            .length,
+        });
       } catch (error) {
         console.log("Error fetching assignment:", error);
       } finally {
@@ -44,7 +75,7 @@ const AssignmentPage = () => {
 
   const handleSubmit = async () => {
     if (!textSubmission && !externalLink && !file) {
-      toast.error("Please submit at least one format.");
+      toast.error(t("assignmentPage.toast.oneFormat"));
       return;
     }
 
@@ -59,18 +90,27 @@ const AssignmentPage = () => {
       const res = await api.post(`/student/assignments/${id}/submit`, formData);
 
       setStatus(res.data.status);
+      setAssignment((prev) => ({
+        ...prev,
+        content: textSubmission || null,
+        link: externalLink || null,
+        submittedAt: new Date().toISOString(),
+      }));
+      toast.success(t("assignmentPage.toast.submitted"));
     } catch (error) {
       console.log("Submission error:", error);
-      toast.error("Failed to submit assignment");
+      toast.error(t("assignmentPage.toast.failed"));
     } finally {
       setSubmitting(false);
     }
   };
 
+  /* ================= RENDER ================= */
+
   if (loading) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        Loading assignment...
+        {t("assignmentPage.loading")}
       </div>
     );
   }
@@ -78,94 +118,165 @@ const AssignmentPage = () => {
   if (!assignment) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        Assignment not found
+        {t("assignmentPage.notFound")}
       </div>
     );
   }
 
   const deadlineDate = new Date(assignment.deadline);
-  const isLate = new Date() > deadlineDate;
+  const isLate = Date.now() > deadlineDate.getTime();
+  const timeDiff = deadlineDate.getTime() - Date.now();
+  const daysLeft = Math.ceil(Math.abs(timeDiff) / (1000 * 60 * 60 * 24));
+
+  const submissionReady = !!(textSubmission || externalLink || file);
+
+  const getStatusBadgeClass = () => {
+    if (status === "Evaluated") return "bg-green-600 text-white";
+    if (status === "Submitted") return "bg-yellow-600 text-white";
+    if (status === "Late Submitted") return "bg-red-600 text-white";
+    if (isLate) return "bg-red-600 text-white";
+    return "bg-blue-600 text-white";
+  };
 
   return (
-    <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-3 md:px-16 pt-20 md:pt-32 pb-16">
-      {/* HEADER */}
-      <div className="mb-10">
-        <h1 className="text-3xl font-semibold">{assignment.title}</h1>
+    <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-4 md:px-10 lg:px-16 pt-10 md:pt-14 pb-16 space-y-7">
+      {/* HERO SECTION */}
+      <section className="rounded-3xl border border-(--border-color) bg-(--bg-surface) p-6 md:p-8 shadow-sm">
+        <div className="grid lg:grid-cols-3 gap-5 md:gap-6">
+          <div className="lg:col-span-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-(--border-color) bg-(--bg-muted) px-3 py-1 text-xs md:text-sm text-(--text-secondary)">
+              <FiFileText size={14} /> {t("assignmentPage.badge")}
+            </span>
 
-        <p className="text-(--text-secondary) mt-2">
-          Deadline: {deadlineDate.toLocaleString()}
-        </p>
+            <h1 className="text-2xl md:text-4xl font-semibold mt-4 leading-tight">
+              {assignment.title}
+            </h1>
 
-        <div
-          className={`mt-3 inline-block px-4 py-1 rounded-full text-sm ${
-            status === "Evaluated"
-              ? "bg-(--color-success) text-white"
-              : status === "Submitted"
-                ? "bg-(--color-warning) text-white"
-                : isLate
-                  ? "bg-(--color-danger) text-white"
-                  : "bg-(--color-accent) text-white"
-          }`}
-        >
-          {status}
-        </div>
-      </div>
+            <p className="text-(--text-secondary) mt-3">
+              {t("assignmentPage.course")}:{" "}
+              {assignment.course || t("common.na")} •{" "}
+              {t("assignmentPage.module")}:{" "}
+              {assignment.module || t("common.na")}
+            </p>
 
-      {/* DESCRIPTION */}
-      <div className="bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl mb-10">
-        <h3 className="font-semibold mb-2">Assignment Description</h3>
-        <p className="text-(--text-secondary)">{assignment.description}</p>
-      </div>
+            <p className="text-(--text-secondary) mt-1 inline-flex items-center gap-2">
+              <FiClock size={14} />
+              {t("assignmentPage.deadline")}: {deadlineDate.toLocaleString()}
+            </p>
 
-      {/* SUBMISSION SECTION */}
-      {status === "Pending" && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl space-y-6"
-        >
-          {/* TEXT */}
-          <div>
-            <label className="font-medium">Text Submission</label>
-            <textarea
-              value={textSubmission}
-              onChange={(e) => setTextSubmission(e.target.value)}
-              rows={4}
-              className="w-full mt-2 p-3 rounded-xl border border-(--border-color) bg-(--bg-muted) disabled:cursor-not-allowed"
-              placeholder="Write explanation or paste code..."
-              disabled={submitting}
+            <div
+              className={`mt-4 inline-block px-4 py-1 rounded-full text-sm ${getStatusBadgeClass()}`}
+            >
+              {status}
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-3 lg:grid-cols-1 gap-3">
+            <InfoCard
+              label={t("assignmentPage.maxMarks")}
+              value={assignment.maxMarks || 0}
+            />
+            <InfoCard
+              label={
+                timeDiff >= 0
+                  ? t("assignmentPage.timeLeft")
+                  : t("assignmentPage.pastDeadline")
+              }
+              value={`${daysLeft} day${daysLeft === 1 ? "" : "s"}`}
+              danger={timeDiff < 0}
+            />
+            <InfoCard
+              label={t("assignmentPage.workload")}
+              value={`${courseStats.pending} pending / ${courseStats.total} total`}
             />
           </div>
+        </div>
+      </section>
 
-          {/* LINK */}
-          <div>
-            <label className="font-medium">External Link</label>
-            <div className="flex mt-2 gap-2">
-              <FiLink className="mt-3" />
-              <input
-                type="text"
-                value={externalLink}
-                onChange={(e) => setExternalLink(e.target.value)}
-                className="flex-1 p-3 rounded-xl border border-(--border-color) bg-(--bg-muted) disabled:cursor-not-allowed"
-                placeholder="GitHub / Live Demo"
+      {/* DESCRIPTION */}
+      <section className="bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl">
+        <h3 className="font-semibold mb-2">
+          {t("assignmentPage.description")}
+        </h3>
+        <p className="text-(--text-secondary)">{assignment.description}</p>
+      </section>
+
+      {/* SUBMISSION FORM */}
+      {status === "Pending" && (
+        <section className="bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl space-y-6">
+          <h3 className="font-semibold text-lg">
+            {t("assignmentPage.submitWork")}
+          </h3>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="md:col-span-2">
+              <label className="font-medium">
+                {t("assignmentPage.textSubmission")}
+              </label>
+              <textarea
+                value={textSubmission}
+                onChange={(e) => setTextSubmission(e.target.value)}
+                rows={5}
+                className="w-full mt-2 p-3 rounded-xl border border-(--border-color) bg-(--bg-muted) disabled:cursor-not-allowed"
+                placeholder={t("assignmentPage.textPlaceholder")}
                 disabled={submitting}
               />
+            </div>
+
+            <div>
+              <label className="font-medium">
+                {t("assignmentPage.externalLink")}
+              </label>
+              <div className="flex mt-2 gap-2 items-center">
+                <FiLink className="text-(--text-secondary)" />
+                <input
+                  type="text"
+                  value={externalLink}
+                  onChange={(e) => setExternalLink(e.target.value)}
+                  className="flex-1 p-3 rounded-xl border border-(--border-color) bg-(--bg-muted) disabled:cursor-not-allowed"
+                  placeholder={t("assignmentPage.linkPlaceholder")}
+                  disabled={submitting}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="font-medium">
+                {t("assignmentPage.uploadFile")}
+              </label>
+              <div className="mt-2 flex items-center gap-3 rounded-xl border border-(--border-color) bg-(--bg-muted) p-3">
+                <FiUpload />
+                <input
+                  type="file"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  disabled={submitting}
+                />
+              </div>
+
+              {file && (
+                <p className="text-xs text-(--text-secondary) mt-2">
+                  {t("assignmentPage.selected")}: {file.name}
+                </p>
+              )}
             </div>
           </div>
 
-          {/* FILE */}
-          <div>
-            <label className="font-medium disabled:cursor-not-allowed">
-              Upload File
-            </label>
-            <div className="mt-2 flex items-center gap-3">
-              <FiUpload />
-              <input
-                type="file"
-                onChange={(e) => setFile(e.target.files[0])}
-                disabled={submitting}
-              />
-            </div>
+          <div className="rounded-xl border border-(--border-color) bg-(--bg-surface) p-4">
+            <p className="font-medium mb-2">{t("assignmentPage.checklist")}</p>
+            <ul className="space-y-2 text-sm text-(--text-secondary)">
+              <li className="inline-flex items-center gap-2">
+                {submissionReady ? (
+                  <FiCheckCircle className="text-green-600" />
+                ) : (
+                  <FiAlertCircle className="text-yellow-600" />
+                )}
+                {t("assignmentPage.checkItem1")}
+              </li>
+              <li className="inline-flex items-center gap-2">
+                <FiCheckCircle className="text-green-600" />
+                {t("assignmentPage.checkItem2")}
+              </li>
+            </ul>
           </div>
 
           <button
@@ -173,28 +284,30 @@ const AssignmentPage = () => {
             className="px-6 py-3 bg-(--color-primary) text-white rounded-xl hover:bg-(--color-primary-hover) disabled:bg-slate-400 disabled:cursor-not-allowed"
             disabled={submitting}
           >
-            {submitting ? "Submitting..." : "Submit Assignment"}
+            {submitting
+              ? t("assignmentPage.submitting")
+              : t("assignmentPage.submit")}
           </button>
-        </motion.div>
+        </section>
       )}
 
-      {/* EVALUATION SECTION */}
+      {/* EVALUATION & SUBMISSION REVIEW */}
       {status !== "Pending" && (
         <>
-          <div className="mt-10 bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl">
+          <section className="bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl">
             {status === "Evaluated" ? (
               <>
                 <h3 className="font-semibold mb-3">Evaluation</h3>
 
                 <div className="text-lg">
                   Marks:
-                  <span className="ml-2 text-(--color-success) font-bold">
+                  <span className="ml-2 text-green-600 font-bold">
                     {marks}/{assignment.maxMarks}
                   </span>
                 </div>
 
                 <p className="mt-3 text-(--text-secondary)">
-                  Feedback: {feedback}
+                  Feedback: {feedback || "No feedback available."}
                 </p>
               </>
             ) : (
@@ -202,20 +315,18 @@ const AssignmentPage = () => {
                 Submission received. Awaiting evaluation.
               </p>
             )}
-          </div>
+          </section>
 
-          <div className="mt-10 bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl ">
+          <section className="bg-(--card-bg) border border-(--border-color) p-6 rounded-2xl">
             <h3 className="font-semibold text-lg">Your Submission</h3>
 
-            {/* Submitted Time */}
             {assignment.submittedAt && (
-              <p className="text-sm text-(--text-muted) mb-4">
+              <p className="text-sm text-(--text-muted) mb-4 mt-1">
                 Submitted on:{" "}
                 {new Date(assignment.submittedAt).toLocaleString()}
               </p>
             )}
 
-            {/* TEXT */}
             {assignment.content && (
               <div className="bg-(--bg-muted) p-4 rounded-xl mb-4">
                 <h4 className="font-medium mb-2">Text Submission</h4>
@@ -225,7 +336,6 @@ const AssignmentPage = () => {
               </div>
             )}
 
-            {/* LINK */}
             {assignment.link && (
               <div className="bg-(--bg-muted) p-4 rounded-xl mb-4">
                 <h4 className="font-medium mb-2">External Link</h4>
@@ -245,9 +355,8 @@ const AssignmentPage = () => {
               </div>
             )}
 
-            {/* FILE */}
             {assignment.file?.url && (
-              <div className="bg-(--bg-muted) p-4 rounded-xl  mb-4">
+              <div className="bg-(--bg-muted) p-4 rounded-xl mb-4">
                 <h4 className="font-medium mb-2">Uploaded File</h4>
                 <a
                   href={assignment.file.url}
@@ -259,11 +368,20 @@ const AssignmentPage = () => {
                 </a>
               </div>
             )}
-          </div>
+          </section>
         </>
       )}
     </div>
   );
 };
+
+const InfoCard = ({ label, value, danger }) => (
+  <div className="rounded-xl border border-(--border-color) bg-(--card-bg) p-3">
+    <p className="text-xs text-(--text-muted)">{label}</p>
+    <p className={`font-semibold mt-1 ${danger ? "text-red-600" : ""}`}>
+      {value}
+    </p>
+  </div>
+);
 
 export default AssignmentPage;

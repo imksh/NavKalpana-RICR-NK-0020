@@ -1,16 +1,33 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import CloseButton from "../../CloseButton";
+import useUiStore from "../../../store/useUiStore";
 
-const ChatModal = ({ tutor, onClose }) => {
+const _MotionRef = motion;
+
+const ChatModal = ({ tutor, onClose, isOpen }) => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState([
     {
       sender: "ai",
       text: tutor.welcomeMessage
         ? tutor.welcomeMessage("Karan")
-        : "Hi, how can I help you?",
+        : t("studentModals.chat.defaultWelcome"),
     },
   ]);
+
+  const { setIsModal } = useUiStore();
+
+  useEffect(() => {
+    setIsModal(true);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "auto";
+      setIsModal(false);
+    };
+  }, []);
 
   const [input, setInput] = useState("");
 
@@ -20,7 +37,7 @@ const ChatModal = ({ tutor, onClose }) => {
     setMessages((prev) => [
       ...prev,
       { sender: "user", text: input },
-      { sender: "ai", text: "This is a demo AI response." },
+      { sender: "ai", text: t("studentModals.chat.demoResponse") },
     ]);
 
     setInput("");
@@ -78,7 +95,7 @@ const ChatModal = ({ tutor, onClose }) => {
         <div className="p-4 border-t border-(--border-color) flex gap-2">
           <input
             type="text"
-            placeholder="Ask something..."
+            placeholder={t("studentModals.chat.inputPlaceholder")}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="flex-1 px-4 py-2 rounded-xl border border-(--border-color) bg-(--bg-surface)"
@@ -87,7 +104,7 @@ const ChatModal = ({ tutor, onClose }) => {
             onClick={sendMessage}
             className="px-4 py-2 bg-(--color-primary) text-white rounded-xl"
           >
-            Send
+            {t("studentModals.chat.sendButton")}
           </button>
         </div>
       </motion.div>

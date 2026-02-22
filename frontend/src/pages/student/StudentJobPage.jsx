@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../config/api";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import useUiStore from "../../store/useUiStore";
 
 const StudentJobPage = () => {
+  const { t } = useTranslation();
+  const { lang } = useUiStore();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -11,6 +15,14 @@ const StudentJobPage = () => {
   const [resume, setResume] = useState(null);
   const [coverLetter, setCoverLetter] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const getLocalizedText = (value) => {
+    if (typeof value === "string") return value;
+    if (value && typeof value === "object") {
+      return value[lang] || value.en || Object.values(value)[0] || "";
+    }
+    return "";
+  };
 
   /* ================= FETCH JOB ================= */
   useEffect(() => {
@@ -23,7 +35,7 @@ const StudentJobPage = () => {
 
   const handleSubmit = async () => {
     if (!resume) {
-      toast.error("Please upload your resume");
+      toast.error(t("studentJobPage.toast.uploadResume"));
       return;
     }
 
@@ -39,20 +51,24 @@ const StudentJobPage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      toast.success("Application Submitted Successfully 🎉");
+      toast.success(t("studentJobPage.toast.submitted"));
       navigate("/student/jobs");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error applying");
+      toast.error(
+        error.response?.data?.message || t("studentJobPage.toast.error"),
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  if (!job) return <div>Loading...</div>;
+  if (!job) return <div>{t("studentJobPage.loading")}</div>;
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
-      <h1 className="text-3xl font-semibold mb-10">Apply for {job.title}</h1>
+      <h1 className="text-3xl font-semibold mb-10">
+        {t("studentJobPage.applyFor", { title: getLocalizedText(job.title) })}
+      </h1>
 
       <div className="grid md:grid-cols-3 gap-10">
         {/* LEFT - JOB DETAILS */}
@@ -60,16 +76,18 @@ const StudentJobPage = () => {
           <h3 className="text-lg font-semibold mb-3">{job.company}</h3>
 
           <p className="text-(--text-secondary) text-sm mb-4">
-            {job.location} • {job.type}
+            {getLocalizedText(job.location)} • {job.type}
           </p>
 
           <p className="text-(--text-secondary) text-sm mb-4">
-            {job.description.split("\n").map((line, index) => (
-              <span key={index}>
-                {line}
-                <br />
-              </span>
-            ))}
+            {getLocalizedText(job.description)
+              .split("\n")
+              .map((line, index) => (
+                <span key={index}>
+                  {line}
+                  <br />
+                </span>
+              ))}
           </p>
 
           <p className="text-(--color-success) mb-4">
@@ -88,7 +106,7 @@ const StudentJobPage = () => {
           </div>
 
           <div className="flex mt-6 mb-2 gap-4 items-center">
-            <h4 className="font-medium ">Application Deadline:</h4>
+            <h4 className="font-medium ">{t("studentJobPage.deadline")}:</h4>
             <p className="text-sm text-(--text-secondary)">
               {new Date(job.deadline).toLocaleDateString()}
             </p>
@@ -96,16 +114,20 @@ const StudentJobPage = () => {
 
           {job.status === "close" && (
             <div className="text-xs bg-(--color-danger) px-4 py-1 rounded-2xl my-2 w-fit">
-              Closed
+              {t("studentJobPage.closed")}
             </div>
           )}
 
           {job.hasApplied && (
             <>
-              <h4 className="font-medium mb-2">Your Application:</h4>
+              <h4 className="font-medium mb-2">
+                {t("studentJobPage.yourApplication")}
+              </h4>
 
               <p className="mb-1">
-                <span className="font-medium">Status:</span>{" "}
+                <span className="font-medium">
+                  {t("studentJobPage.status")}:
+                </span>{" "}
                 <span
                   className={`font-medium ${
                     job.applicationStatus === "Accepted"
@@ -120,9 +142,11 @@ const StudentJobPage = () => {
               </p>
 
               <p className="mb-1">
-                <p className="font-medium">Cover Letter:</p>{" "}
+                <p className="font-medium">
+                  {t("studentJobPage.coverLetter")}:
+                </p>{" "}
                 <p className="text-(--text-secondary) text-sm mb-4">
-                  {job.coverLetter || "N/A"}
+                  {job.coverLetter || t("studentJobPage.na")}
                 </p>
               </p>
 
@@ -133,7 +157,7 @@ const StudentJobPage = () => {
                   rel="noopener noreferrer"
                   className="text-(--color-primary) underline text-sm"
                 >
-                  View Uploaded Resume
+                  {t("studentJobPage.viewResume")}
                 </a>
               )}
             </>
@@ -143,7 +167,9 @@ const StudentJobPage = () => {
         {/* RIGHT - APPLY FORM */}
         <div className="md:col-span-2 bg-(--card-bg) border border-(--border-color) p-8 rounded-2xl">
           <div className="mb-6">
-            <label className="block mb-2 text-sm">Upload Resume (PDF)</label>
+            <label className="block mb-2 text-sm">
+              {t("studentJobPage.uploadResume")}
+            </label>
 
             <input
               type="file"
@@ -155,7 +181,9 @@ const StudentJobPage = () => {
           </div>
 
           <div className="mb-8">
-            <label className="block mb-2 text-sm">Cover Letter</label>
+            <label className="block mb-2 text-sm">
+              {t("studentJobPage.coverLetter")}
+            </label>
 
             <textarea
               rows="6"
@@ -171,7 +199,7 @@ const StudentJobPage = () => {
               onClick={() => navigate(-1)}
               className="px-6 py-3 rounded-xl bg-(--bg-muted)"
             >
-              Cancel
+              {t("studentJobPage.cancel")}
             </button>
 
             <button
@@ -180,10 +208,10 @@ const StudentJobPage = () => {
               className="px-6 py-3 rounded-xl bg-(--color-primary) text-white disabled:bg-slate-400 disabled:cursor-not-allowed"
             >
               {loading
-                ? "Submitting..."
+                ? t("studentJobPage.submitting")
                 : job.status === "close"
-                  ? "Job Closed"
-                  : "Submit Application"}
+                  ? t("studentJobPage.jobClosed")
+                  : t("studentJobPage.submitApplication")}
             </button>
           </div>
         </div>

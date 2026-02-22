@@ -8,6 +8,7 @@ import LearningActivity from "../models/learningActivity.model.js";
 import Attendance from "../models/attendance.model.js";
 import User from "../models/user.model.js";
 import Event from "../models/event.model.js";
+import { updateLearningStreak } from "../utils/updateLearningStreak.js";
 
 export const stats = async (req, res, next) => {
   try {
@@ -101,6 +102,8 @@ export const stats = async (req, res, next) => {
 
     const streak = calculateStreak(activityDates.map((d) => d._id));
 
+    console.log(streak);
+
     const attendanceRecords = await Attendance.find({
       studentId: user._id,
       courseId: { $in: courseIds },
@@ -118,17 +121,11 @@ export const stats = async (req, res, next) => {
     let courseCompletionPercent = 0;
 
     if (enrollments.length > 0) {
-      const totalCourses = enrollments.length;
-
-      const completedCourses = enrollments.filter(
-        (e) =>
-          e.courseId.totalLessons > 0 &&
-          user.completedLessonsCount >= e.courseId.totalLessons,
-      ).length;
-
-      courseCompletionPercent = Math.round(
-        (completedCourses / totalCourses) * 100,
+      const totalPercent = enrollments.reduce(
+        (sum, enrollment) => sum + (enrollment.progressPercent || 0),
+        0,
       );
+      courseCompletionPercent = Math.round(totalPercent / enrollments.length);
     }
 
     const overallScore = calculateOverallScore({
@@ -191,7 +188,7 @@ export const getLearningActivity = async (req, res, next) => {
       },
     ]);
 
-    const streak = calculateStreak(activity);
+    const streak = calculateStreak(activity.map((a) => a.date));
 
     res.status(200).json({ activity, streak });
   } catch (error) {
@@ -308,7 +305,6 @@ export const getUpcomingEvents = async (req, res, next) => {
 export const getEvents = async (req, res, next) => {
   try {
     const events = await Event.find({}).sort({ startDate: -1 });
-    console.log(events);
 
     res.status(200).json(events);
   } catch (error) {
@@ -419,24 +415,11 @@ export const leaderboard = async (req, res, next) => {
             $cond: [
               { $gt: [{ $size: "$enrollments" }, 0] },
               {
-                $multiply: [
+                $round: [
                   {
-                    $divide: [
-                      {
-                        $size: {
-                          $filter: {
-                            input: "$enrollments",
-                            as: "e",
-                            cond: {
-                              $gte: [{ $size: "$$e.completedLessons" }, 1],
-                            },
-                          },
-                        },
-                      },
-                      { $size: "$enrollments" },
-                    ],
+                    $avg: "$enrollments.progressPercent",
                   },
-                  100,
+                  0,
                 ],
               },
               0,
@@ -504,31 +487,76 @@ export const leaderboard = async (req, res, next) => {
   }
 };
 
+export const lessonOpened = async (req, res, next) => {
+  try {
+    const studentId = req.user._id;
+    const { courseId, lessonId } = req.body;
+
+    const isDuplicate = await LearningActivity.findOne({
+      studentId,
+      actionType: "lesson_opened",
+      createdAt: {
+        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+        $lt: new Date(new Date().setHours(23, 59, 59, 999)),
+      },
+    });
+
+    if (isDuplicate) {
+      return res
+        .status(200)
+        .json({ message: "Activity already recorded for today" });
+    }
+
+    /* ===== CREATE ACTIVITY ===== */
+    await LearningActivity.create({
+      studentId,
+      courseId,
+      actionType: "lesson_opened",
+      referenceId: lessonId,
+    });
+
+    /* ===== UPDATE STREAK ===== */
+    await updateLearningStreak(studentId);
+
+    res.status(200).json({ message: "Activity recorded" });
+  } catch (error) {
+    console.log("Error in lessonOpened:", error);
+    next(error);
+  }
+};
+
 //helpers
 
-const calculateStreak = (dates) => {
-  if (!dates.length) return 0;
+const calculateStreak = (dateStrings) => {
+  if (!dateStrings.length) return 0;
 
-  let streak = 0;
+  const dates = dateStrings
+    .map((d) => {
+      const date = new Date(d);
+      date.setHours(0, 0, 0, 0);
+      return date;
+    })
+    .sort((a, b) => b - a);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  let expectedDate = today;
+  const diffFromToday = (today - dates[0]) / (1000 * 60 * 60 * 24);
 
-  for (let i = 0; i < dates.length; i++) {
-    const activityDate = new Date(dates[i].date);
-    activityDate.setHours(0, 0, 0, 0);
+  // If last activity not today or yesterday → streak broken
+  if (diffFromToday > 1) {
+    return 0;
+  }
 
-    const diff = (expectedDate - activityDate) / (1000 * 60 * 60 * 24);
+  let streak = 1;
+  let expectedDate = new Date(dates[0]);
 
-    if (diff === 0) {
+  for (let i = 1; i < dates.length; i++) {
+    const diff = (expectedDate - dates[i]) / (1000 * 60 * 60 * 24);
+
+    if (diff === 1) {
       streak++;
       expectedDate.setDate(expectedDate.getDate() - 1);
-    } else if (diff === 1 && streak === 0) {
-      // allow streak to start from yesterday
-      streak++;
-      expectedDate.setDate(expectedDate.getDate() - 2);
     } else {
       break;
     }
@@ -540,21 +568,25 @@ const calculateStreak = (dates) => {
 const calculateLongestStreak = (dateStrings) => {
   if (!dateStrings.length) return 0;
 
-  const dates = dateStrings.map((d) => new Date(d));
+  // Normalize, remove duplicates, sort ascending
+  const dates = [...new Set(dateStrings)]
+    .map((d) => {
+      const date = new Date(d);
+      date.setHours(0, 0, 0, 0);
+      return date;
+    })
+    .sort((a, b) => a - b);
 
   let longest = 1;
   let current = 1;
 
   for (let i = 1; i < dates.length; i++) {
-    const prev = dates[i - 1];
-    const curr = dates[i];
-
-    const diff = (curr - prev) / (1000 * 60 * 60 * 24);
+    const diff = (dates[i] - dates[i - 1]) / (1000 * 60 * 60 * 24);
 
     if (diff === 1) {
       current++;
       longest = Math.max(longest, current);
-    } else {
+    } else if (diff > 1) {
       current = 1;
     }
   }

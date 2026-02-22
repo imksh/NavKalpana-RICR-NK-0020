@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import api from "../../../config/api";
 import { toast } from "react-hot-toast";
 import { useAuthStore } from "../../../store/useAuthStore";
@@ -7,7 +8,10 @@ import CloseButton from "../../CloseButton";
 import { FiCamera } from "react-icons/fi";
 import useUiStore from "../../../store/useUiStore";
 
+const _MotionRef = motion;
+
 const StudentEditProfileModal = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const { user, setUser } = useAuthStore();
   const { setIsModal } = useUiStore();
 
@@ -59,17 +63,20 @@ const StudentEditProfileModal = ({ isOpen, onClose }) => {
     try {
       setLoading(true);
 
-      const res = await api.put("/users/profile", {
+      const res = await api.patch("/auth/update-profile", {
         name: formData.name,
         bio: formData.bio,
         phone: formData.phone,
       });
 
       setUser(res.data);
-      toast.success("Profile updated");
+      toast.success(t("studentModals.editProfile.profileUpdated"));
       onClose();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Update failed");
+      toast.error(
+        error.response?.data?.message ||
+          t("studentModals.editProfile.updateFailed"),
+      );
     } finally {
       setLoading(false);
     }
@@ -90,17 +97,17 @@ const StudentEditProfileModal = ({ isOpen, onClose }) => {
       setPhotoLoading(true);
 
       const data = new FormData();
-      data.append("avatar", photoFile);
+      data.append("image", photoFile);
 
-      const res = await api.put("/users/profile/photo", data, {
+      const res = await api.put("/auth/change-photo", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       setUser(res.data);
-      toast.success("Profile photo updated");
+      toast.success(t("studentModals.editProfile.photoUpdated"));
       setPhotoFile(null);
     } catch {
-      toast.error("Photo upload failed");
+      toast.error(t("studentModals.editProfile.photoFailed"));
     } finally {
       setPhotoLoading(false);
     }
@@ -129,7 +136,9 @@ const StudentEditProfileModal = ({ isOpen, onClose }) => {
         >
           {/* ===== HEADER + CLOSE ===== */}
           <div className="p-6 border-b border-(--border-color) relative">
-            <h2 className="text-2xl font-semibold">Edit Profile</h2>
+            <h2 className="text-2xl font-semibold">
+              {t("studentModals.editProfile.title")}
+            </h2>
 
             <div className="absolute top-4 right-4">
               <CloseButton onClose={onClose} />
@@ -160,19 +169,25 @@ const StudentEditProfileModal = ({ isOpen, onClose }) => {
               </div>
 
               {photoFile && (
-                <button
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.05 }}
                   onClick={handlePhotoUpload}
                   disabled={photoLoading}
-                  className="mt-4 px-4 py-2 text-sm rounded-xl bg-(--color-primary) text-white hover:opacity-90"
+                  className="mt-4 px-4 py-2 text-sm rounded-xl bg-(--color-primary) text-white hover:opacity-90 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {photoLoading ? "Uploading..." : "Update Photo"}
-                </button>
+                  {photoLoading
+                    ? t("studentModals.editProfile.uploading")
+                    : t("studentModals.editProfile.updatePhoto")}
+                </motion.button>
               )}
             </div>
 
             {/* Name */}
             <div>
-              <label className="block text-sm mb-1">Name</label>
+              <label className="block text-sm mb-1">
+                {t("studentModals.editProfile.nameLabel")}
+              </label>
               <input
                 type="text"
                 value={formData.name}
@@ -185,7 +200,9 @@ const StudentEditProfileModal = ({ isOpen, onClose }) => {
 
             {/* Email */}
             <div>
-              <label className="block text-sm mb-1">Email</label>
+              <label className="block text-sm mb-1">
+                {t("studentModals.editProfile.emailLabel")}
+              </label>
               <input
                 type="email"
                 value={formData.email}
@@ -196,7 +213,9 @@ const StudentEditProfileModal = ({ isOpen, onClose }) => {
 
             {/* Phone */}
             <div>
-              <label className="block text-sm mb-1">Phone</label>
+              <label className="block text-sm mb-1">
+                {t("studentModals.editProfile.phoneLabel")}
+              </label>
               <input
                 type="text"
                 value={formData.phone}
@@ -209,7 +228,9 @@ const StudentEditProfileModal = ({ isOpen, onClose }) => {
 
             {/* Bio */}
             <div>
-              <label className="block text-sm mb-1">Bio</label>
+              <label className="block text-sm mb-1">
+                {t("studentModals.editProfile.bioLabel")}
+              </label>
               <textarea
                 rows="4"
                 value={formData.bio}
@@ -227,7 +248,7 @@ const StudentEditProfileModal = ({ isOpen, onClose }) => {
               onClick={onClose}
               className="px-6 py-2 rounded-xl bg-(--bg-muted)"
             >
-              Cancel
+              {t("studentModals.editProfile.cancelButton")}
             </button>
 
             <button
@@ -235,7 +256,9 @@ const StudentEditProfileModal = ({ isOpen, onClose }) => {
               disabled={loading}
               className="px-6 py-2 rounded-xl bg-(--color-primary) text-white hover:opacity-90"
             >
-              {loading ? "Saving..." : "Save Changes"}
+              {loading
+                ? t("studentModals.editProfile.saving")
+                : t("studentModals.editProfile.saveButton")}
             </button>
           </div>
         </div>

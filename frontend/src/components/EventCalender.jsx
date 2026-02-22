@@ -1,6 +1,7 @@
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useState, useRef, useEffect } from "react";
+import { motion } from 'motion/react';
 
 const EventCalendar = ({ events = [] }) => {
   const [value, setValue] = useState(new Date());
@@ -31,9 +32,12 @@ const EventCalendar = ({ events = [] }) => {
   }, []);
 
   return (
-    <div
+    <motion.div
+      whileTap={{ scale: 0.95 }}
+      whileHover={{ x:[-10,0,10,0] }}
+      transition={{duration:0.2}}
       ref={containerRef}
-      className="relative bg-(--card-bg) border border-(--border-color) sm:p-6 rounded-2xl "
+      className="relative bg-(--card-bg) border border-(--border-color) rounded-2xl "
     >
       <Calendar
         onChange={(date) => {
@@ -85,7 +89,7 @@ const EventCalendar = ({ events = [] }) => {
           ))}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,11 +1,22 @@
-import { useState, useEffect } from "react";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-import { motion } from "framer-motion";
+import { useState, useEffect, useMemo } from "react";
+import {
+  FiBookOpen,
+  FiCheckCircle,
+  FiChevronDown,
+  FiChevronUp,
+  FiClock,
+  FiPlayCircle,
+  FiTrendingUp,
+  FiUser,
+} from "react-icons/fi";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import api from "../../config/api";
 import useUiStore from "../../store/useUiStore";
+import Loading from "../../components/Loading";
+import { useTranslation } from "react-i18next";
 
 const CoursePage = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -14,7 +25,6 @@ const CoursePage = () => {
   const [course, setCourse] = useState(location.state || null);
   const [modules, setModules] = useState([]);
   const [openModule, setOpenModule] = useState(null);
-  const [completedLessons, setCompletedLessons] = useState([]);
   const [loadingCourse, setLoadingCourse] = useState(true);
   const [loadingModules, setLoadingModules] = useState(true);
 
@@ -34,7 +44,7 @@ const CoursePage = () => {
     };
 
     fetchCourse();
-  }, [slug, location.pathname]);
+  }, [slug, location.pathname, course]);
 
   /* ================= FETCH MODULES ================= */
   useEffect(() => {
@@ -59,82 +69,145 @@ const CoursePage = () => {
     fetchModules();
   }, [course?._id]);
 
-  /* ================= TOGGLE LESSON ================= */
-  const toggleLesson = (lessonId) => {
-    setCompletedLessons((prev) =>
-      prev.includes(lessonId)
-        ? prev.filter((id) => id !== lessonId)
-        : [...prev, lessonId],
-    );
-  };
-
-  /* ================= GLOBAL COURSE PROGRESS ================= */
-  const totalLessons = modules.reduce(
-    (acc, mod) => acc + (mod.lessons?.length || 0),
-    0,
+  const allLessons = useMemo(
+    () => modules.flatMap((module) => module.lessons || []),
+    [modules],
   );
 
-  const completedCount = completedLessons.length;
+  const completedLessons = useMemo(
+    () => allLessons.filter((lesson) => lesson.isCompleted).length,
+    [allLessons],
+  );
 
-  const overallProgress =
-    totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+  const totalLessons = allLessons.length;
 
-  if (loadingCourse) {
-    return (
-      <div className="min-h-dvh flex items-center justify-center">
-        Loading course...
-      </div>
-    );
-  }
+  const totalDurationMinutes = useMemo(
+    () =>
+      allLessons.reduce(
+        (sum, lesson) => sum + (lesson.estimatedDurationMinutes || 0),
+        0,
+      ),
+    [allLessons],
+  );
+
+  const nextLesson = useMemo(
+    () => allLessons.find((lesson) => !lesson.isCompleted) || null,
+    [allLessons],
+  );
+
+  const completionRatio = totalLessons
+    ? Math.round((completedLessons / totalLessons) * 100)
+    : 0;
+
+  if (loadingCourse) return <Loading />;
 
   return (
-    <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
-      {/* ================= COURSE HEADER ================= */}
-      <div className="mb-12">
-        <h1 className="text-3xl md:text-4xl font-semibold">
-          {course?.title?.[lang]}
-        </h1>
+    <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-4 md:px-10 lg:px-16 pt-10 md:pt-14 pb-16 space-y-8">
+      <section className="rounded-3xl border border-(--border-color) bg-(--bg-surface) p-6 md:p-8 shadow-sm">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-(--border-color) bg-(--bg-muted) px-3 py-1 text-xs md:text-sm text-(--text-secondary)">
+              <FiBookOpen size={14} /> {t("coursePage.badge")}
+            </span>
 
-        <p className="mt-2">{course?.description?.[lang]}</p>
+            <h1 className="text-3xl md:text-4xl font-semibold mt-4 leading-tight">
+              {course?.title?.[lang] || course?.title?.en}
+            </h1>
 
-        <p className="text-(--text-secondary) mt-2">
-          <strong>Instructor:</strong> {course?.instructor?.name || "N/A"}
-        </p>
+            <p className="mt-3 text-(--text-secondary)">
+              {course?.description?.[lang] || course?.description?.en}
+            </p>
 
-        {/* PROGRESS */}
-        <div className="mt-6">
-          <div className="flex justify-between text-sm mb-1">
-            <span>Course Progress</span>
-            <span>{overallProgress}%</span>
+            <div className="mt-4 text-sm text-(--text-secondary) inline-flex items-center gap-2">
+              <FiUser size={14} />
+              <span>{course?.instructor?.name || t("common.na")}</span>
+            </div>
+
+            <div className="mt-6">
+              <div className="flex justify-between text-sm mb-1">
+                <span>{t("coursePage.progress")}</span>
+                <span>{course?.progress || 0}%</span>
+              </div>
+
+              <div className="w-full h-3 bg-(--bg-muted) rounded-full overflow-hidden">
+                <div
+                  className="h-3 bg-(--color-primary) rounded-full transition-all"
+                  style={{ width: `${course?.progress || 0}%` }}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="w-full h-3 bg-(--bg-muted) rounded-full">
-            <div
-              className="h-3 bg-(--color-primary) rounded-full transition-all"
-              style={{ width: `${overallProgress}%` }}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-1 gap-3">
+            <StatCard
+              icon={<FiTrendingUp size={14} />}
+              label={t("coursePage.attendance")}
+              value={`${course?.attendancePercent || 0}%`}
+            />
+            <StatCard
+              icon={<FiCheckCircle size={14} />}
+              label={t("coursePage.completedLessons")}
+              value={`${completedLessons}/${totalLessons || 0}`}
+            />
+            <StatCard
+              icon={<FiClock size={14} />}
+              label={t("coursePage.estimatedDuration")}
+              value={`${totalDurationMinutes} min`}
             />
           </div>
         </div>
 
-        <div className="mt-4 text-sm text-(--text-secondary)">
-          Attendance:
-          <span className="ml-2 text-(--color-success)">
-            {course?.attendancePercent || 0}%
-          </span>
+        <div className="grid md:grid-cols-3 gap-3 mt-5">
+          <MiniInsight
+            title={t("coursePage.moduleCompletion")}
+            value={`${completionRatio}%`}
+            subtitle={t("coursePage.moduleCompletionSub")}
+          />
+          <MiniInsight
+            title={t("coursePage.totalModules")}
+            value={modules.length}
+            subtitle={t("coursePage.totalModulesSub")}
+          />
+          <MiniInsight
+            title={t("coursePage.skills")}
+            value={course?.skills?.length || 0}
+            subtitle={t("coursePage.skillsSub")}
+          />
         </div>
-      </div>
 
-      {/* ================= MODULES ================= */}
+        {nextLesson ? (
+          <button
+            onClick={() =>
+              navigate(
+                `/student/courses/${slug}/${nextLesson.slug || nextLesson._id}`,
+              )
+            }
+            className="mt-5 w-full md:w-auto rounded-xl border border-(--border-color) bg-(--card-bg) px-4 py-3 text-left hover:bg-(--bg-muted) cursor-pointer transition-all"
+          >
+            <p className="text-xs text-(--text-secondary) mb-1">
+              {t("coursePage.upNext")}
+            </p>
+            <p className="font-medium line-clamp-2">
+              {nextLesson.title?.[lang] || nextLesson.title}
+            </p>
+            <p className="text-xs text-(--text-secondary) mt-1 inline-flex items-center gap-1">
+              <FiPlayCircle size={12} />{" "}
+              {nextLesson.estimatedDurationMinutes || 0} min
+            </p>
+          </button>
+        ) : null}
+      </section>
+
       {loadingModules ? (
-        <div>Loading modules...</div>
+        <div className="rounded-2xl border border-(--border-color) bg-(--card-bg) p-6 text-(--text-secondary)">
+          {t("coursePage.loadingModules")}
+        </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5">
           {modules.map((module) => {
             const lessons = module.lessons || [];
 
-            const moduleCompleted = lessons.filter((l) =>
-              completedLessons.includes(l._id),
-            ).length;
+            const moduleCompleted = lessons.filter((l) => l.isCompleted).length;
 
             const moduleProgress =
               lessons.length > 0
@@ -144,11 +217,10 @@ const CoursePage = () => {
             return (
               <div
                 key={module._id}
-                className="bg-(--card-bg) border border-(--border-color) rounded-2xl"
+                className="bg-(--card-bg) border border-(--border-color) rounded-2xl shadow-sm"
               >
-                {/* MODULE HEADER */}
                 <div
-                  className="flex justify-between items-center p-6 cursor-pointer"
+                  className="flex justify-between items-center py-5 px-4 md:px-6 cursor-pointer"
                   onClick={() =>
                     setOpenModule(openModule === module._id ? null : module._id)
                   }
@@ -158,7 +230,8 @@ const CoursePage = () => {
                       {module.title?.[lang]}
                     </h3>
                     <p className="text-sm text-(--text-secondary)">
-                      Progress: {moduleProgress}%
+                      {moduleCompleted}/{lessons.length}{" "}
+                      {t("coursePage.lessonsCompleted")} • {moduleProgress}%
                     </p>
                   </div>
 
@@ -169,32 +242,24 @@ const CoursePage = () => {
                   )}
                 </div>
 
-                {/* LESSONS */}
                 {openModule === module._id && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="px-6 pb-6 space-y-4"
-                  >
+                  <div className="px-4 md:px-6 pb-6 space-y-3">
                     {lessons.length === 0 ? (
                       <p className="text-sm text-(--text-secondary)">
-                        No lessons available.
+                        {t("coursePage.noLessons")}
                       </p>
                     ) : (
                       lessons.map((lesson) => (
                         <div
                           key={lesson._id}
-                          className="flex justify-between items-center bg-(--bg-muted) p-4 rounded-xl"
+                          className="flex justify-between items-center bg-(--bg-muted) border border-(--border-color) p-4 rounded-xl hover:bg-(--card-bg) transition-all"
+                          onClick={() =>
+                            navigate(
+                              `/student/courses/${slug}/${lesson.slug || lesson._id}`,
+                            )
+                          }
                         >
-                          {/* Lesson Click */}
-                          <div
-                            className="cursor-pointer"
-                            onClick={() =>
-                              navigate(
-                                `/student/courses/${slug}/${lesson.slug || lesson._id}`,
-                              )
-                            }
-                          >
+                          <div className="cursor-pointer">
                             <h4 className="font-medium">
                               {lesson.title?.[lang] || lesson.title}
                             </h4>
@@ -204,23 +269,17 @@ const CoursePage = () => {
                             </p>
                           </div>
 
-                          {/* Complete Button */}
-                          <button
-                            onClick={() => toggleLesson(lesson._id)}
-                            className={`px-4 py-2 text-sm rounded-lg ${
-                              completedLessons.includes(lesson._id)
-                                ? "bg-(--color-success) text-white"
-                                : "bg-(--color-primary) text-white"
-                            }`}
-                          >
-                            {completedLessons.includes(lesson._id)
-                              ? "Completed"
-                              : "Mark Complete"}
-                          </button>
+                          {lesson.isCompleted ? (
+                            <FiCheckCircle className="text-(--color-success)" />
+                          ) : (
+                            <span className="text-xs text-(--text-muted)">
+                              {t("coursePage.pending")}
+                            </span>
+                          )}
                         </div>
                       ))
                     )}
-                  </motion.div>
+                  </div>
                 )}
               </div>
             );
@@ -230,5 +289,25 @@ const CoursePage = () => {
     </div>
   );
 };
+
+const StatCard = ({ icon, label, value }) => (
+  <div className="rounded-xl border border-(--border-color) bg-(--card-bg) p-3">
+    <p className="text-xs text-(--text-muted) inline-flex items-center gap-1">
+      <span className="text-(--color-primary)">{icon}</span>
+      {label}
+    </p>
+    <p className="font-semibold mt-1">{value}</p>
+  </div>
+);
+
+const MiniInsight = ({ title, value, subtitle }) => (
+  <div className="rounded-xl border border-(--border-color) bg-(--card-bg) p-4">
+    <p className="text-xs uppercase tracking-wide text-(--text-muted)">
+      {title}
+    </p>
+    <p className="text-lg font-semibold mt-1">{value}</p>
+    <p className="text-xs text-(--text-secondary) mt-1">{subtitle}</p>
+  </div>
+);
 
 export default CoursePage;

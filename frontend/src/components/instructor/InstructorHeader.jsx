@@ -5,14 +5,18 @@ import {
   FiMoon,
   FiLogOut,
   FiBook,
-  FiBarChart2
+  FiBarChart2,
 } from "react-icons/fi";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useThemeStore } from "../../store/useThemeStore";
 import useUiStore from "../../store/useUiStore";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+const _MotionRef = motion;
 
 const InstructorHeader = () => {
+  const { t } = useTranslation();
   const { user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const { openProfile, setOpenProfile, closeAll } = useUiStore();
@@ -29,37 +33,34 @@ const InstructorHeader = () => {
       >
         {/* LEFT SIDE */}
         <div className="flex items-center gap-6">
-
           <h1 className="text-xl font-semibold">
-            Instructor Panel
+            {t("components.instructorHeader.title")}
           </h1>
 
           <span className="hidden md:block text-xs bg-white/20 px-3 py-1 rounded-full">
-            Educator
+            {t("components.instructorHeader.role")}
           </span>
 
           <div className="hidden md:flex items-center gap-4 text-sm">
-
             <button
               onClick={() => navigate("/instructor/courses")}
               className="flex items-center gap-2 hover:text-emerald-300 transition"
             >
-              <FiBook size={16} /> Courses
+              <FiBook size={16} /> {t("components.instructorHeader.courses")}
             </button>
 
             <button
               onClick={() => navigate("/instructor/analytics")}
               className="flex items-center gap-2 hover:text-emerald-300 transition"
             >
-              <FiBarChart2 size={16} /> Analytics
+              <FiBarChart2 size={16} />{" "}
+              {t("components.instructorHeader.analytics")}
             </button>
-
           </div>
         </div>
 
         {/* RIGHT SIDE */}
         <div className="flex items-center gap-5 relative">
-
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
@@ -106,7 +107,7 @@ const InstructorHeader = () => {
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
                 >
-                  My Profile
+                  {t("components.instructorHeader.myProfile")}
                 </button>
 
                 <button
@@ -116,7 +117,7 @@ const InstructorHeader = () => {
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
                 >
-                  Settings
+                  {t("components.instructorHeader.settings")}
                 </button>
 
                 <button
@@ -126,12 +127,11 @@ const InstructorHeader = () => {
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) flex items-center gap-2 text-(--color-danger)"
                 >
-                  <FiLogOut /> Logout
+                  <FiLogOut /> {t("components.instructorHeader.logout")}
                 </button>
               </motion.div>
             )}
           </div>
-
         </div>
       </div>
     </header>

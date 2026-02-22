@@ -1,7 +1,8 @@
 import Quiz from "../models/quiz.model.js";
 import QuizResult from "../models/quizResult.model.js";
 import Enrollment from "../models/enrollment.model.js";
-import mongoose from "mongoose";
+import LearningActivity from "../models/learningActivity.model.js";
+import { updateLearningStreak } from "../utils/updateLearningStreak.js";
 
 export const getStudentQuizzes = async (req, res, next) => {
   try {
@@ -114,6 +115,7 @@ export const submitQuiz = async (req, res, next) => {
     });
 
     if (existing) {
+      console.log("Quiz already submitted");
       return res.status(400).json({
         message: "Quiz already submitted",
       });
@@ -152,12 +154,24 @@ export const submitQuiz = async (req, res, next) => {
       answers: answerDetails, // 🔥 SAVE ANSWERS
     });
 
+    //streak Add
+    await LearningActivity.create({
+      studentId,
+      courseId: quiz.courseId,
+      actionType: "quiz_attempted",
+      referenceId: quiz._id,
+    });
+
+    await updateLearningStreak(studentId);
+
     res.status(200).json({
       scorePercent,
       correctCount,
       totalQuestions,
     });
   } catch (error) {
+    console.log(error);
+
     next(error);
   }
 };
