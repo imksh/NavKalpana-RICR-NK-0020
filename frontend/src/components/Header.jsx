@@ -127,7 +127,7 @@ const Header = () => {
       initial={{ y: -100 }}
       animate={{ y: showHeader ? 0 : -120 }}
       transition={{ duration: 0.3 }}
-      className="fixed top-0 left-0 w-full z-50 px-4 md:px-16 pt-4 backdrop-blur-2xl"
+      className="fixed top-0 left-0 w-full z-50 px-4 md:px-16 pt-4 backdrop-blur-2xl "
       onClick={(e) => {
         e.stopPropagation();
       }}
@@ -403,7 +403,7 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -40 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden mt-3 bg-(--color-primary) backdrop-blur-lg rounded-2xl shadow-xl border border-(--border-color) overflow-hidden"
+            className="lg:hidden mt-3 bg-(--color-primary) backdrop-blur-lg rounded-2xl shadow-xl border border-(--border-color) overflow-hidden "
           >
             <div className="p-4 space-y-2">
               {/* User Info (if logged in) */}
@@ -432,7 +432,7 @@ const Header = () => {
                 className={`block px-4 py-3 rounded-xl hover:bg-(--bg-surface) transition-colors font-medium ${
                   location === "/"
                     ? "bg-(--bg-surface) text-(--color-primary)"
-                    : "text-(--text-primary)"
+                    : "text-white"
                 }`}
               >
                 {t("header.home")}
@@ -444,7 +444,7 @@ const Header = () => {
                 className={`block px-4 py-3 rounded-xl hover:bg-(--bg-surface) transition-colors font-medium ${
                   location === "/courses"
                     ? "bg-(--bg-surface) text-(--color-primary)"
-                    : "text-(--text-primary)"
+                    : "text-white"
                 }`}
               >
                 {t("header.courses")}
@@ -456,7 +456,7 @@ const Header = () => {
                 className={`block px-4 py-3 rounded-xl hover:bg-(--bg-surface) transition-colors font-medium ${
                   location === "/about"
                     ? "bg-(--bg-surface) text-(--color-primary)"
-                    : "text-(--text-primary)"
+                    : "text-white"
                 }`}
               >
                 {t("header.about")}
@@ -468,7 +468,7 @@ const Header = () => {
                 className={`block px-4 py-3 rounded-xl hover:bg-(--bg-surface) transition-colors font-medium ${
                   location === "/contact"
                     ? "bg-(--bg-surface) text-(--color-primary)"
-                    : "text-(--text-primary)"
+                    : "text-white"
                 }`}
               >
                 {t("header.contact")}
@@ -480,7 +480,7 @@ const Header = () => {
                   toggleTheme();
                   closeAll();
                 }}
-                className="w-full px-4 py-3 rounded-xl hover:bg-(--bg-surface) transition-colors flex items-center gap-3 font-medium text-(--text-primary)"
+                className="w-full px-4 py-3 rounded-xl hover:bg-(--bg-surface) transition-colors flex items-center gap-3 font-medium text-white"
               >
                 <div className="p-2 rounded-lg bg-(--bg-surface)">
                   {theme === "dark" ? (
