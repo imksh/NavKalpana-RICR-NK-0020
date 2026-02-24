@@ -122,9 +122,7 @@ const StudentHeader = () => {
           <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
             <FiBookOpen className="text-white" size={20} />
           </div>
-          <p className="text-2xl font-bold text-white">
-            {t("header.brand")}
-          </p>
+          <p className="text-2xl font-bold text-white">{t("header.brand")}</p>
         </Link>
 
         <div
@@ -228,7 +226,7 @@ const StudentHeader = () => {
                   }}
                 >
                   {/* Quick Stats */}
-                  <div className="bg-(--bg-surface) p-4 border-b border-(--border-color)">
+                  <div className="bg-(--bg-surface) p-4 border-b border-(--border-color) rounded-xl">
                     <p className="text-xs text-(--text-muted) mb-3">
                       Quick Overview
                     </p>
@@ -392,7 +390,7 @@ const StudentHeader = () => {
             className="md:hidden mt-3 bg-(--color-primary) rounded-2xl p-4 flex flex-col text-white shadow-lg"
           >
             {/* Mobile Quick Stats */}
-            <div className="bg-white/10 rounded-lg p-3 mb-4">
+            {/* <div className="bg-white/10 rounded-lg p-3 mb-4">
               <p className="text-xs text-white/70 mb-2">Quick Overview</p>
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-white/10 rounded-lg p-2 text-center">
@@ -417,7 +415,29 @@ const StudentHeader = () => {
                   <p className="text-[10px] text-white/70">Score</p>
                 </div>
               </div>
-            </div>
+            </div> */}
+
+            <button
+              onClick={() => {
+                navigate("/student/courses");
+                closeAll();
+                setMobileOpen(false);
+              }}
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
+            >
+              {t("header.course")}
+            </button>
+
+            <button
+              onClick={() => {
+                navigate("/student/support");
+                closeAll();
+                setMobileOpen(false);
+              }}
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
+            >
+              {t("header.support")}
+            </button>
 
             <button
               onClick={() => {

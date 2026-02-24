@@ -21,6 +21,7 @@ import {
   FiEye,
   FiEdit,
   FiTrash2,
+  FiStar,
 } from "react-icons/fi";
 import { useAuthStore } from "../../store/useAuthStore";
 import api from "../../config/api";
@@ -240,7 +241,7 @@ const AdminHome = () => {
   }
 
   return (
-    <div className="min-h-screen bg-(--bg-main) text-(--text-primary)">
+    <div className="min-h-screen bg-(--bg-main) text-(--text-primary)  pt-20">
       {/* Header */}
       <section className="bg-(--bg-surface) border-b border-(--border-color) px-6 md:px-20 py-8">
         <div className="max-w-7xl mx-auto">

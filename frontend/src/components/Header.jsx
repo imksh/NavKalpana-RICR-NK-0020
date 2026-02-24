@@ -120,7 +120,7 @@ const Header = () => {
       initial={{ y: -100 }}
       animate={{ y: showHeader ? 0 : -120 }}
       transition={{ duration: 0.3 }}
-      className="fixed top-0 left-0 w-full z-50 px-4 md:px-16 pt-4"
+      className="fixed top-0 left-0 w-full z-50 px-4 md:px-16 pt-4 backdrop-blur-2xl"
       onClick={(e) => {
         e.stopPropagation();
       }}

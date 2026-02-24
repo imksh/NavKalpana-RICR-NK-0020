@@ -26,7 +26,7 @@ const AdminHeader = () => {
 
   return (
     <header
-      className="fixed top-0 left-0 w-full z-50 px-6 md:px-16 pt-4"
+      className="fixed top-0 left-0 w-full z-50 px-6 md:px-16 pt-4 backdrop-blur-2xl"
       onClick={closeAll}
     >
       <div

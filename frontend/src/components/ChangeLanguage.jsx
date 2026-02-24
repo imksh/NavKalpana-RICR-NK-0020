@@ -33,7 +33,7 @@ const ChangeLanguage = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="absolute left-0 mt-2 w-36 bg-(--card-bg) border border-(--border-color) rounded-xl shadow-lg overflow-hidden z-50"
+            className="absolute right-0 translate-x-full top-0 mt-2 w-36 bg-(--card-bg) border border-(--border-color) rounded-xl shadow-lg overflow-hidden z-50"
             onMouseLeave={() => setOpenLang(false)}
           >
             {languages.map((item) => (

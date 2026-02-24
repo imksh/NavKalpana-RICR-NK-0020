@@ -174,7 +174,7 @@ const InstructorHome = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-(--bg-main) flex items-center justify-center">
+      <div className="min-h-screen bg-(--bg-main) flex items-center justify-center pt-10">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-(--color-primary) border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-(--text-secondary)">Loading dashboard...</p>
@@ -184,7 +184,7 @@ const InstructorHome = () => {
   }
 
   return (
-    <div className="min-h-screen bg-(--bg-main) text-(--text-primary)">
+    <div className="min-h-screen bg-(--bg-main) text-(--text-primary) pt-20">
       {/* Header */}
       <section className="bg-(--bg-surface) border-b border-(--border-color) px-6 md:px-20 py-8">
         <div className="max-w-7xl mx-auto">
