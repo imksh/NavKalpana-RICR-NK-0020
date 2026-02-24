@@ -346,9 +346,11 @@ Provide analysis in this JSON structure:
               className="inline-flex items-center gap-2 rounded-xl border border-(--border-color) px-3 py-2 text-sm hover:bg-(--bg-muted) disabled:opacity-60"
             >
               <FiRefreshCw className={aiLoading ? "animate-spin" : ""} />
-              {aiLoading
-                ? t("studentHome.generating", { defaultValue: "Generating" })
-                : t("studentHome.regenerate", { defaultValue: "Regenerate" })}
+              <span className="hidden sm:block">
+                {aiLoading
+                  ? t("studentHome.generating", { defaultValue: "Generating" })
+                  : t("studentHome.regenerate", { defaultValue: "Regenerate" })}
+              </span>
             </button>
           </div>
 
@@ -475,9 +477,11 @@ Provide analysis in this JSON structure:
               <FiRefreshCw
                 className={aiAdvancedLoading ? "animate-spin" : ""}
               />
-              {aiAdvancedLoading
-                ? t("studentHome.generating", { defaultValue: "Generating" })
-                : t("studentHome.regenerate", { defaultValue: "Regenerate" })}
+              <span className="hidden sm:block">
+                {aiAdvancedLoading
+                  ? t("studentHome.generating", { defaultValue: "Generating" })
+                  : t("studentHome.regenerate", { defaultValue: "Regenerate" })}
+              </span>
             </button>
           </div>
 

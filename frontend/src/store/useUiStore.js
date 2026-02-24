@@ -11,11 +11,21 @@ const useUiStore = create((set, get) => ({
   isUploading: false,
   newNotification: false,
   isModal: false,
+  showSearch: false,
 
   lang: localStorage.getItem("lang") || "en",
 
   closeAll: () => {
-    set({ mobileOpen: false, openLang: false, openProfile: false });
+    set({
+      mobileOpen: false,
+      openLang: false,
+      openProfile: false,
+      showSearch: false,
+    });
+  },
+
+  setShowSearch: (val) => {
+    set({ showSearch: val });
   },
 
   setIsModal: (val) => {

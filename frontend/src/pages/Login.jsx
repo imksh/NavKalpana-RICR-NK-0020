@@ -274,7 +274,7 @@ const Login = () => {
                 </div>
 
                 {/* Social Login Buttons */}
-                <div className="grid grid-cols-3 gap-3 mb-6">
+                {/* <div className="grid grid-cols-3 gap-3 mb-6">
                   <button
                     type="button"
                     className="py-2.5 px-4 border border-(--border-color) rounded-lg hover:bg-(--bg-muted) transition flex items-center justify-center"
@@ -324,7 +324,7 @@ const Login = () => {
                       <path fill="#ffb900" d="M13 13h10v10H13z" />
                     </svg>
                   </button>
-                </div>
+                </div> */}
 
                 {/* Register Link */}
                 <p className="text-center text-sm text-(--text-muted)">

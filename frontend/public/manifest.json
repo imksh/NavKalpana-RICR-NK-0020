@@ -1,10 +1,10 @@
 {
-  "short_name": "Baglamukhi Mandir",
-  "name": "Maa Baglamukhi Mandir – Puja & Anushthan Services",
-  "description": "Official Maa Baglamukhi Mandir website offering Baglamukhi Puja, Anushthan, court case puja, tantra sadhana and spiritual guidance.",
+  "short_name": "Gradify",
+  "name": "Gradify - Empowering Students",
+  "description": "Official Gradify website offering courses, resources, and support for students.",
   "icons": [
     {
-      "src": "/logo-192.png",
+      "src": "/logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
@@ -16,6 +16,6 @@
   ],
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#f57c00",
+  "theme_color": "var(--bg-main)",
   "background_color": "#fff5f0"
 }

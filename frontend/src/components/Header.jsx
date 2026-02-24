@@ -22,10 +22,16 @@ import ChangeLanguage from "./ChangeLanguage";
 const Header = () => {
   const { t } = useTranslation();
   const { user, logout } = useAuthStore();
-  const { mobileOpen, setMobileOpen, openProfile, setOpenProfile, closeAll } =
-    useUiStore();
+  const {
+    mobileOpen,
+    setMobileOpen,
+    openProfile,
+    setOpenProfile,
+    closeAll,
+    showSearch,
+    setShowSearch,
+  } = useUiStore();
   const [showHeader, setShowHeader] = useState(true);
-  const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const lastScrollY = useRef(0);
   const profileMenuRef = useRef(null);
@@ -45,6 +51,7 @@ const Header = () => {
         setShowHeader(false);
         setMobileOpen(false);
         setOpenProfile(false);
+        
       } else {
         setShowHeader(true);
       }
@@ -131,9 +138,7 @@ const Header = () => {
           <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
             <FiBookOpen className="text-white" size={20} />
           </div>
-          <p className="text-2xl font-bold text-white ">
-            {t("header.brand")}
-          </p>
+          <p className="text-2xl font-bold text-white ">{t("header.brand")}</p>
         </Link>
 
         {/* DESKTOP MENU */}

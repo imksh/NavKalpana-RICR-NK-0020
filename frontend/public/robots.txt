@@ -1,0 +1,89 @@
+# Gradify - SEO & Crawling Rules
+# This file controls how search engine robots crawl and index the website
+
+# ===================================
+# DEFAULT RULES FOR ALL CRAWLERS
+# ===================================
+User-agent: *
+
+# Allow crawling of public pages
+Allow: /
+Allow: /courses
+Allow: /courses/
+Allow: /about
+Allow: /contact
+Allow: /terms-and-conditions
+Allow: /alumini
+
+# Disallow private/authenticated routes
+Disallow: /student/
+Disallow: /instructor/
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Disallow: /unsubscribe-success
+
+# Disallow API endpoints
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*.graphql$
+
+# Disallow temporary & utility routes
+Disallow: /temp/
+Disallow: /*.php
+Disallow: /*?*
+Disallow: /*.js$
+Disallow: /*.css$
+
+# Set crawl delay (in seconds)
+Crawl-delay: 1
+Request-rate: 30/60
+
+# ===================================
+# GOOGLE-SPECIFIC RULES
+# ===================================
+User-agent: Googlebot
+Allow: /
+Disallow: /student/
+Disallow: /instructor/
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Crawl-delay: 0
+
+# ===================================
+# BING-SPECIFIC RULES
+# ===================================
+User-agent: Bingbot
+Allow: /
+Disallow: /student/
+Disallow: /instructor/
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Crawl-delay: 1
+
+# ===================================
+# BLOCK BAD BOTS
+# ===================================
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MojeekBot
+Disallow: /
+
+# ===================================
+# SITEMAP LOCATION
+# ===================================
+Sitemap: https://gradify.com/sitemap.xml
+Sitemap: https://gradify.com/sitemap-courses.xml
+Sitemap: https://gradify.com/sitemap-alumni.xml

@@ -240,6 +240,7 @@ Return ONLY valid JSON with this shape:
             className="inline-flex items-center gap-2 rounded-xl border border-(--border-color) px-3 py-2 text-sm hover:bg-(--bg-muted) disabled:opacity-60"
           >
             <FiRefreshCw className={aiInsightLoading ? "animate-spin" : ""} />
+
             {aiInsightLoading
               ? t("myCourses.aiInsight.generating", {
                   defaultValue: "Generating",

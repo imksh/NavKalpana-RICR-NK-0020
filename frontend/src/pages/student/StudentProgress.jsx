@@ -13,6 +13,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import api from "../../config/api";
 import { useTranslation } from "react-i18next";
+import LoadingWave from "../../components/LoadingWave";
 
 const parseAiAnalyticsResponse = (rawResponse) => {
   const jsonMatch = rawResponse?.match(/\{[\s\S]*\}/);
@@ -148,7 +149,7 @@ Return ONLY valid JSON in this exact structure:
   if (!progressData) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        {t("studentProgress.loading")}
+        <LoadingWave />
       </div>
     );
   }

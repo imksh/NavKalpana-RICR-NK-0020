@@ -429,13 +429,15 @@ Rules:
             className="inline-flex items-center gap-2 rounded-xl border border-(--border-color) px-3 py-2 text-sm hover:bg-(--bg-muted) disabled:opacity-60"
           >
             <FiRefreshCw className={aiLoading ? "animate-spin" : ""} />
-            {aiLoading
-              ? t("studentJobs.aiRecommendations.generating", {
-                  defaultValue: "Generating",
-                })
-              : t("studentJobs.aiRecommendations.refresh", {
-                  defaultValue: "Refresh",
-                })}
+            <span className="hidden sm:block">
+              {aiLoading
+                ? t("studentJobs.aiRecommendations.generating", {
+                    defaultValue: "Generating",
+                  })
+                : t("studentJobs.aiRecommendations.refresh", {
+                    defaultValue: "Refresh",
+                  })}
+            </span>
           </button>
         </div>
 

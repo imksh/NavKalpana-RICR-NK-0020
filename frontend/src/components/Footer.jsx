@@ -150,10 +150,10 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* Products */}
+          {/* Explore */}
           <motion.div variants={itemVariants}>
             <h4 className="font-bold text-(--text-primary) mb-5 flex items-center gap-2">
-              Products
+              Explore
               <span className="text-(--color-primary)">•</span>
             </h4>
             <ul className="space-y-3">
@@ -168,93 +168,20 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/instructors"
-                  className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.products.instructors")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/enterprises"
-                  className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.products.enterprise")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/mobile-app"
-                  className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.products.mobileApp")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/pricing"
-                  className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.products.pricing")}
-                </Link>
-              </li>
-            </ul>
-          </motion.div>
-
-          {/* Company */}
-          <motion.div variants={itemVariants}>
-            <h4 className="font-bold text-(--text-primary) mb-5 flex items-center gap-2">
-              Company
-              <span className="text-(--color-primary)">•</span>
-            </h4>
-            <ul className="space-y-3">
-              <li>
-                <Link
                   to="/about"
                   className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
                 >
                   <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.company.about")}
+                  About
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/blog"
+                  to="/alumini"
                   className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
                 >
                   <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.company.blog")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/careers"
-                  className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.company.careers")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/press"
-                  className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.company.press")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/sponsors"
-                  className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.company.partner")}
+                  Alumni
                 </Link>
               </li>
             </ul>
@@ -278,38 +205,11 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/help"
+                  to="/terms-and-conditions"
                   className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
                 >
                   <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.support.help")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/faq"
-                  className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.support.faq")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/community"
-                  className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.support.community")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/system-status"
-                  className="text-(--text-secondary) hover:text-(--color-primary) transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 rounded-full bg-(--color-primary) group-hover:translate-x-1 transition-transform" />
-                  {t("footer.support.status")}
+                  Terms & Conditions
                 </Link>
               </li>
             </ul>
@@ -349,10 +249,10 @@ const Footer = () => {
                     {t("footer.contact.phone")}
                   </p>
                   <a
-                    href="tel:+1234567890"
+                    href="tel:+917295038835"
                     className="text-(--text-primary) hover:text-(--color-primary) transition-colors"
                   >
-                    +1 (234) 567-890
+                    +91 7295038835
                   </a>
                 </div>
               </div>
@@ -390,24 +290,6 @@ const Footer = () => {
               className="hover:text-(--color-primary) transition-colors"
             >
               {t("footer.legal.terms")}
-            </Link>
-            <Link
-              to="/privacy"
-              className="hover:text-(--color-primary) transition-colors"
-            >
-              {t("footer.legal.privacy")}
-            </Link>
-            <Link
-              to="/cookies"
-              className="hover:text-(--color-primary) transition-colors"
-            >
-              {t("footer.legal.cookies")}
-            </Link>
-            <Link
-              to="/disclaimer"
-              className="hover:text-(--color-primary) transition-colors"
-            >
-              {t("footer.legal.disclaimer")}
             </Link>
           </div>
 

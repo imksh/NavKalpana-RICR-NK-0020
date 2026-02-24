@@ -56,7 +56,7 @@ import Courses from "./pages/Courses";
 
 const App = () => {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
-  const { setOpenLang, setOpenProfile, setMobileOpen } = useUiStore();
+  const { setOpenLang, setOpenProfile, setMobileOpen,setShowSearch } = useUiStore();
   const theme = useThemeStore((state) => state.theme);
   useLenis();
 
@@ -108,34 +108,10 @@ const App = () => {
         setOpenLang(false);
         setOpenProfile(false);
         setMobileOpen(false);
+        setShowSearch(false);
       }}
     >
       <Scroll />
-
-      {/* {!user ? (
-        <Header />
-      ) : user.role === "admin" ? (
-        <AdminHeader />
-      ) : user.role === "instructor" ? (
-        <InstructorHeader />
-      ) : (
-        <StudentHeader />
-      )} */}
-
-      {/* <Route
-          path="/"
-          element={
-            !user ? (
-              <Landing />
-            ) : user.role === "admin" ? (
-              <AdminHome />
-            ) : user.role === "instructor" ? (
-              <InstructorHome />
-            ) : (
-              <Navigate to="/student" />
-            )
-          }
-        /> */}
 
       <ThemeBubble />
 

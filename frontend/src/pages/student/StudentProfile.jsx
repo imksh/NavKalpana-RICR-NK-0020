@@ -97,7 +97,7 @@ const StudentProfile = () => {
 
   return (
     <>
-      <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
+      <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-3 md:px-16 pt-20 md:pt-32 pb-16">
         {/* ================= HEADER ================= */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -365,7 +365,7 @@ const StudentProfile = () => {
         </div>
 
         {/* ================= RECENT ACTIVITY ================= */}
-        <div className="bg-(--card-bg) border border-(--border-color) p-8 rounded-3xl mb-12">
+        <div className="bg-(--card-bg) border border-(--border-color) px-4 py-8 sm:p-8 rounded-3xl mb-12">
           <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
             <FiClock className="text-(--color-success)" />
             {t("studentProfile.recentActivity")}
@@ -376,7 +376,7 @@ const StudentProfile = () => {
               {recentActivity.map((activity, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-4 p-3 hover:bg-(--bg-muted) rounded-xl transition"
+                  className="flex items-center gap-4 p-1 hover:bg-(--bg-muted) rounded-xl transition"
                 >
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -398,17 +398,19 @@ const StudentProfile = () => {
                     )}
                   </div>
 
-                  <div className="flex-1">
-                    <p className="font-medium">{activity.title}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center  w-full">
+                    <div className="flex-1">
+                      <p className="font-medium">{activity.title}</p>
+                      <p className="text-xs text-(--text-muted)">
+                        {getActivityTypeLabel(activity.type)} •{" "}
+                        {getActivityStatusLabel(activity.status)}
+                      </p>
+                    </div>
+
                     <p className="text-xs text-(--text-muted)">
-                      {getActivityTypeLabel(activity.type)} •{" "}
-                      {getActivityStatusLabel(activity.status)}
+                      {new Date(activity.date).toLocaleDateString()}
                     </p>
                   </div>
-
-                  <p className="text-xs text-(--text-muted)">
-                    {new Date(activity.date).toLocaleDateString()}
-                  </p>
                 </div>
               ))}
             </div>
@@ -484,7 +486,7 @@ const StudentProfile = () => {
         </div>
 
         {/* ================= ENROLLED COURSES ================= */}
-        <div className="bg-(--card-bg) border border-(--border-color) p-8 rounded-3xl mb-12">
+        <div className="bg-(--card-bg) border border-(--border-color) px-4 py-8 sm:p-8 rounded-3xl mb-12">
           <h2 className="text-xl font-semibold mb-6">
             {t("studentProfile.enrolledCourses")}
           </h2>
@@ -552,7 +554,7 @@ const StudentProfile = () => {
             {t("studentProfile.security")}
           </h2>
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 sm:items-center justify-between">
             <div>
               <p className="font-medium">{t("studentProfile.password")}</p>
               <p className="text-sm text-(--text-muted)">
@@ -581,13 +583,14 @@ const StudentProfile = () => {
                 {t("studentProfile.language")}
               </p>
               <p className="font-medium">
-                {user.preferredLanguage
+                {lang === "hi"
+                  ? t("studentProfile.hindi")
+                  : t("studentProfile.english")}
+                {/* user.preferredLanguage
                   ? user.preferredLanguage === "en"
                     ? t("studentProfile.english")
                     : t("studentProfile.hindi")
-                  : lang === "en"
-                    ? t("studentProfile.hindi")
-                    : t("studentProfile.english")}
+                  :  */}
               </p>
             </div>
 
@@ -596,7 +599,9 @@ const StudentProfile = () => {
                 {t("studentProfile.theme")}
               </p>
               <p className="font-medium capitalize">
-                {user.themePreference || theme}
+                {theme ||
+                  user.themePreference ||
+                  t("studentProfile.systemDefault")}
               </p>
             </div>
           </div>
