@@ -16,6 +16,7 @@ import Loading from "../../components/Loading";
 import LottieIcon from "../../components/LottieIcon";
 import Back from "../../assets/animations/Logout.json";
 import { useTranslation } from "react-i18next";
+import LoadingWave from "../../components/LoadingWave";
 
 const LessonPage = () => {
   const { t } = useTranslation();
@@ -104,7 +105,7 @@ const LessonPage = () => {
   }, [lesson]);
 
   if (loading) {
-    return <Loading />;
+    return <LoadingWave />;
   }
 
   if (!lesson) {

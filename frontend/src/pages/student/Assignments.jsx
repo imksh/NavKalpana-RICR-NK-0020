@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -10,9 +10,26 @@ import {
   FiTrendingUp,
   FiCalendar,
   FiFileText,
+  FiCpu,
+  FiRefreshCw,
 } from "react-icons/fi";
 import api from "../../config/api";
 import { useTranslation } from "react-i18next";
+import LoadingWave from "../../components/LoadingWave";
+
+const _MotionRef = motion;
+
+const parseAiInsightResponse = (rawResponse) => {
+  const jsonMatch = rawResponse?.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+
+  const parsed = JSON.parse(jsonMatch[0]);
+  return {
+    summary: parsed.summary || rawResponse,
+    priority: parsed.priority || "Medium",
+    actions: Array.isArray(parsed.actions) ? parsed.actions : [],
+  };
+};
 
 const Assignments = () => {
   const { t } = useTranslation();
@@ -22,6 +39,10 @@ const Assignments = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("deadline");
+  const [aiInsight, setAiInsight] = useState(null);
+  const [aiInsightLoading, setAiInsightLoading] = useState(false);
+  const [aiInsightError, setAiInsightError] = useState("");
+  const aiInsightRequestedRef = useRef(false);
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -73,6 +94,90 @@ const Assignments = () => {
 
     return { total, pending, submitted, evaluated, avgScore, upcoming };
   }, [assignments]);
+
+  const generateAiInsight = useCallback(async () => {
+    if (loading) return;
+
+    if (!assignments.length) {
+      setAiInsight({
+        summary: "No assignments available to analyze yet.",
+        priority: "Low",
+        actions: [
+          "Enroll in courses with assignment activities.",
+          "Check back after your first assignment is assigned.",
+        ],
+      });
+      return;
+    }
+
+    const now = new Date();
+    const overdueCount = assignments.filter(
+      (item) => item.status === "Pending" && new Date(item.deadline) < now,
+    ).length;
+
+    const dueSoonList = stats.upcoming
+      .slice(0, 3)
+      .map((item) => item.title)
+      .join(", ");
+
+    const prompt = `You are an educational productivity coach.
+
+Analyze this student's assignment snapshot and return concise actionable insight.
+
+Data:
+- Total assignments: ${stats.total}
+- Pending assignments: ${stats.pending}
+- Submitted assignments: ${stats.submitted}
+- Evaluated assignments: ${stats.evaluated}
+- Average score: ${stats.avgScore}%
+- Overdue pending assignments: ${overdueCount}
+- Assignments due in next 3 days: ${stats.upcoming.length}
+- Due soon titles: ${dueSoonList || "N/A"}
+
+Return ONLY valid JSON with this shape:
+{
+  "summary": "one short paragraph (max 40 words)",
+  "priority": "Low|Medium|High",
+  "actions": ["exactly 3 short next actions"]
+}`;
+
+    setAiInsightLoading(true);
+    setAiInsightError("");
+
+    try {
+      const modelsRes = await api.get("/ai/models");
+      const selectedModel = modelsRes?.data?.[0]?.name || "DoubtSolver";
+
+      const aiRes = await api.post("/ai/chat", {
+        modelName: selectedModel,
+        message: prompt,
+      });
+
+      const responseText = aiRes?.data?.response || "";
+      const parsed = parseAiInsightResponse(responseText);
+
+      if (parsed) {
+        setAiInsight(parsed);
+      } else {
+        setAiInsight({
+          summary: responseText || "AI insight is currently unavailable.",
+          priority: "Medium",
+          actions: [],
+        });
+      }
+    } catch (error) {
+      console.error("Error generating assignment AI insight:", error);
+      setAiInsightError("Unable to generate AI insight right now.");
+    } finally {
+      setAiInsightLoading(false);
+    }
+  }, [assignments, loading, stats]);
+
+  useEffect(() => {
+    if (loading || aiInsightRequestedRef.current) return;
+    aiInsightRequestedRef.current = true;
+    generateAiInsight();
+  }, [loading, generateAiInsight]);
 
   // Filter and search assignments
   const filteredAssignments = useMemo(() => {
@@ -154,10 +259,7 @@ const Assignments = () => {
   if (loading) {
     return (
       <div className="min-h-dvh bg-(--bg-main) flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-(--color-primary) border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-(--text-secondary)">{t("assignments.loading")}</p>
-        </div>
+        <LoadingWave size="w-40 h-40" />
       </div>
     );
   }
@@ -309,6 +411,71 @@ const Assignments = () => {
       )}
 
       {/* SEARCH AND FILTERS */}
+      <div className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-4 md:p-6 mb-8">
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <FiCpu className="text-(--color-primary)" />
+            {t("assignments.aiInsight.title", { defaultValue: "AI Insight" })}
+          </h3>
+
+          <button
+            type="button"
+            onClick={generateAiInsight}
+            disabled={aiInsightLoading}
+            className="inline-flex items-center gap-2 rounded-lg border border-(--border-color) px-3 py-2 text-sm hover:bg-(--bg-muted) disabled:opacity-60"
+          >
+            <FiRefreshCw className={aiInsightLoading ? "animate-spin" : ""} />
+            {aiInsightLoading
+              ? t("assignments.aiInsight.generating", {
+                  defaultValue: "Generating",
+                })
+              : t("assignments.aiInsight.refresh", {
+                  defaultValue: "Refresh",
+                })}
+          </button>
+        </div>
+
+        {aiInsightLoading ? (
+          <p className="text-(--text-secondary)">
+            {t("assignments.aiInsight.loading", {
+              defaultValue: "Analyzing your assignment workload...",
+            })}
+          </p>
+        ) : aiInsightError ? (
+          <p className="text-(--color-warning)">{aiInsightError}</p>
+        ) : aiInsight ? (
+          <div className="space-y-3">
+            <p className="text-(--text-secondary)">{aiInsight.summary}</p>
+            <p className="text-sm">
+              <span className="font-semibold">
+                {t("assignments.aiInsight.priority", {
+                  defaultValue: "Priority",
+                })}
+                :
+              </span>{" "}
+              {aiInsight.priority}
+            </p>
+
+            {aiInsight.actions?.length > 0 ? (
+              <ul className="space-y-2 text-sm text-(--text-secondary)">
+                {aiInsight.actions.map((item, index) => (
+                  <li key={`ai-action-${index}`} className="flex gap-2">
+                    <span className="text-(--color-primary)">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : (
+          <p className="text-(--text-secondary)">
+            {t("assignments.aiInsight.empty", {
+              defaultValue: "Generate insight to see personalized guidance.",
+            })}
+          </p>
+        )}
+      </div>
+
       <div className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-4 md:p-6 mb-8">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}

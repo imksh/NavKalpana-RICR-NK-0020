@@ -1,11 +1,30 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AttendanceHeatmap from "../../components/student/AttendanceHeatmap";
 import api from "../../config/api";
 import { FaDownload } from "react-icons/fa6";
 import AttendanceCalendar from "../../components/AttendanceCalender";
 import CourseAttendanceChart from "../../components/CourseAttendanceChart";
-import { FiAlertTriangle, FiCheckCircle, FiTrendingUp } from "react-icons/fi";
+import {
+  FiAlertTriangle,
+  FiCheckCircle,
+  FiCpu,
+  FiRefreshCw,
+  FiTrendingUp,
+} from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import LoadingWave from "../../components/LoadingWave";
+
+const parseAiInsightResponse = (rawResponse) => {
+  const jsonMatch = rawResponse?.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+
+  const parsed = JSON.parse(jsonMatch[0]);
+  return {
+    summary: parsed.summary || rawResponse,
+    priority: parsed.priority || "Medium",
+    actions: Array.isArray(parsed.actions) ? parsed.actions : [],
+  };
+};
 
 const StudentAttendance = () => {
   const { t } = useTranslation();
@@ -13,6 +32,10 @@ const StudentAttendance = () => {
   const [courseAttendance, setCourseAttendance] = useState([]);
   const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [aiInsight, setAiInsight] = useState(null);
+  const [aiInsightLoading, setAiInsightLoading] = useState(false);
+  const [aiInsightError, setAiInsightError] = useState("");
+  const aiInsightRequestedRef = useRef(false);
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -55,6 +78,120 @@ const StudentAttendance = () => {
     ? Math.round((presentDays / totalClasses) * 100)
     : 0;
 
+  const generateAiInsight = useCallback(async () => {
+    if (loading) return;
+
+    if (!attendanceData.length) {
+      setAiInsight({
+        summary: "No attendance records available to analyze yet.",
+        priority: "Low",
+        actions: [
+          "Attend upcoming classes consistently this week.",
+          "Track attendance after each class session.",
+          "Review your timetable daily to avoid missed classes.",
+        ],
+      });
+      return;
+    }
+
+    const absentDays = Math.max(0, totalClasses - presentDays);
+    const weakCourses = courseAttendance
+      .filter((course) => (course.percent || 0) < 75)
+      .map((course) => `${course.name} (${course.percent || 0}%)`)
+      .slice(0, 3)
+      .join(", ");
+
+    const prompt = `You are an academic attendance coach.
+
+Analyze this student's attendance snapshot and provide concise guidance.
+
+Data:
+- Total classes: ${totalClasses}
+- Present classes: ${presentDays}
+- Absent classes: ${absentDays}
+- Overall attendance: ${attendancePercent}%
+- Current streak: ${streak} days
+- Courses tracked: ${courseAttendance.length}
+- Courses below 75% attendance: ${weakCourses || "None"}
+
+Return ONLY valid JSON with this shape:
+{
+  "summary": "one short paragraph (max 40 words)",
+  "priority": "Low|Medium|High",
+  "actions": ["exactly 3 short next actions"]
+}
+
+Consistency rules:
+- If overall attendance is 80% or above, do NOT describe attendance as low.
+- If overall attendance is below 75%, treat it as at-risk and mention improvement urgency.`;
+
+    setAiInsightLoading(true);
+    setAiInsightError("");
+
+    try {
+      const modelsRes = await api.get("/ai/models");
+      const selectedModel = modelsRes?.data?.[0]?.name || "DoubtSolver";
+
+      const aiRes = await api.post("/ai/chat", {
+        modelName: selectedModel,
+        message: prompt,
+      });
+
+      const responseText = aiRes?.data?.response || "";
+      const parsed = parseAiInsightResponse(responseText);
+
+      if (parsed) {
+        const hasLowAttendanceLabel =
+          /low attendance|poor attendance|at-risk attendance/i.test(
+            parsed.summary || "",
+          );
+
+        if (attendancePercent >= 80 && hasLowAttendanceLabel) {
+          setAiInsight({
+            summary:
+              "Your attendance is in a healthy range overall. Focus on consistency to maintain momentum and strengthen any specific course where attendance is relatively lower.",
+            priority: "Low",
+            actions:
+              parsed.actions?.length === 3
+                ? parsed.actions
+                : [
+                    "Maintain your current class attendance consistency this week.",
+                    "Prioritize classes in courses with lower attendance percentages.",
+                    "Review your weekly timetable nightly to avoid accidental misses.",
+                  ],
+          });
+        } else {
+          setAiInsight(parsed);
+        }
+      } else {
+        setAiInsight({
+          summary: responseText || "AI insight is currently unavailable.",
+          priority: "Medium",
+          actions: [],
+        });
+      }
+    } catch (error) {
+      console.log("Error generating attendance AI insight:", error);
+      setAiInsightError("Unable to generate AI insight right now.");
+    } finally {
+      setAiInsightLoading(false);
+    }
+  }, [
+    loading,
+    attendanceData,
+    totalClasses,
+    presentDays,
+    attendancePercent,
+    streak,
+    courseAttendance,
+  ]);
+
+  useEffect(() => {
+    if (loading || aiInsightRequestedRef.current) return;
+    aiInsightRequestedRef.current = true;
+    generateAiInsight();
+  }, [loading, generateAiInsight]);
+
   const handleReportDonwnload = async (query) => {
     try {
       const res = await api.get("/student/attendance/report", {
@@ -76,7 +213,7 @@ const StudentAttendance = () => {
   if (loading) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        {t("studentAttendance.loading")}
+        <LoadingWave />
       </div>
     );
   }
@@ -131,6 +268,77 @@ const StudentAttendance = () => {
           subtitle={t("studentAttendance.cards.streakSub")}
           tone="accent"
         />
+      </section>
+
+      <section className="mb-8 md:mb-10 rounded-3xl border border-(--border-color) bg-(--card-bg) p-5 md:p-6 shadow-sm">
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <h2 className="text-lg md:text-xl font-semibold flex items-center gap-2">
+            <FiCpu className="text-(--color-primary)" />
+            {t("studentAttendance.aiInsight.title", {
+              defaultValue: "AI Insight",
+            })}
+          </h2>
+
+          <button
+            type="button"
+            onClick={generateAiInsight}
+            disabled={aiInsightLoading}
+            className="inline-flex items-center gap-2 rounded-xl border border-(--border-color) px-3 py-2 text-sm hover:bg-(--bg-muted) disabled:opacity-60"
+          >
+            <FiRefreshCw className={aiInsightLoading ? "animate-spin" : ""} />
+            {aiInsightLoading
+              ? t("studentAttendance.aiInsight.generating", {
+                  defaultValue: "Generating",
+                })
+              : t("studentAttendance.aiInsight.refresh", {
+                  defaultValue: "Refresh",
+                })}
+          </button>
+        </div>
+
+        {aiInsightLoading ? (
+          <p className="text-(--text-secondary)">
+            {t("studentAttendance.aiInsight.loading", {
+              defaultValue: "Analyzing your attendance trends...",
+            })}
+          </p>
+        ) : aiInsightError ? (
+          <p className="text-(--color-warning)">{aiInsightError}</p>
+        ) : aiInsight ? (
+          <div className="space-y-3">
+            <p className="text-(--text-secondary)">{aiInsight.summary}</p>
+            <p className="text-sm">
+              <span className="font-semibold">
+                {t("studentAttendance.aiInsight.priority", {
+                  defaultValue: "Priority",
+                })}
+                :
+              </span>{" "}
+              {aiInsight.priority}
+            </p>
+
+            {aiInsight.actions?.length > 0 ? (
+              <ul className="space-y-2 text-sm text-(--text-secondary)">
+                {aiInsight.actions.map((item, index) => (
+                  <li
+                    key={`attendance-ai-action-${index}`}
+                    className="flex gap-2"
+                  >
+                    <span className="text-(--color-primary)">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : (
+          <p className="text-(--text-secondary)">
+            {t("studentAttendance.aiInsight.empty", {
+              defaultValue:
+                "Generate insight to see personalized attendance guidance.",
+            })}
+          </p>
+        )}
       </section>
 
       {attendancePercent > 0 && attendancePercent < 75 && (

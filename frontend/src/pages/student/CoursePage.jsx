@@ -1,11 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   FiBookOpen,
   FiCheckCircle,
   FiChevronDown,
   FiChevronUp,
   FiClock,
+  FiCpu,
   FiPlayCircle,
+  FiRefreshCw,
   FiTrendingUp,
   FiUser,
 } from "react-icons/fi";
@@ -14,6 +16,19 @@ import api from "../../config/api";
 import useUiStore from "../../store/useUiStore";
 import Loading from "../../components/Loading";
 import { useTranslation } from "react-i18next";
+import LoadingWave from "../../components/LoadingWave";
+
+const parseAiInsightResponse = (rawResponse) => {
+  const jsonMatch = rawResponse?.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+
+  const parsed = JSON.parse(jsonMatch[0]);
+  return {
+    summary: parsed.summary || rawResponse,
+    priority: parsed.priority || "Medium",
+    actions: Array.isArray(parsed.actions) ? parsed.actions : [],
+  };
+};
 
 const CoursePage = () => {
   const { t } = useTranslation();
@@ -27,6 +42,10 @@ const CoursePage = () => {
   const [openModule, setOpenModule] = useState(null);
   const [loadingCourse, setLoadingCourse] = useState(true);
   const [loadingModules, setLoadingModules] = useState(true);
+  const [aiInsight, setAiInsight] = useState(null);
+  const [aiInsightLoading, setAiInsightLoading] = useState(false);
+  const [aiInsightError, setAiInsightError] = useState("");
+  const aiInsightRequestedRef = useRef(false);
 
   /* ================= FETCH COURSE ================= */
   useEffect(() => {
@@ -99,7 +118,85 @@ const CoursePage = () => {
     ? Math.round((completedLessons / totalLessons) * 100)
     : 0;
 
-  if (loadingCourse) return <Loading />;
+  const generateAiInsight = useCallback(async () => {
+    if (loadingCourse || loadingModules || !course) return;
+
+    const courseTitle = course?.title?.[lang] || course?.title?.en || "Course";
+    const attendancePercent = course?.attendancePercent || 0;
+    const progressPercent = course?.progress || 0;
+
+    const prompt = `You are an academic course coach.
+
+Analyze this student's single-course learning snapshot and return concise actionable insight.
+
+Data:
+- Course: ${courseTitle}
+- Course progress: ${progressPercent}%
+- Attendance: ${attendancePercent}%
+- Completed lessons: ${completedLessons}
+- Total lessons: ${totalLessons}
+- Module completion ratio: ${completionRatio}%
+- Modules: ${modules.length}
+- Next lesson pending: ${nextLesson ? "Yes" : "No"}
+- Next lesson duration: ${nextLesson?.estimatedDurationMinutes || 0} minutes
+
+Return ONLY valid JSON with this shape:
+{
+  "summary": "one short paragraph (max 40 words)",
+  "priority": "Low|Medium|High",
+  "actions": ["exactly 3 short next actions"]
+}`;
+
+    setAiInsightLoading(true);
+    setAiInsightError("");
+
+    try {
+      const modelsRes = await api.get("/ai/models");
+      const selectedModel = modelsRes?.data?.[0]?.name || "DoubtSolver";
+
+      const aiRes = await api.post("/ai/chat", {
+        modelName: selectedModel,
+        message: prompt,
+      });
+
+      const responseText = aiRes?.data?.response || "";
+      const parsed = parseAiInsightResponse(responseText);
+
+      if (parsed) {
+        setAiInsight(parsed);
+      } else {
+        setAiInsight({
+          summary: responseText || "AI insight is currently unavailable.",
+          priority: "Medium",
+          actions: [],
+        });
+      }
+    } catch (error) {
+      console.log("Error generating course-page AI insight:", error);
+      setAiInsightError("Unable to generate AI insight right now.");
+    } finally {
+      setAiInsightLoading(false);
+    }
+  }, [
+    loadingCourse,
+    loadingModules,
+    course,
+    lang,
+    completedLessons,
+    totalLessons,
+    completionRatio,
+    modules.length,
+    nextLesson,
+  ]);
+
+  useEffect(() => {
+    if (loadingCourse || loadingModules || aiInsightRequestedRef.current)
+      return;
+    aiInsightRequestedRef.current = true;
+    generateAiInsight();
+  }, [loadingCourse, loadingModules, generateAiInsight]);
+
+  if (loadingCourse) return <LoadingWave />;
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-4 md:px-10 lg:px-16 pt-10 md:pt-14 pb-16 space-y-8">
@@ -196,6 +293,72 @@ const CoursePage = () => {
             </p>
           </button>
         ) : null}
+      </section>
+
+      <section className="rounded-3xl border border-(--border-color) bg-(--card-bg) p-6 md:p-8 shadow-sm">
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <h2 className="text-lg md:text-xl font-semibold flex items-center gap-2">
+            <FiCpu className="text-(--color-primary)" />
+            {t("coursePage.aiInsight.title", { defaultValue: "AI Insight" })}
+          </h2>
+
+          <button
+            type="button"
+            onClick={generateAiInsight}
+            disabled={aiInsightLoading}
+            className="inline-flex items-center gap-2 rounded-xl border border-(--border-color) px-3 py-2 text-sm hover:bg-(--bg-muted) disabled:opacity-60"
+          >
+            <FiRefreshCw className={aiInsightLoading ? "animate-spin" : ""} />
+            {aiInsightLoading
+              ? t("coursePage.aiInsight.generating", {
+                  defaultValue: "Generating",
+                })
+              : t("coursePage.aiInsight.refresh", {
+                  defaultValue: "Refresh",
+                })}
+          </button>
+        </div>
+
+        {aiInsightLoading ? (
+          <p className="text-(--text-secondary)">
+            {t("coursePage.aiInsight.loading", {
+              defaultValue: "Analyzing your course learning status...",
+            })}
+          </p>
+        ) : aiInsightError ? (
+          <p className="text-(--color-warning)">{aiInsightError}</p>
+        ) : aiInsight ? (
+          <div className="space-y-3">
+            <p className="text-(--text-secondary)">{aiInsight.summary}</p>
+            <p className="text-sm">
+              <span className="font-semibold">
+                {t("coursePage.aiInsight.priority", {
+                  defaultValue: "Priority",
+                })}
+                :
+              </span>{" "}
+              {aiInsight.priority}
+            </p>
+
+            {aiInsight.actions?.length > 0 ? (
+              <ul className="space-y-2 text-sm text-(--text-secondary)">
+                {aiInsight.actions.map((item, index) => (
+                  <li key={`course-ai-action-${index}`} className="flex gap-2">
+                    <span className="text-(--color-primary)">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : (
+          <p className="text-(--text-secondary)">
+            {t("coursePage.aiInsight.empty", {
+              defaultValue:
+                "Generate insight to see personalized course guidance.",
+            })}
+          </p>
+        )}
       </section>
 
       {loadingModules ? (

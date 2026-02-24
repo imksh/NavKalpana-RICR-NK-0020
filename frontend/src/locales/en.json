@@ -458,6 +458,14 @@
       "viewApplication": "View Application",
       "applyNow": "Apply Now",
       "viewDetails": "View Details"
+    },
+    "aiRecommendations": {
+      "title": "AI Job Recommendations",
+      "generating": "Generating",
+      "refresh": "Refresh",
+      "loading": "Finding the best job matches for you...",
+      "viewJob": "View Job",
+      "empty": "No recommendations available right now."
     }
   },
   "studentJobPage": {
@@ -515,7 +523,26 @@
     "leaderboard": {
       "title": "Leaderboard",
       "subtitle": "Top performers in your cohort"
-    }
+    },
+    "aiDashboard": {
+      "title": "AI Dashboard Intelligence"
+    },
+    "generating": "Generating",
+    "regenerate": "Regenerate",
+    "analyzingDashboard": "Analyzing your learning journey and generating insights...",
+    "analyzingPerformance": "Analyzing your performance and generating insights...",
+    "summary": "Dashboard Summary",
+    "thisWeek": "This Week's Focus",
+    "recommendations": "Study Recommendations",
+    "smartReminders": "Smart Reminders",
+    "strengths": "Strengths",
+    "weaknesses": "Areas for Improvement",
+    "strategies": "Study Strategies",
+    "aiEmpty": "Generate AI insights to see your personalized dashboard.",
+    "aiAdvanced": {
+      "title": "Performance Analysis & Strategies"
+    },
+    "aiAdvancedEmpty": "Generate performance analysis to unlock deeper insights."
   },
   "common": {
     "na": "N/A"
@@ -728,7 +755,15 @@
     "summary": "Quiz Summary",
     "duration": "Duration",
     "min": "min",
-    "submitQuiz": "Submit Quiz"
+    "submitQuiz": "Submit Quiz",
+    "aiReview": "Quiz AI Review",
+    "aiReviewSubtitle": "Get personalized feedback on your performance",
+    "analyzingQuiz": "Analyzing your quiz...",
+    "yourScore": "Your Score",
+    "strengths": "Strengths",
+    "improvements": "Areas to Improve",
+    "suggestions": "Recommendations",
+    "askAboutQuiz": "Ask about your performance..."
   },
   "studentSupport": {
     "loading": "Loading support data...",
@@ -775,7 +810,9 @@
       "doubts": "doubts",
       "sessions": "sessions",
       "resolved": "Resolved",
-      "response": "Response"
+      "response": "Response",
+      "available": "Available",
+      "questions": "Questions"
     },
     "status": {
       "pending": "Pending",
@@ -787,11 +824,13 @@
     "courseInstructor": "Course Instructor",
     "buttons": {
       "askDoubt": "Ask Doubt",
-      "bookSession": "Book Session"
+      "bookSession": "Book Session",
+      "chatWithAI": "Chat with AI"
     },
     "availability": "Availability",
     "online": "24/7 Online",
-    "startAiChat": "Start AI Chat"
+    "startAiChat": "Start AI Chat",
+    "noAiModels": "AI teachers will appear here"
   },
   "studentProfile": {
     "defaultBio": "Gradify student passionate about learning and growth.",

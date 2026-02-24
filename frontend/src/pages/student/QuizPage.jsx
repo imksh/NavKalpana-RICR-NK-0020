@@ -2,8 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../config/api";
 import QuizResultPage from "../../components/student/QuizResult";
+import QuizAiReviewModal from "../../components/student/modal/QuizAiReviewModal";
 import { FiCheckCircle, FiClock, FiHelpCircle, FiTarget } from "react-icons/fi";
+import { HiOutlineSparkles } from "react-icons/hi";
 import { useTranslation } from "react-i18next";
+import LoadingWave from "../../components/LoadingWave";
 
 const QuizPage = () => {
   const { t } = useTranslation();
@@ -18,6 +21,7 @@ const QuizPage = () => {
   const [loading, setLoading] = useState(true);
   const [quizMeta, setQuizMeta] = useState(null);
   const [allQuizzes, setAllQuizzes] = useState([]);
+  const [showAiReview, setShowAiReview] = useState(false);
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -94,13 +98,26 @@ const QuizPage = () => {
   if (loading) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        {t("quizPage.loading")}
+        <LoadingWave />
       </div>
     );
   }
 
   if (alreadyAttempted || submitted) {
-    return <QuizResultPage quizId={id} />;
+    return (
+      <>
+        <QuizResultPage
+          quizId={id}
+          onAiReviewClick={() => setShowAiReview(true)}
+        />
+        <QuizAiReviewModal
+          quizId={id}
+          courseId={quizMeta?.course}
+          isOpen={showAiReview}
+          onClose={() => setShowAiReview(false)}
+        />
+      </>
+    );
   }
 
   if (!quiz) return null;

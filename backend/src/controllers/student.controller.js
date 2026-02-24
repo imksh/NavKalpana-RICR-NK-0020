@@ -29,6 +29,7 @@ export const stats = async (req, res, next) => {
 
     const assignmentSubmissions = await AssignmentSubmission.find({
       studentId: user._id,
+      status: "Evaluated",
       assignmentId: { $in: assignments.map((a) => a._id) },
     });
 
@@ -368,7 +369,12 @@ export const leaderboard = async (req, res, next) => {
             $filter: {
               input: "$assignmentSubmissions",
               as: "sub",
-              cond: { $ne: ["$$sub.marks", null] },
+              cond: {
+                $and: [
+                  { $eq: ["$$sub.status", "Evaluated"] },
+                  { $ne: ["$$sub.marks", null] },
+                ],
+              },
             },
           },
         },

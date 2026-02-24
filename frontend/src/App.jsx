@@ -110,6 +110,8 @@ const App = () => {
         setMobileOpen(false);
       }}
     >
+      <Scroll />
+
       {/* {!user ? (
         <Header />
       ) : user.role === "admin" ? (

@@ -729,7 +729,15 @@
     "summary": "क्विज़ सारांश",
     "duration": "अवधि",
     "min": "मिनट",
-    "submitQuiz": "क्विज़ जमा करें"
+    "submitQuiz": "क्विज़ जमा करें",
+    "aiReview": "क्विज़ AI समीक्षा",
+    "aiReviewSubtitle": "अपने प्रदर्शन पर व्यक्तिगत प्रतिक्रिया प्राप्त करें",
+    "analyzingQuiz": "आपकी क्विज़ का विश्लेषण किया जा रहा है...",
+    "yourScore": "आपका स्कोर",
+    "strengths": "शक्तियां",
+    "improvements": "सुधार के लिए क्षेत्र",
+    "suggestions": "सिफारिशें",
+    "askAboutQuiz": "अपने प्रदर्शन के बारे में पूछें..."
   },
   "studentSupport": {
     "loading": "सपोर्ट डेटा लोड हो रहा है...",
@@ -776,7 +784,9 @@
       "doubts": "सवाल",
       "sessions": "सेशन",
       "resolved": "सुलझाया गया",
-      "response": "प्रतिक्रिया"
+      "response": "प्रतिक्रिया",
+      "available": "उपलब्ध",
+      "questions": "प्रश्न"
     },
     "status": {
       "pending": "लंबित",
@@ -788,11 +798,13 @@
     "courseInstructor": "कोर्स प्रशिक्षक",
     "buttons": {
       "askDoubt": "सवाल पूछें",
-      "bookSession": "सेशन बुक करें"
+      "bookSession": "सेशन बुक करें",
+      "chatWithAI": "AI से चैट करें"
     },
     "availability": "उपलब्धता",
     "online": "24/7 ऑनलाइन",
-    "startAiChat": "AI चैट शुरू करें"
+    "startAiChat": "AI चैट शुरू करें",
+    "noAiModels": "AI शिक्षक यहां दिखाई देंगे"
   },
   "studentProfile": {
     "defaultBio": "Gradify छात्र जो सीखने और विकास के प्रति उत्साही है।",

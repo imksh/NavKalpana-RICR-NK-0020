@@ -14,9 +14,8 @@ const BookSessionModal = ({
   onClose,
   selectedInstructor,
   selectedTopic,
+  onSubmit,
 }) => {
-  console.log(selectedTopic);
-
   const { t } = useTranslation();
   const { lang, setIsModal } = useUiStore();
   const [loading, setLoading] = useState(false);
@@ -78,6 +77,7 @@ const BookSessionModal = ({
       setLoading(true);
       await api.post("/student/book-session", form);
       toast.success(t("studentModals.bookSession.success"));
+      if (onSubmit) await onSubmit();
       onClose();
     } catch (error) {
       console.log("Error in booking session:", error);

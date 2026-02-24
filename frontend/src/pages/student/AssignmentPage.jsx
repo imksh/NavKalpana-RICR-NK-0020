@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import api from "../../config/api";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import LoadingWave from "../../components/LoadingWave";
 
 const AssignmentPage = () => {
   const { t } = useTranslation();
@@ -110,7 +111,7 @@ const AssignmentPage = () => {
   if (loading) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        {t("assignmentPage.loading")}
+        <LoadingWave size="w-40 h-40" />
       </div>
     );
   }

@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
-import api from "../../../config/api";
+import api from "../../config/api";
 import useUiStore from "../../store/useUiStore";
 import CloseButton from "../CloseButton";
 import { useTranslation } from "react-i18next";

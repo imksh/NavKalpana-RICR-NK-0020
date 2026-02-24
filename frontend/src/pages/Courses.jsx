@@ -154,7 +154,7 @@ const Courses = () => {
           students: 2450,
           duration: "24 weeks",
           image:
-            "https://images.unsplash.com/photo-1633356122544-f134324ef6db?w=400&h=250&fit=crop",
+            "https://images.unsplash.com/photo-1508830524289-0adcbe822b40?q=80&w=1425&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
           instructor: "John Doe",
           description:
             "Master React with hooks, context, and performance optimization",
@@ -171,7 +171,7 @@ const Courses = () => {
           students: 3890,
           duration: "16 weeks",
           image:
-            "https://images.unsplash.com/photo-1526374965328-7f5ae4e8e90f?w=400&h=250&fit=crop",
+            "https://images.unsplash.com/photo-1508830524289-0adcbe822b40?q=80&w=1425&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
           instructor: "Jane Smith",
           description:
             "Learn data analysis, machine learning, and visualization",
@@ -220,7 +220,7 @@ const Courses = () => {
           students: 945,
           duration: "18 weeks",
           image:
-            "https://images.unsplash.com/photo-1512941691920-25bda36dc643?w=400&h=250&fit=crop",
+            "https://images.unsplash.com/photo-1508830524289-0adcbe822b40?q=80&w=1425&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
           instructor: "Emma Davis",
           description: "Build cross-platform mobile apps efficiently",
           popular: false,
@@ -236,7 +236,7 @@ const Courses = () => {
           students: 1687,
           duration: "10 weeks",
           image:
-            "https://images.unsplash.com/photo-1460925895917-adf4ee868993?w=400&h=250&fit=crop",
+            "https://images.unsplash.com/photo-1508830524289-0adcbe822b40?q=80&w=1425&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
           instructor: "Alex Brown",
           description: "Master SEO, social media, and content marketing",
           popular: false,
@@ -252,7 +252,7 @@ const Courses = () => {
           students: 8934,
           duration: "14 weeks",
           image:
-            "https://images.unsplash.com/photo-1517694712555-31fde8dc9c0f?w=400&h=250&fit=crop",
+            "https://images.unsplash.com/photo-1508830524289-0adcbe822b40?q=80&w=1425&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
           instructor: "Chris Lee",
           description:
             "Learn JavaScript from fundamentals to advanced concepts",

@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   FiBookOpen,
   FiAward,
-  FiMessageSquare,
   FiSettings,
   FiHelpCircle,
   FiDownload,
@@ -19,6 +18,7 @@ import {
 } from "react-icons/fi";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useTranslation } from "react-i18next";
+import api from "../../config/api";
 
 const _MotionRef = motion;
 
@@ -26,6 +26,20 @@ const StudentFooter = () => {
   const { t } = useTranslation();
   const { user } = useAuthStore();
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [footerStatsData, setFooterStatsData] = useState(null);
+
+  useEffect(() => {
+    const fetchFooterStats = async () => {
+      try {
+        const res = await api.get("/student/stats");
+        setFooterStatsData(res.data || null);
+      } catch (error) {
+        console.log("Error fetching footer stats:", error);
+      }
+    };
+
+    fetchFooterStats();
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -43,26 +57,35 @@ const StudentFooter = () => {
   const stats = [
     {
       icon: FiBookOpen,
-      labelKey: "studentFooter.stats.courses",
-      value: "12",
+      label: t("studentFooter.stats.courses"),
+      value: footerStatsData?.totalCourses ?? 0,
       color: "text-(--color-primary)",
     },
     {
       icon: FiAward,
-      labelKey: "studentFooter.stats.certificates",
-      value: "8",
+      label: t("studentHome.stats.assignments"),
+      value:
+        footerStatsData?.totalAssignments != null
+          ? `${footerStatsData.submittedAssignments || 0}/${footerStatsData.totalAssignments}`
+          : "0/0",
       color: "text-(--color-success)",
     },
     {
       icon: FiBarChart2,
-      labelKey: "studentFooter.stats.progress",
-      value: "72%",
+      label: t("studentHome.stats.quizzes"),
+      value:
+        footerStatsData?.totalQuizzes != null
+          ? `${footerStatsData.attemptedQuizzes || 0}/${footerStatsData.totalQuizzes}`
+          : "0/0",
       color: "text-(--color-warning)",
     },
     {
       icon: FiClock,
-      labelKey: "studentFooter.stats.learningTime",
-      value: "128h",
+      label: t("studentHome.stats.overallScore"),
+      value:
+        footerStatsData?.overallScore != null
+          ? `${footerStatsData.overallScore}%`
+          : "0%",
       color: "text-(--color-secondary)",
     },
   ];
@@ -72,36 +95,24 @@ const StudentFooter = () => {
       icon: FiBookOpen,
       labelKey: "studentFooter.quickLinks.myCourses",
       href: "/student/courses",
-      badge: "12",
-    },
-    {
-      icon: FiAward,
-      labelKey: "studentFooter.quickLinks.certificates",
-      href: "/student/certificates",
-      badge: "8",
+      badge: null,
     },
     {
       icon: FiBarChart2,
       labelKey: "studentFooter.quickLinks.analytics",
-      href: "/student/analytics",
+      href: "/student/progress",
       badge: null,
-    },
-    {
-      icon: FiMessageSquare,
-      labelKey: "studentFooter.quickLinks.messages",
-      href: "/student/messages",
-      badge: "3",
     },
     {
       icon: FiCalendar,
       labelKey: "studentFooter.quickLinks.schedule",
-      href: "/student/schedule",
+      href: "/student/notifications",
       badge: null,
     },
     {
       icon: FiSettings,
       labelKey: "studentFooter.quickLinks.settings",
-      href: "/student/settings",
+      href: "/student/profile",
       badge: null,
     },
   ];
@@ -109,36 +120,36 @@ const StudentFooter = () => {
   const resourceLinks = [
     {
       labelKey: "studentFooter.resources.learningPath",
-      href: "/student/learning-path",
+      href: "/student/progress",
     },
     {
       labelKey: "studentFooter.resources.studyGroups",
-      href: "/student/study-groups",
+      href: "/student/alumni",
     },
-    { labelKey: "studentFooter.resources.qaForum", href: "/student/forum" },
+    { labelKey: "studentFooter.resources.qaForum", href: "/student/support" },
     {
       labelKey: "studentFooter.resources.recordedSessions",
-      href: "/student/sessions",
+      href: "/student/support",
     },
     {
       labelKey: "studentFooter.resources.downloadableResources",
-      href: "/student/resources",
+      href: "/student/courses",
     },
     {
       labelKey: "studentFooter.resources.careerGuidance",
-      href: "/student/career",
+      href: "/student/jobs",
     },
   ];
 
   const supportLinks = [
-    { labelKey: "studentFooter.support.helpCenter", href: "/help" },
-    { labelKey: "studentFooter.support.faq", href: "/faq" },
+    { labelKey: "studentFooter.support.helpCenter", href: "/student/support" },
+    { labelKey: "studentFooter.support.faq", href: "/about" },
     { labelKey: "studentFooter.support.contactSupport", href: "/contact" },
-    { labelKey: "studentFooter.support.reportIssue", href: "/report-issue" },
-    { labelKey: "studentFooter.support.feedback", href: "/feedback" },
+    { labelKey: "studentFooter.support.reportIssue", href: "/student/support" },
+    { labelKey: "studentFooter.support.feedback", href: "/contact" },
     {
       labelKey: "studentFooter.support.communityGuidelines",
-      href: "/guidelines",
+      href: "/terms-and-conditions",
     },
   ];
 
@@ -164,7 +175,6 @@ const StudentFooter = () => {
               return (
                 <motion.div
                   key={index}
-                  variants={itemVariants}
                   whileHover={{ scale: 1.05 }}
                   className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-4 text-center hover:border-(--color-primary) transition-all cursor-pointer"
                 >
@@ -173,7 +183,7 @@ const StudentFooter = () => {
                     {stat.value}
                   </p>
                   <p className="text-xs text-(--text-secondary)">
-                    {t(stat.labelKey)}
+                    {stat.label}
                   </p>
                 </motion.div>
               );
@@ -193,7 +203,7 @@ const StudentFooter = () => {
           <h3 className="text-2xl font-bold text-(--text-primary) mb-8">
             {t("studentFooter.titles.quickAccess")}
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {quickLinks.map((link, index) => {
               const Icon = link.icon;
               return (
@@ -359,13 +369,13 @@ const StudentFooter = () => {
         >
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 text-xs text-(--text-secondary)">
             <Link
-              to="/terms"
+              to="/terms-and-conditions"
               className="hover:text-(--color-primary) transition-colors"
             >
               {t("studentFooter.bottom.terms")}
             </Link>
             <Link
-              to="/privacy"
+              to="/contact"
               className="hover:text-(--color-primary) transition-colors"
             >
               {t("studentFooter.bottom.privacy")}

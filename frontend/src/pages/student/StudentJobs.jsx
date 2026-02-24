@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FiMapPin,
   FiClock,
@@ -8,12 +8,28 @@ import {
   FiCheckCircle,
   FiTrendingUp,
   FiFilter,
+  FiCpu,
+  FiRefreshCw,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../../config/api";
 import { useNavigate } from "react-router-dom";
 import useUiStore from "../../store/useUiStore";
 import { useTranslation } from "react-i18next";
+import LoadingWave from "../../components/LoadingWave";
+
+const _MotionRef = motion;
+
+const parseAiRecommendations = (rawResponse) => {
+  const jsonMatch = rawResponse?.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+
+  const parsed = JSON.parse(jsonMatch[0]);
+  return {
+    summary: parsed.summary || "",
+    recommended: Array.isArray(parsed.recommended) ? parsed.recommended : [],
+  };
+};
 
 const StudentJobs = () => {
   const { lang } = useUiStore();
@@ -27,15 +43,23 @@ const StudentJobs = () => {
   );
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [aiRecommendations, setAiRecommendations] = useState([]);
+  const [aiSummary, setAiSummary] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
+  const aiRecommendationRequestedRef = useRef(false);
   const navigate = useNavigate();
 
-  const getLocalizedText = (value) => {
-    if (typeof value === "string") return value;
-    if (value && typeof value === "object") {
-      return value[lang] || value.en || Object.values(value)[0] || "";
-    }
-    return "";
-  };
+  const getLocalizedText = useCallback(
+    (value) => {
+      if (typeof value === "string") return value;
+      if (value && typeof value === "object") {
+        return value[lang] || value.en || Object.values(value)[0] || "";
+      }
+      return "";
+    },
+    [lang],
+  );
 
   /* ================= FETCH DATA ================= */
   useEffect(() => {
@@ -93,7 +117,7 @@ const StudentJobs = () => {
     }
 
     setFilteredJobs(result);
-  }, [filter, jobs, bookmarkedJobs, searchQuery]);
+  }, [filter, jobs, bookmarkedJobs, searchQuery, getLocalizedText]);
 
   /* ================= BOOKMARK HANDLER ================= */
   const handleBookmark = (job) => {
@@ -126,10 +150,183 @@ const StudentJobs = () => {
     open: jobs.filter((j) => j.status === "open").length,
   };
 
+  const preferredSkills = useMemo(() => {
+    const skillCounts = {};
+
+    [...bookmarkedJobs, ...jobs.filter((job) => job.hasApplied)].forEach(
+      (job) => {
+        (job.skills || []).forEach((skill) => {
+          const key = skill.toLowerCase();
+          skillCounts[key] = (skillCounts[key] || 0) + 1;
+        });
+      },
+    );
+
+    return Object.entries(skillCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([skill]) => skill);
+  }, [bookmarkedJobs, jobs]);
+
+  const createFallbackRecommendations = useCallback(() => {
+    const openJobs = jobs.filter(
+      (job) => job.status === "open" && !job.hasApplied,
+    );
+
+    const scored = openJobs
+      .map((job) => {
+        const matches = (job.skills || []).filter((skill) =>
+          preferredSkills.includes(skill.toLowerCase()),
+        ).length;
+
+        const fitScore = Math.max(
+          55,
+          Math.min(
+            95,
+            Math.round(55 + matches * 12 + (job.type === "Full-Time" ? 4 : 0)),
+          ),
+        );
+
+        return {
+          job,
+          fitScore,
+          reason:
+            matches > 0
+              ? `Matches ${matches} of your recent interest skills.`
+              : "Good opportunity based on your current activity and open roles.",
+        };
+      })
+      .sort((a, b) => b.fitScore - a.fitScore)
+      .slice(0, 3);
+
+    setAiSummary(
+      "Recommended based on your recent bookmarks, applications, and active openings.",
+    );
+    setAiRecommendations(scored);
+  }, [jobs, preferredSkills]);
+
+  const generateAiRecommendations = useCallback(async () => {
+    if (loading) return;
+
+    if (!jobs.length) {
+      setAiSummary("No jobs available yet for recommendation.");
+      setAiRecommendations([]);
+      return;
+    }
+
+    const openJobs = jobs.filter((job) => job.status === "open");
+    const aiInputJobs = openJobs.slice(0, 20).map((job) => ({
+      id: job._id,
+      title: getLocalizedText(job.title),
+      company: getLocalizedText(job.company),
+      location: getLocalizedText(job.location),
+      type: job.type,
+      skills: (job.skills || []).slice(0, 8),
+      deadline: job.deadline,
+      hasApplied: !!job.hasApplied,
+      bookmarked: bookmarkedJobs.some((b) => b._id === job._id),
+    }));
+
+    const prompt = `You are a job recommendation assistant for students.
+
+Use the student activity and available jobs to recommend the best 3 jobs.
+
+Student activity:
+- Applied jobs: ${stats.applied}
+- Bookmarked jobs: ${stats.bookmarked}
+- Preferred skills (inferred): ${preferredSkills.join(", ") || "N/A"}
+
+Available open jobs (JSON):
+${JSON.stringify(aiInputJobs)}
+
+Return ONLY valid JSON in this exact format:
+{
+  "summary": "one short paragraph (max 35 words)",
+  "recommended": [
+    {
+      "jobId": "job id from list",
+      "fitScore": 0,
+      "reason": "one concise reason"
+    }
+  ]
+}
+
+Rules:
+- Return exactly 3 recommendations when possible.
+- Use only provided job IDs.
+- fitScore should be an integer from 0 to 100.`;
+
+    setAiLoading(true);
+    setAiError("");
+
+    try {
+      const modelsRes = await api.get("/ai/models");
+      const selectedModel = modelsRes?.data?.[0]?.name || "DoubtSolver";
+
+      const aiRes = await api.post("/ai/chat", {
+        modelName: selectedModel,
+        message: prompt,
+      });
+
+      const responseText = aiRes?.data?.response || "";
+      const parsed = parseAiRecommendations(responseText);
+
+      if (!parsed?.recommended?.length) {
+        createFallbackRecommendations();
+        return;
+      }
+
+      const recommendations = parsed.recommended
+        .map((rec) => {
+          const job = jobs.find((item) => item._id === rec.jobId);
+          if (!job) return null;
+
+          return {
+            job,
+            fitScore: Math.max(0, Math.min(100, Number(rec.fitScore) || 0)),
+            reason: rec.reason || "Recommended based on your activity.",
+          };
+        })
+        .filter(Boolean)
+        .slice(0, 3);
+
+      if (!recommendations.length) {
+        createFallbackRecommendations();
+        return;
+      }
+
+      setAiSummary(
+        parsed.summary || "Top jobs tailored to your profile and activity.",
+      );
+      setAiRecommendations(recommendations);
+    } catch (error) {
+      console.error("Error generating job recommendations:", error);
+      setAiError("Unable to generate AI recommendations right now.");
+      createFallbackRecommendations();
+    } finally {
+      setAiLoading(false);
+    }
+  }, [
+    loading,
+    jobs,
+    bookmarkedJobs,
+    preferredSkills,
+    stats.applied,
+    stats.bookmarked,
+    createFallbackRecommendations,
+    getLocalizedText,
+  ]);
+
+  useEffect(() => {
+    if (loading || aiRecommendationRequestedRef.current) return;
+    aiRecommendationRequestedRef.current = true;
+    generateAiRecommendations();
+  }, [loading, generateAiRecommendations]);
+
   if (loading) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        {t("studentJobs.loading")}
+        <LoadingWave size="w-40 h-40" />
       </div>
     );
   }
@@ -216,6 +413,87 @@ const StudentJobs = () => {
       </div>
 
       {/* ================= SEARCH & FILTER ================= */}
+      <div className="bg-(--card-bg) border border-(--border-color) p-5 md:p-6 rounded-2xl mb-8">
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <FiCpu className="text-(--color-primary)" />
+            {t("studentJobs.aiRecommendations.title", {
+              defaultValue: "AI Job Recommendations",
+            })}
+          </h2>
+
+          <button
+            type="button"
+            onClick={generateAiRecommendations}
+            disabled={aiLoading}
+            className="inline-flex items-center gap-2 rounded-xl border border-(--border-color) px-3 py-2 text-sm hover:bg-(--bg-muted) disabled:opacity-60"
+          >
+            <FiRefreshCw className={aiLoading ? "animate-spin" : ""} />
+            {aiLoading
+              ? t("studentJobs.aiRecommendations.generating", {
+                  defaultValue: "Generating",
+                })
+              : t("studentJobs.aiRecommendations.refresh", {
+                  defaultValue: "Refresh",
+                })}
+          </button>
+        </div>
+
+        {aiLoading ? (
+          <p className="text-(--text-secondary)">
+            {t("studentJobs.aiRecommendations.loading", {
+              defaultValue: "Finding the best job matches for you...",
+            })}
+          </p>
+        ) : aiRecommendations.length > 0 ? (
+          <div className="space-y-4">
+            <p className="text-sm text-(--text-secondary)">{aiSummary}</p>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              {aiRecommendations.map((rec, index) => (
+                <div
+                  key={`${rec.job._id}-${index}`}
+                  className="rounded-xl border border-(--border-color) bg-(--bg-surface) p-4"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="font-medium line-clamp-2">
+                      {getLocalizedText(rec.job.title)}
+                    </h3>
+                    <span className="text-xs px-2 py-1 rounded-full bg-(--color-primary)/10 text-(--color-primary) whitespace-nowrap">
+                      {rec.fitScore}% fit
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-(--text-secondary) mb-3">
+                    {getLocalizedText(rec.job.company)} • {rec.job.type}
+                  </p>
+
+                  <p className="text-sm text-(--text-secondary) mb-4">
+                    {rec.reason}
+                  </p>
+
+                  <button
+                    onClick={() => navigate(`/student/jobs/${rec.job._id}`)}
+                    className="w-full py-2 rounded-lg bg-(--color-primary) text-white text-sm font-medium hover:opacity-90"
+                  >
+                    {t("studentJobs.aiRecommendations.viewJob", {
+                      defaultValue: "View Job",
+                    })}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-(--text-secondary)">
+            {aiError ||
+              t("studentJobs.aiRecommendations.empty", {
+                defaultValue: "No recommendations available right now.",
+              })}
+          </p>
+        )}
+      </div>
+
       <div className="flex flex-col md:flex-row gap-4 mb-8">
         {/* Search Bar */}
         <div className="flex-1 relative">

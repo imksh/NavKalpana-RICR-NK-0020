@@ -7,15 +7,35 @@ import {
   FiBarChart2,
   FiCheckCircle,
   FiAlertCircle,
+  FiCpu,
+  FiRefreshCw,
 } from "react-icons/fi";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import api from "../../config/api";
 import { useTranslation } from "react-i18next";
+
+const parseAiAnalyticsResponse = (rawResponse) => {
+  const jsonMatch = rawResponse?.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+
+  const parsed = JSON.parse(jsonMatch[0]);
+
+  return {
+    summary: parsed.summary || rawResponse,
+    strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
+    risks: Array.isArray(parsed.risks) ? parsed.risks : [],
+    nextActions: Array.isArray(parsed.nextActions) ? parsed.nextActions : [],
+  };
+};
 
 const StudentProgress = () => {
   const { t } = useTranslation();
   const [progressData, setProgressData] = useState(null);
   const [statsData, setStatsData] = useState(null);
+  const [aiAnalytics, setAiAnalytics] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
+  const analyticsRequestedRef = useRef(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -38,6 +58,92 @@ const StudentProgress = () => {
     };
     fetch();
   }, []);
+
+  const generateAiAnalytics = useCallback(async () => {
+    if (!progressData) return;
+
+    const {
+      overallProgress,
+      courseProgress,
+      avgQuizScore,
+      avgAssignmentScore,
+      skills,
+    } = progressData;
+
+    const attendancePercent = statsData?.attendancePercent ?? null;
+    const courseCompletionPercent = statsData?.courseCompletionPercent ?? null;
+    const overallScore = statsData?.overallScore ?? null;
+
+    const performanceBlend = Math.round(
+      (overallProgress + avgQuizScore + avgAssignmentScore) / 3,
+    );
+
+    const weakestCourses = [...courseProgress]
+      .sort((a, b) => a.progress - b.progress)
+      .slice(0, 3)
+      .map((course) => `${course.name} (${course.progress}%)`)
+      .join(", ");
+
+    const prompt = `You are an academic performance analyst.
+
+Analyze this student's progress and return concise analytics.
+
+Data:
+- Overall progress: ${overallProgress}%
+- Average quiz score: ${avgQuizScore}%
+- Average assignment score: ${avgAssignmentScore}%
+- Attendance: ${attendancePercent ?? "N/A"}%
+- Course completion: ${courseCompletionPercent ?? "N/A"}%
+- Skills acquired: ${skills.length}
+- Overall blended score: ${overallScore ?? performanceBlend}%
+- Lowest-performing courses: ${weakestCourses || "N/A"}
+
+Return ONLY valid JSON in this exact structure:
+{
+  "summary": "one short paragraph (max 45 words)",
+  "strengths": ["2-3 concise points"],
+  "risks": ["2-3 concise points"],
+  "nextActions": ["3 concise, specific next actions for the next 7 days"]
+}`;
+
+    setAiLoading(true);
+    setAiError("");
+
+    try {
+      const modelsRes = await api.get("/ai/models");
+      const selectedModel = modelsRes?.data?.[0]?.name || "DoubtSolver";
+
+      const aiRes = await api.post("/ai/chat", {
+        modelName: selectedModel,
+        message: prompt,
+      });
+
+      const responseText = aiRes?.data?.response || "";
+      const parsed = parseAiAnalyticsResponse(responseText);
+
+      if (parsed) {
+        setAiAnalytics(parsed);
+      } else {
+        setAiAnalytics({
+          summary: responseText || "AI analytics is currently unavailable.",
+          strengths: [],
+          risks: [],
+          nextActions: [],
+        });
+      }
+    } catch (error) {
+      console.log("Error generating AI analytics:", error);
+      setAiError("Unable to generate AI analytics right now.");
+    } finally {
+      setAiLoading(false);
+    }
+  }, [progressData, statsData]);
+
+  useEffect(() => {
+    if (!progressData || analyticsRequestedRef.current) return;
+    analyticsRequestedRef.current = true;
+    generateAiAnalytics();
+  }, [progressData, generateAiAnalytics]);
 
   if (!progressData) {
     return (
@@ -257,6 +363,72 @@ const StudentProgress = () => {
           </p>
         )}
       </section>
+
+      <section className="bg-(--card-bg) border border-(--border-color) p-6 md:p-8 rounded-3xl">
+        <div className="flex items-center justify-between gap-4 mb-5">
+          <h2 className="text-lg font-medium flex items-center gap-2">
+            <FiCpu />
+            {t("studentProgress.aiAnalyticsTitle", {
+              defaultValue: "AI Analytics",
+            })}
+          </h2>
+
+          <button
+            type="button"
+            onClick={generateAiAnalytics}
+            disabled={aiLoading}
+            className="inline-flex items-center gap-2 rounded-xl border border-(--border-color) px-3 py-2 text-sm hover:bg-(--bg-muted) disabled:opacity-60"
+          >
+            <FiRefreshCw className={aiLoading ? "animate-spin" : ""} />
+            {aiLoading
+              ? t("studentProgress.generating", { defaultValue: "Generating" })
+              : t("studentProgress.regenerate", {
+                  defaultValue: "Regenerate",
+                })}
+          </button>
+        </div>
+
+        {aiLoading ? (
+          <p className="text-(--text-secondary)">
+            {t("studentProgress.generatingDetails", {
+              defaultValue:
+                "Analyzing your progress and generating insights...",
+            })}
+          </p>
+        ) : aiError ? (
+          <p className="text-(--color-warning)">{aiError}</p>
+        ) : aiAnalytics ? (
+          <div className="space-y-5">
+            <p className="text-(--text-secondary)">{aiAnalytics.summary}</p>
+
+            <AnalyticsList
+              title={t("studentProgress.strengths", {
+                defaultValue: "Strengths",
+              })}
+              items={aiAnalytics.strengths}
+            />
+
+            <AnalyticsList
+              title={t("studentProgress.risks", { defaultValue: "Risks" })}
+              items={aiAnalytics.risks}
+            />
+
+            <AnalyticsList
+              title={t("studentProgress.nextActions", {
+                defaultValue: "Next 7-Day Actions",
+              })}
+              items={aiAnalytics.nextActions}
+            />
+          </div>
+        ) : (
+          <p className="text-(--text-secondary)">
+            {t("studentProgress.aiEmpty", {
+              defaultValue:
+                "Generate AI analytics to see personalized insights.",
+            })}
+          </p>
+        )}
+      </section>
     </div>
   );
 };
@@ -301,6 +473,27 @@ const InlineStat = ({ label, value }) => (
       {label}
     </p>
     <p className="text-base font-semibold mt-1">{value}</p>
+  </div>
+);
+
+const AnalyticsList = ({ title, items }) => (
+  <div>
+    <h3 className="text-sm font-semibold mb-2">{title}</h3>
+    {items?.length ? (
+      <ul className="space-y-2">
+        {items.map((item, index) => (
+          <li
+            key={`${title}-${index}`}
+            className="text-sm text-(--text-secondary) flex gap-2"
+          >
+            <span className="text-(--color-primary)">•</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-sm text-(--text-muted)">-</p>
+    )}
   </div>
 );
 

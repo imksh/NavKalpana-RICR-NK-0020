@@ -15,6 +15,7 @@ import studentRouter from "./src/routers/student.route.js";
 import instructorRouter from "./src/routers/instructor.route.js";
 import courseRouter from "./src/routers/course.route.js";
 import jobRouter from "./src/routers/job.route.js";
+import aiRouter from "./src/routers/ai.route.js";
 
 const app = express();
 
@@ -26,7 +27,6 @@ app.use(
     credentials: true,
   }),
 );
-
 
 app.use(express.json());
 app.use(cookieParser());
@@ -42,6 +42,7 @@ app.use("/api/student", studentRouter);
 app.use("/api/instructor", instructorRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/jobs", jobRouter);
+app.use("/api/ai", aiRouter);
 
 //home route
 app.get("/", (req, res) => {

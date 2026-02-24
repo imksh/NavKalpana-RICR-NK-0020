@@ -112,7 +112,10 @@ const StudentProfile = () => {
             />
 
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-3xl font-semibold mb-2">{user.name}</h1>
+              <h1 className="text-3xl font-semibold mb-2">
+                {user.name.slice(0, 20)}
+                {user.name.length > 20 ? "..." : ""}
+              </h1>
 
               <div className="flex items-center justify-center md:justify-start gap-2 text-(--text-secondary)">
                 <FiMail />

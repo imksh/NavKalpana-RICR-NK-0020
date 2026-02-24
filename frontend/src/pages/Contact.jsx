@@ -227,12 +227,7 @@ const Contact = () => {
 
             {/* Map Placeholder */}
             <div className="bg-(--card-bg) border border-(--border-color) rounded-2xl h-48 overflow-hidden">
-              <div className="w-full h-full bg-(--bg-muted) flex items-center justify-center text-(--text-muted)">
-                <div className="text-center">
-                  <FiMapPin size={32} className="mx-auto mb-2" />
-                  <p className="text-sm">{t("contact.mapPreview")}</p>
-                </div>
-              </div>
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14661.164942506253!2d77.45872335!3d23.268865150000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c6967f58e0dbf%3A0x65d0724cf8368e2d!2sRICR%20-%20Raj%20Institute%20of%20Coding%20%26%20Robotics%20%7C%20Best%20Java%20Coding%20Classes%20In%20Bhopal!5e0!3m2!1sen!2sin!4v1771940241153!5m2!1sen!2sin" className="w-full h-full" />
             </div>
           </motion.div>
 

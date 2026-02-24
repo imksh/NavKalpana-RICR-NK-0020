@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { HiOutlineSparkles } from "react-icons/hi";
 import api from "../../config/api";
 
-const QuizResult = ({ quizId }) => {
+const QuizResult = ({ quizId, onAiReviewClick }) => {
   const navigate = useNavigate();
 
   const [result, setResult] = useState(null);
@@ -11,12 +12,10 @@ const QuizResult = ({ quizId }) => {
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        const res = await api.get(
-          `/student/quizzes/${quizId}/result`
-        );
+        const res = await api.get(`/student/quizzes/${quizId}/result`);
 
         console.log(res.data);
-        
+
         setResult(res.data); // ✅ store response
       } catch (error) {
         console.log("Error fetching result:", error);
@@ -46,12 +45,9 @@ const QuizResult = ({ quizId }) => {
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-6 md:px-16 pt-32 pb-16">
-
       {/* ===== HEADER ===== */}
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-semibold mb-2">
-          {result.title}
-        </h1>
+        <h1 className="text-3xl font-semibold mb-2">{result.title}</h1>
 
         <p className="text-2xl font-bold text-(--color-success)">
           {result.scorePercent}%
@@ -65,8 +61,7 @@ const QuizResult = ({ quizId }) => {
       {/* ===== QUESTIONS REVIEW ===== */}
       <div className="space-y-6">
         {result.questions.map((q, index) => {
-          const isCorrect =
-            q.selectedAnswerIndex === q.correctAnswerIndex;
+          const isCorrect = q.selectedAnswerIndex === q.correctAnswerIndex;
 
           return (
             <div
@@ -79,11 +74,9 @@ const QuizResult = ({ quizId }) => {
 
               <div className="space-y-2">
                 {q.options.map((option, optIndex) => {
-                  const isSelected =
-                    optIndex === q.selectedAnswerIndex;
+                  const isSelected = optIndex === q.selectedAnswerIndex;
 
-                  const isAnswer =
-                    optIndex === q.correctAnswerIndex;
+                  const isAnswer = optIndex === q.correctAnswerIndex;
 
                   return (
                     <div
@@ -93,8 +86,8 @@ const QuizResult = ({ quizId }) => {
                           isAnswer
                             ? "border-(--color-success) border-2"
                             : isSelected && !isCorrect
-                            ? "border-(--color-danger) border-2"
-                            : "border-(--border-color) border"
+                              ? "border-(--color-danger) border-2"
+                              : "border-(--border-color) border"
                         }
                       `}
                     >
@@ -113,13 +106,22 @@ const QuizResult = ({ quizId }) => {
       </div>
 
       {/* ===== BACK BUTTON ===== */}
-      <div className="text-center mt-10">
+      <div className="flex gap-4 justify-center mt-10">
         <button
           onClick={() => navigate("/student/quizzes")}
-          className="px-6 py-2 bg-(--color-primary) text-white rounded-xl"
+          className="px-6 py-2 bg-(--bg-muted) text-(--text-primary) rounded-xl hover:bg-(--border-color) transition-all"
         >
           Back to Quizzes
         </button>
+        {onAiReviewClick && (
+          <button
+            onClick={onAiReviewClick}
+            className="px-6 py-2 bg-(--color-primary) text-white rounded-xl hover:opacity-90 transition-all inline-flex items-center gap-2"
+          >
+            <HiOutlineSparkles size={18} />
+            AI Review
+          </button>
+        )}
       </div>
     </div>
   );

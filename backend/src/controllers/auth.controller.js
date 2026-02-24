@@ -146,10 +146,13 @@ export const genOtp = async (req, res, next) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedOtp = await bcrypt.hash(otp, 10);
 
-    await Otp.create({
+    const newOtp = await Otp.create({
       email: lowerEmail,
       otp: hashedOtp,
     });
+
+    console.log({ otp, newOtp });
+    
 
     await sendOtpEmail(lowerEmail, otp);
 
@@ -178,6 +181,7 @@ export const verifyOtp = async (req, res, next) => {
     }
 
     const existingOtp = await Otp.findOne({ email: lowerEmail });
+    console.log({ email, otp, existingOtp: existingOtp?.otp });
     if (!existingOtp) {
       return next({ status: 400, message: "OTP invalid or expired" });
     }
@@ -232,7 +236,7 @@ export const resetPassword = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   try {
-    const { phone, name } = req.body;
+    const { phone, name, bio } = req.body;
 
     if (!name?.trim() || !phone?.trim()) {
       return next({
@@ -243,6 +247,7 @@ export const updateProfile = async (req, res, next) => {
 
     req.user.name = name.trim();
     req.user.phone = phone.trim();
+    req.user.bio = bio.trim();
 
     await req.user.save();
 
@@ -255,7 +260,7 @@ export const updateProfile = async (req, res, next) => {
 export const changePhoto = async (req, res, next) => {
   try {
     console.log("lskg");
-    
+
     const currentUser = req.user;
     const dp = req.file;
 

@@ -13,76 +13,129 @@ const seedQuizzes = async () => {
   try {
     await Quiz.deleteMany();
 
-    const course = await Course.findOne();
-    const module = await Module.findOne({ courseId: course?._id });
+    const courses = await Course.find();
 
-    if (!course) {
+    if (!courses.length) {
       console.log("Seed courses first.");
       process.exit();
     }
 
-    const quiz = await Quiz.create({
-      courseId: course._id,
-      moduleId: module?._id || null,
-      title: "React Fundamentals Quiz",
-      durationMinutes: 15,
-      totalQuestions: 5,
-      questions: [
-        {
-          questionText: "What is JSX?",
-          options: [
-            { text: "A JavaScript syntax extension", isCorrect: true },
-            { text: "A database", isCorrect: false },
-            { text: "A CSS framework", isCorrect: false },
-            { text: "A backend language", isCorrect: false }
-          ],
-          explanation: "JSX allows writing HTML-like syntax inside JavaScript."
-        },
-        {
-          questionText: "Which hook is used for state management?",
-          options: [
-            { text: "useState", isCorrect: true },
-            { text: "useEffect", isCorrect: false },
-            { text: "useRef", isCorrect: false },
-            { text: "useMemo", isCorrect: false }
-          ],
-          explanation: "useState is used to manage local state in React."
-        },
-        {
-          questionText: "Which method is used to create an Express server?",
-          options: [
-            { text: "express()", isCorrect: true },
-            { text: "createServer()", isCorrect: false },
-            { text: "initServer()", isCorrect: false },
-            { text: "nodeServer()", isCorrect: false }
-          ],
-          explanation: "Calling express() initializes the Express application."
-        },
-        {
-          questionText: "What does MongoDB store data in?",
-          options: [
-            { text: "Documents", isCorrect: true },
-            { text: "Tables", isCorrect: false },
-            { text: "Rows", isCorrect: false },
-            { text: "Sheets", isCorrect: false }
-          ],
-          explanation: "MongoDB stores data in BSON documents."
-        },
-        {
-          questionText: "Which HTTP method is used to update data?",
-          options: [
-            { text: "PUT", isCorrect: true },
-            { text: "GET", isCorrect: false },
-            { text: "DELETE", isCorrect: false },
-            { text: "FETCH", isCorrect: false }
-          ],
-          explanation: "PUT is typically used for updating existing data."
-        }
-      ],
-      isActive: true
-    });
+    const quizzes = [];
 
-    console.log("Quiz seeded successfully");
+    for (const course of courses) {
+      const module = await Module.findOne({ courseId: course._id });
+
+      /* ================= REACT QUIZ ================= */
+      if (course.title?.en?.toLowerCase().includes("full stack")) {
+        quizzes.push({
+          courseId: course._id,
+          moduleId: module?._id || null,
+          title: "React Fundamentals Quiz",
+          durationMinutes: 15,
+          totalQuestions: 5,
+          questions: [
+            {
+              questionText: "What is JSX?",
+              options: [
+                { text: "A JavaScript syntax extension", isCorrect: true },
+                { text: "A database", isCorrect: false },
+                { text: "A CSS framework", isCorrect: false },
+                { text: "A backend language", isCorrect: false },
+              ],
+              explanation:
+                "JSX allows writing HTML-like syntax inside JavaScript.",
+            },
+            {
+              questionText: "Which hook manages state?",
+              options: [
+                { text: "useState", isCorrect: true },
+                { text: "useEffect", isCorrect: false },
+                { text: "useMemo", isCorrect: false },
+                { text: "useRef", isCorrect: false },
+              ],
+              explanation: "useState manages local component state.",
+            },
+          ],
+          isActive: true,
+        });
+      }
+
+      /* ================= DSA QUIZ ================= */
+      if (course.title?.en?.toLowerCase().includes("data")) {
+        quizzes.push({
+          courseId: course._id,
+          moduleId: module?._id || null,
+          title: "Data Structures Basics Quiz",
+          durationMinutes: 20,
+          totalQuestions: 5,
+          questions: [
+            {
+              questionText: "What is the time complexity of binary search?",
+              options: [
+                { text: "O(log n)", isCorrect: true },
+                { text: "O(n)", isCorrect: false },
+                { text: "O(n²)", isCorrect: false },
+                { text: "O(1)", isCorrect: false },
+              ],
+              explanation:
+                "Binary search divides the array in half each time.",
+            },
+            {
+              questionText: "Which data structure uses FIFO?",
+              options: [
+                { text: "Queue", isCorrect: true },
+                { text: "Stack", isCorrect: false },
+                { text: "Tree", isCorrect: false },
+                { text: "Graph", isCorrect: false },
+              ],
+              explanation:
+                "Queue follows First In First Out order.",
+            },
+          ],
+          isActive: true,
+        });
+      }
+
+      /* ================= PROGRAMMING BASICS QUIZ ================= */
+      if (course.title?.en?.toLowerCase().includes("program")) {
+        quizzes.push({
+          courseId: course._id,
+          moduleId: module?._id || null,
+          title: "Programming Fundamentals Quiz",
+          durationMinutes: 15,
+          totalQuestions: 5,
+          questions: [
+            {
+              questionText: "What is a variable?",
+              options: [
+                { text: "A container for storing data", isCorrect: true },
+                { text: "A loop type", isCorrect: false },
+                { text: "A database", isCorrect: false },
+                { text: "An API", isCorrect: false },
+              ],
+              explanation:
+                "Variables store values that can change during execution.",
+            },
+            {
+              questionText: "Which keyword declares a constant in JS?",
+              options: [
+                { text: "const", isCorrect: true },
+                { text: "var", isCorrect: false },
+                { text: "let", isCorrect: false },
+                { text: "static", isCorrect: false },
+              ],
+              explanation:
+                "const declares a constant variable in JavaScript.",
+            },
+          ],
+          isActive: true,
+        });
+      }
+    }
+
+    await Quiz.insertMany(quizzes);
+
+    console.log(`✓ ${quizzes.length} quizzes seeded successfully`);
     process.exit();
   } catch (error) {
     console.error(error);

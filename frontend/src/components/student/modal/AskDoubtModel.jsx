@@ -10,9 +10,14 @@ import api from "../../../config/api";
 const _MotionRef = motion;
 const MAX_DOUBT_LENGTH = 500;
 
-const AskDoubtModal = ({ isOpen, onClose, selectedInstructor }) => {
+const AskDoubtModal = ({ isOpen, onClose, selectedInstructor, onSubmit }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("instructor"); // "instructor" or "ai"
+  const [aiModels, setAiModels] = useState([]);
+  const [selectedAiModel, setSelectedAiModel] = useState(null);
+  const [loadingModels, setLoadingModels] = useState(false);
+
   const [form, setForm] = useState({
     subject: "",
     instructor: selectedInstructor?.name || "",
@@ -22,6 +27,29 @@ const AskDoubtModal = ({ isOpen, onClose, selectedInstructor }) => {
   });
 
   const { setIsModal } = useUiStore();
+
+  // Fetch AI models when modal opens and AI tab is selected
+  useEffect(() => {
+    if (isOpen && activeTab === "ai" && aiModels.length === 0) {
+      fetchAiModels();
+    }
+  }, [isOpen, activeTab]);
+
+  const fetchAiModels = async () => {
+    try {
+      setLoadingModels(true);
+      const res = await api.get("/ai/models");
+      setAiModels(res.data);
+      if (res.data.length > 0) {
+        setSelectedAiModel(res.data[0].name);
+      }
+    } catch (error) {
+      console.error("Error fetching AI models:", error);
+      toast.error("Failed to load AI models");
+    } finally {
+      setLoadingModels(false);
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -56,14 +84,46 @@ const AskDoubtModal = ({ isOpen, onClose, selectedInstructor }) => {
       toast.error(t("studentModals.askDoubt.requiredFields"));
       return;
     }
+
+    if (activeTab === "instructor") {
+      // Submit to instructor
+      try {
+        setLoading(true);
+        await api.post("/student/doubts", form);
+        toast.success(t("studentModals.askDoubt.success"));
+        if (onSubmit) await onSubmit();
+        onClose();
+      } catch (error) {
+        console.log("Error in submitting doubt:", error);
+        toast.error(t("studentModals.askDoubt.error"));
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Submit to AI
+      await submitToAi();
+    }
+  };
+
+  const submitToAi = async () => {
+    if (!selectedAiModel) {
+      toast.error("Please select an AI model");
+      return;
+    }
+
     try {
       setLoading(true);
-      await api.post("/student/doubts", form);
-      toast.success(t("studentModals.askDoubt.success"));
-      onClose();
+      const response = await api.post("/ai/chat", {
+        modelName: selectedAiModel,
+        message: form.doubt,
+        courseId: form.courseId || null,
+      });
+
+      toast.success("Got response from AI!");
+      console.log("AI Response:", response.data);
     } catch (error) {
-      console.log("Error in submitting doubt:", error);
-      toast.error(t("studentModals.askDoubt.error"));
+      console.error("Error submitting to AI:", error);
+      toast.error("Failed to get AI response");
     } finally {
       setLoading(false);
     }
@@ -112,30 +172,88 @@ const AskDoubtModal = ({ isOpen, onClose, selectedInstructor }) => {
                          w-full max-w-md rounded-3xl 
                          h-[75vh] flex flex-col relative"
             >
-              {/* ===== HEADER ===== */}
+              {/* ===== HEADER WITH TABS ===== */}
               <div className="p-6 border-b border-(--border-color) relative">
                 <div className="absolute top-6 right-6">
                   <CloseButton onClose={onClose} />
                 </div>
 
-                <h2 className="text-xl font-semibold text-center">
+                <h2 className="text-xl font-semibold text-center mb-4">
                   {t("studentModals.askDoubt.title")}
                 </h2>
 
-                {selectedInstructor && (
-                  <p className="text-sm text-(--text-secondary) text-center mt-1">
-                    {t("studentModals.askDoubt.sendingTo")}{" "}
-                    {selectedInstructor?.name}
-                  </p>
-                )}
+                {/* TAB BUTTONS */}
+                <div className="flex gap-2 bg-(--bg-muted) p-1 rounded-lg">
+                  <button
+                    onClick={() => setActiveTab("instructor")}
+                    className={`flex-1 py-2 rounded-md transition-all text-sm font-medium ${
+                      activeTab === "instructor"
+                        ? "bg-(--color-primary) text-white"
+                        : "text-(--text-secondary) hover:text-(--text-primary)"
+                    }`}
+                  >
+                    Ask Instructor
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("ai")}
+                    className={`flex-1 py-2 rounded-md transition-all text-sm font-medium ${
+                      activeTab === "ai"
+                        ? "bg-(--color-primary) text-white"
+                        : "text-(--text-secondary) hover:text-(--text-primary)"
+                    }`}
+                  >
+                    Ask AI
+                  </button>
+                </div>
               </div>
 
               {/* ===== BODY ===== */}
               <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+                {/* AI MODEL SELECTION (only for AI tab) */}
+                {activeTab === "ai" && (
+                  <div>
+                    <label className="text-sm text-(--text-secondary) block mb-2">
+                      Choose AI Model
+                    </label>
+                    {loadingModels ? (
+                      <div className="p-3 bg-(--bg-muted) rounded-xl text-center text-sm">
+                        Loading models...
+                      </div>
+                    ) : aiModels.length > 0 ? (
+                      <select
+                        value={selectedAiModel || ""}
+                        onChange={(e) => setSelectedAiModel(e.target.value)}
+                        disabled={loading}
+                        className="w-full p-3 rounded-xl border border-(--border-color) bg-(--bg-main) text-(--text-primary)"
+                      >
+                        {aiModels.map((model) => (
+                          <option key={model._id} value={model.name}>
+                            {model.icon} {model.title}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="p-3 bg-(--bg-muted) rounded-xl text-center text-sm text-(--text-secondary)">
+                        No AI models available
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* INSTRUCTOR INFO (only for instructor tab) */}
+                {activeTab === "instructor" && selectedInstructor && (
+                  <p className="text-sm text-(--text-secondary) text-center pb-2">
+                    {t("studentModals.askDoubt.sendingTo")}{" "}
+                    {selectedInstructor?.name}
+                  </p>
+                )}
+
                 {/* Subject */}
                 <div>
                   <label className="text-sm text-(--text-secondary)">
-                    {t("studentModals.askDoubt.subjectLabel")}
+                    {activeTab === "instructor"
+                      ? t("studentModals.askDoubt.subjectLabel")
+                      : "Topic"}
                     <span className="text-red-500 ml-1">*</span>
                   </label>
                   <div className="flex items-center gap-3 border border-(--border-color) bg-(--bg-main) p-3 rounded-xl mt-1 focus-within:border-(--color-primary) transition-colors">
@@ -158,7 +276,9 @@ const AskDoubtModal = ({ isOpen, onClose, selectedInstructor }) => {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="text-sm text-(--text-secondary)">
-                      {t("studentModals.askDoubt.doubtLabel")}
+                      {activeTab === "instructor"
+                        ? t("studentModals.askDoubt.doubtLabel")
+                        : "Your Question"}
                       <span className="text-red-500 ml-1">*</span>
                     </label>
                     <span className={`text-xs ${getCharacterColor()}`}>
@@ -189,12 +309,16 @@ const AskDoubtModal = ({ isOpen, onClose, selectedInstructor }) => {
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
                       <FiLoader className="animate-spin" size={18} />
-                      {t("studentModals.askDoubt.submittingButton")}
+                      {activeTab === "instructor"
+                        ? t("studentModals.askDoubt.submittingButton")
+                        : "Getting AI Response..."}
                     </span>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       <FiMessageCircle />
-                      {t("studentModals.askDoubt.submitButton")}
+                      {activeTab === "instructor"
+                        ? t("studentModals.askDoubt.submitButton")
+                        : "Ask AI"}
                     </span>
                   )}
                 </motion.button>

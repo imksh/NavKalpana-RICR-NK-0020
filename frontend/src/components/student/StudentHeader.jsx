@@ -110,7 +110,7 @@ const StudentHeader = () => {
       initial={{ y: -100 }}
       animate={{ y: showHeader ? 0 : -120 }}
       transition={{ duration: 0.3 }}
-      className="fixed top-0 left-0 w-full z-50 px-4 md:px-16 pt-4 backdrop-blur-md items-center"
+      className="fixed top-0 left-0 w-full z-50 px-4 md:px-16 pt-4 backdrop-blur-md items-center "
       onClick={(e) => {
         e.stopPropagation();
         setOpenProfile(false);
@@ -189,7 +189,10 @@ const StudentHeader = () => {
           {/* Profile */}
           <div className="hidden md:block relative">
             <button
-              onClick={() => setOpenProfile(!openProfile)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenProfile(!openProfile);
+              }}
               className="flex items-center gap-3 bg-white/10 px-3 py-2 rounded-xl hover:bg-white/20 transition cursor-pointer"
               onMouseEnter={() => setOpenProfile(true)}
               onMouseLeave={() => setOpenProfile(false)}
@@ -206,7 +209,7 @@ const StudentHeader = () => {
                 </div>
               )}
               <span className="hidden md:block text-sm font-medium text-white">
-                {user?.name}
+                {user?.name?.slice(0, 15)}
               </span>
             </button>
 

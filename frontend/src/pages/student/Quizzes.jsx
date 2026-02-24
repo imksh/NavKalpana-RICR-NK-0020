@@ -14,6 +14,7 @@ import {
 } from "react-icons/fi";
 import api from "../../config/api";
 import { useTranslation } from "react-i18next";
+import LoadingWave from "../../components/LoadingWave";
 
 const Quizzes = () => {
   const { t } = useTranslation();
@@ -132,10 +133,7 @@ const Quizzes = () => {
   if (loading) {
     return (
       <div className="min-h-dvh bg-(--bg-main) flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-(--color-primary) border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-(--text-secondary)">{t("quizzes.loading")}</p>
-        </div>
+        <LoadingWave />
       </div>
     );
   }

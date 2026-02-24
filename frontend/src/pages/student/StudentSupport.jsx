@@ -19,17 +19,9 @@ import api from "../../config/api";
 import AskDoubtModal from "../../components/student/modal/AskDoubtModel";
 import StudentSupportTrackerModal from "../../components/student/modal/StudentSupportTrackerModal";
 import { useTranslation } from "react-i18next";
-
-/* ================= DEMO DATA ================= */
-
-const demoAiTutors = [
-  {
-    _id: "ai1",
-    name: "CodeMentor AI",
-    role: "Instant Coding Help",
-    avatar: "https://i.pravatar.cc/150?img=32",
-  },
-];
+import LoadingWave from "../../components/LoadingWave";
+import AiTutorSelectModal from "../../components/student/modal/AiTutorSelectModal";
+import ChatModal from "../../components/student/modal/ChatModal";
 
 const StudentSupport = () => {
   const { t } = useTranslation();
@@ -40,25 +32,53 @@ const StudentSupport = () => {
   const { lang } = useUiStore();
   const [courses, setCourses] = useState(null);
   const [showTracker, setShowTracker] = useState(false);
+  const [selectedTutor, setSelectedTutor] = useState(null);
+  const [aiModels, setAiModels] = useState([]);
+  const [showAiTutorSelect, setShowAiTutorSelect] = useState(false);
 
   /* ================= SUPPORT DATA ================= */
   const [doubts, setDoubts] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  /* ================= STATS STATE ================= */
+  const [stats, setStats] = useState({
+    totalDoubts: 0,
+    pendingDoubts: 0,
+    totalSessions: 0,
+    upcomingSessions: 0,
+  });
+
+  const updateStats = (doubtsData, sessionsData) => {
+    setStats({
+      totalDoubts: doubtsData.length,
+      pendingDoubts: doubtsData.filter((d) => d.status === "Pending").length,
+      totalSessions: sessionsData.length,
+      upcomingSessions: sessionsData.filter(
+        (s) => s.status === "Pending" && new Date(s.dateTime) > new Date(),
+      ).length,
+    });
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [coursesRes, doubtsRes, sessionsRes] = await Promise.all([
-          api.get("/student/courses"),
-          api.get("/student/doubts").catch(() => ({ data: [] })),
-          api.get("/student/sessions").catch(() => ({ data: [] })),
-        ]);
+        const [coursesRes, doubtsRes, sessionsRes, aiModelsRes] =
+          await Promise.all([
+            api.get("/student/courses"),
+            api.get("/student/doubts").catch(() => ({ data: [] })),
+            api.get("/student/sessions").catch(() => ({ data: [] })),
+            api.get("/ai/models").catch(() => ({ data: [] })),
+          ]);
 
         setCourses(coursesRes.data);
-        setDoubts(doubtsRes.data || []);
-        setSessions(sessionsRes.data || []);
+        const doubtsData = doubtsRes.data || [];
+        const sessionsData = sessionsRes.data || [];
+        setDoubts(doubtsData);
+        setSessions(sessionsData);
+        setAiModels(aiModelsRes.data || []);
+        updateStats(doubtsData, sessionsData);
       } catch (error) {
         console.log("Error fetching support data:", error);
       } finally {
@@ -68,14 +88,27 @@ const StudentSupport = () => {
     fetchData();
   }, []);
 
-  /* ================= STATS ================= */
-  const stats = {
-    totalDoubts: doubts.length,
-    pendingDoubts: doubts.filter((d) => d.status === "Pending").length,
-    totalSessions: sessions.length,
-    upcomingSessions: sessions.filter(
-      (s) => s.status === "Pending" && new Date(s.dateTime) > new Date(),
-    ).length,
+  /* ================= UPDATE HANDLERS ================= */
+  const handleDoubtSubmitted = async () => {
+    try {
+      const doubtsRes = await api.get("/student/doubts");
+      const doubtsData = doubtsRes.data || [];
+      setDoubts(doubtsData);
+      updateStats(doubtsData, sessions);
+    } catch (error) {
+      console.log("Error refreshing doubts:", error);
+    }
+  };
+
+  const handleSessionBooked = async () => {
+    try {
+      const sessionsRes = await api.get("/student/sessions");
+      const sessionsData = sessionsRes.data || [];
+      setSessions(sessionsData);
+      updateStats(doubts, sessionsData);
+    } catch (error) {
+      console.log("Error refreshing sessions:", error);
+    }
   };
 
   const recentDoubts = doubts.slice(0, 3);
@@ -99,7 +132,7 @@ const StudentSupport = () => {
   if (loading) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        {t("studentSupport.loading")}
+        <LoadingWave size="w-40 h-40" />
       </div>
     );
   }
@@ -369,6 +402,7 @@ const StudentSupport = () => {
                   </div>
 
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Course Instructor Card */}
                     <div className="bg-(--card-bg) border border-(--border-color) p-5 md:p-6 rounded-3xl flex flex-col shadow-sm hover:shadow-md transition">
                       <div className="flex items-start gap-4 mb-4">
                         <img
@@ -476,6 +510,122 @@ const StudentSupport = () => {
                         </button>
                       </div>
                     </div>
+
+                    {/* AI Course Helper Card */}
+                    {(() => {
+                      // Find course-specific AI first, then fallback to CourseHelper (universal)
+                      const courseHelper =
+                        aiModels.find(
+                          (ai) =>
+                            ai.courseId?.toString() === course._id?.toString(),
+                        ) ||
+                        aiModels.find(
+                          (ai) => ai.name === "CourseHelper" && !ai.courseId,
+                        );
+
+                      if (!courseHelper) return null;
+
+                      return (
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          onClick={() => setSelectedTutor(courseHelper)}
+                          className="bg-gradient-to-br from-(--color-primary)/5 to-blue-500/5 border border-(--color-primary)/20 p-5 md:p-6 rounded-3xl flex flex-col shadow-sm hover:shadow-md transition cursor-pointer group"
+                        >
+                          <div className="flex items-start gap-4 mb-4">
+                            <div className="relative">
+                              <img
+                                src={courseHelper.avatar}
+                                alt={courseHelper.title}
+                                className="w-16 h-16 rounded-full object-cover border-2 border-(--color-primary)"
+                              />
+                              {/* <span className="absolute -bottom-1 -right-1 text-2xl bg-(--card-bg) rounded-full border-2 border-(--color-primary) p-1">
+                                {courseHelper.icon}
+                              </span> */}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-semibold text-lg">
+                                  {courseHelper.title}
+                                </h3>
+                                <HiOutlineSparkles
+                                  className="text-(--color-primary) mt-1"
+                                  size={18}
+                                />
+                              </div>
+                              <p className="text-xs text-(--color-primary) font-medium uppercase tracking-wide">
+                                {courseHelper.role}
+                              </p>
+                              <p className="text-sm text-(--text-secondary) mt-1">
+                                {courseHelper.description}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* AI Features */}
+                          <div className="grid grid-cols-3 gap-2 mb-4 p-3 bg-(--bg-muted) rounded-xl">
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-(--color-primary)">
+                                24/7
+                              </p>
+                              <p className="text-xs text-(--text-muted)">
+                                {t("studentSupport.labels.available") ||
+                                  "Available"}
+                              </p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-(--color-success)">
+                                &lt;5s
+                              </p>
+                              <p className="text-xs text-(--text-muted)">
+                                {t("studentSupport.labels.response") ||
+                                  "Response"}
+                              </p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-(--color-accent)">
+                                ∞
+                              </p>
+                              <p className="text-xs text-(--text-muted)">
+                                {t("studentSupport.labels.questions") ||
+                                  "Questions"}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* AI Capabilities */}
+                          <div className="flex flex-wrap gap-2 mb-6">
+                            <span className="bg-(--color-primary)/10 text-(--color-primary) text-xs px-3 py-1.5 rounded-full font-medium">
+                              📚 Concepts
+                            </span>
+                            <span className="bg-(--color-primary)/10 text-(--color-primary) text-xs px-3 py-1.5 rounded-full font-medium">
+                              📝 Assignments
+                            </span>
+                            <span className="bg-(--color-primary)/10 text-(--color-primary) text-xs px-3 py-1.5 rounded-full font-medium">
+                              💡 Examples
+                            </span>
+                          </div>
+
+                          {/* Action Button */}
+                          <div className="mt-auto">
+                            <button className="w-full py-2.5 bg-gradient-to-r from-(--color-primary) to-blue-500 text-white rounded-xl cursor-pointer hover:opacity-90 transition-all inline-flex items-center justify-center gap-2 font-medium">
+                              <HiOutlineSparkles size={18} />
+                              {t("studentSupport.buttons.chatWithAI") ||
+                                "Chat with AI"}
+                            </button>
+                          </div>
+
+                          {/* AI Badge */}
+                          {courseHelper.isActive && (
+                            <div className="flex items-center justify-center gap-1 mt-3 text-green-600 text-xs">
+                              <FiCheckCircle size={12} />
+                              <span className="font-medium">
+                                {t("studentSupport.online") || "Online Now"}
+                              </span>
+                            </div>
+                          )}
+                        </motion.div>
+                      );
+                    })()}
                   </div>
                 </motion.div>
               );
@@ -496,42 +646,82 @@ const StudentSupport = () => {
           />
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {demoAiTutors.map((ai) => (
+            {aiModels.length > 0 ? (
+              aiModels.slice(0, 5).map((ai) => (
+                <motion.div
+                  key={ai._id}
+                  whileHover={{ scale: 1.02 }}
+                  onClick={() => setSelectedTutor(ai)}
+                  className="bg-(--card-bg) border border-(--border-color) p-5 md:p-6 rounded-3xl shadow-sm hover:shadow-md transition cursor-pointer"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="relative">
+                      <img
+                        src={ai.avatar}
+                        alt={ai.title}
+                        className="w-14 h-14 rounded-full border-2 border-(--color-primary) object-cover"
+                      />
+                      <span className="absolute -bottom-1 -right-1 text-xl">
+                        {ai.icon}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">{ai.title}</h3>
+                      <p className="text-xs text-(--color-primary) font-medium">
+                        {ai.role}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mb-4 p-3 bg-(--bg-muted) rounded-xl">
+                    <p className="text-xs text-(--text-secondary) line-clamp-2">
+                      {ai.description}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs text-(--text-secondary)">
+                      {t("studentSupport.availability") || "Availability"}
+                    </span>
+                    {ai.isActive && (
+                      <span className="flex items-center gap-1 text-green-600 text-xs">
+                        <FiCheckCircle size={12} />
+                        {t("studentSupport.online") || "Online"}
+                      </span>
+                    )}
+                  </div>
+
+                  <button className="w-full py-2.5 bg-(--color-accent) text-white rounded-xl inline-flex items-center justify-center gap-2 hover:bg-(--color-accent-hover) transition-all font-medium">
+                    <FiArrowUpRight size={16} />
+                    {t("studentSupport.startAiChat") || "Start Chat"}
+                  </button>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8">
+                <div className="text-4xl mb-3">🤖</div>
+                <p className="text-(--text-secondary)">
+                  {t("studentSupport.noAiModels") ||
+                    "AI teachers will appear here"}
+                </p>
+              </div>
+            )}
+
+            {aiModels.length > 3 && (
               <motion.div
-                key={ai._id}
                 whileHover={{ scale: 1.02 }}
-                className="bg-(--card-bg) border border-(--border-color) p-5 md:p-6 rounded-3xl shadow-sm hover:shadow-md transition"
+                onClick={() => setShowAiTutorSelect(true)}
+                className="bg-gradient-to-br from-(--color-primary)/10 to-(--color-accent)/10 border-2 border-dashed border-(--color-primary)/30 p-6 rounded-3xl flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-(--color-primary) transition"
               >
-                <div className="flex items-center gap-4 mb-4">
-                  <img
-                    src={ai.avatar}
-                    alt={ai.name}
-                    className="w-14 h-14 rounded-full border border-(--border-color)"
-                  />
-                  <div>
-                    <h3 className="font-semibold">{ai.name}</h3>
-                    <p className="text-sm text-(--text-secondary)">{ai.role}</p>
-                  </div>
-                </div>
-
-                <div className="mb-4 p-3 bg-(--bg-muted) rounded-xl">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-(--text-secondary)">
-                      {t("studentSupport.availability")}
-                    </span>
-                    <span className="flex items-center gap-1 text-green-600">
-                      <FiCheckCircle size={12} />
-                      {t("studentSupport.online")}
-                    </span>
-                  </div>
-                </div>
-
-                <button className="w-full py-2.5 bg-(--color-accent) text-white rounded-xl inline-flex items-center justify-center gap-2 hover:bg-(--color-accent-hover) transition-all font-medium">
-                  <FiArrowUpRight size={16} />
-                  {t("studentSupport.startAiChat")}
-                </button>
+                <div className="text-4xl">✨</div>
+                <p className="font-semibold text-(--color-primary)">
+                  +{aiModels.length - 3} More Teachers
+                </p>
+                <p className="text-xs text-(--text-secondary) text-center">
+                  Click to view all AI mentors
+                </p>
               </motion.div>
-            ))}
+            )}
           </div>
         </section>
       </div>
@@ -546,6 +736,7 @@ const StudentSupport = () => {
         }}
         selectedInstructor={selectedInstructor}
         selectedTopic={selectedTopic}
+        onSubmit={handleSessionBooked}
       />
       <AskDoubtModal
         isOpen={showAskDoubt}
@@ -555,12 +746,34 @@ const StudentSupport = () => {
           setSelectedTopic(null);
           setShowAskDoubt(false);
         }}
+        onSubmit={handleDoubtSubmitted}
       />
 
       <StudentSupportTrackerModal
         isOpen={showTracker}
         onClose={() => setShowTracker(false)}
       />
+
+      {selectedTutor && (
+        <ChatModal
+          tutor={selectedTutor}
+          onClose={() => {
+            setSelectedTutor(null);
+          }}
+        />
+      )}
+
+      {showAiTutorSelect && (
+        <AiTutorSelectModal
+          aiModels={aiModels}
+          isOpen={showAiTutorSelect}
+          onClose={() => setShowAiTutorSelect(false)}
+          onSelect={(ai) => {
+            setSelectedTutor(ai);
+            setShowAiTutorSelect(false);
+          }}
+        />
+      )}
     </>
   );
 };

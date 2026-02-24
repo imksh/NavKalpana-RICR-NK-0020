@@ -11,7 +11,7 @@ const sendEmail = async (to, subject, message) => {
     });
 
     const mailOptions = {
-      from: `"Maa Baglamukhi Mandir" <${process.env.EMAIL_USER}>`,
+      from: `"Gradify" <${process.env.EMAIL_USER}>`,
       to: to,
       subject: subject,
       html: message,

@@ -17,9 +17,6 @@ const LearningHeatmap = () => {
     fetch();
   }, []);
 
-  console.log(data);
-  
-
   /* ============================= */
   /*       TRANSFORM DATA          */
   /* ============================= */
