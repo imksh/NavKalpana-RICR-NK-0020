@@ -9,6 +9,7 @@ import {
   FiTarget,
   FiClock,
   FiActivity,
+  FiDownload,
 } from "react-icons/fi";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useStudentStore } from "../../store/useStudentStore";
@@ -19,6 +20,7 @@ import StudentEditProfileModal from "../../components/student/modal/StudentEditP
 import ChangePasswordModal from "../../components/modals/ChangePasswordModal";
 import api from "../../config/api";
 import { useTranslation } from "react-i18next";
+import usePwaInstall from "../../hooks/usePwaInstall";
 
 const StudentProfile = () => {
   const { t } = useTranslation();
@@ -26,6 +28,7 @@ const StudentProfile = () => {
   const { stats } = useStudentStore();
   const { lang } = useUiStore();
   const { theme } = useThemeStore();
+  const { canInstall, isInstalled, promptInstall } = usePwaInstall();
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
@@ -102,7 +105,7 @@ const StudentProfile = () => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-(--card-bg) border border-(--border-color) rounded-3xl p-8 shadow-sm mb-12"
+          className="bg-(--card-bg) border border-(--border-color) rounded-3xl px-2 py-8 sm:p-8 shadow-sm mb-12"
         >
           <div className="flex flex-col md:flex-row items-center gap-8">
             <img
@@ -128,13 +131,29 @@ const StudentProfile = () => {
               </p>
             </div>
 
-            <button
-              onClick={() => setIsEditProfileModalOpen((prev) => !prev)}
-              className="flex items-center gap-2 px-5 py-2 bg-(--color-primary) text-white rounded-xl hover:opacity-90"
-            >
-              <FiEdit2 />
-              {t("studentProfile.editProfile")}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsEditProfileModalOpen((prev) => !prev)}
+                className="flex items-center gap-2 px-5 py-2 bg-(--color-primary) text-white rounded-xl hover:opacity-90"
+              >
+                <FiEdit2 />
+                {t("studentProfile.editProfile")}
+              </button>
+
+              <button
+                type="button"
+                onClick={promptInstall}
+                disabled={!canInstall}
+                className={`flex items-center gap-2 px-5 py-2 rounded-xl transition-all ${
+                  canInstall
+                    ? "border border-(--color-primary) text-(--color-primary) hover:bg-(--bg-muted)"
+                    : "border border-(--border-color) text-(--text-secondary) opacity-70"
+                }`}
+              >
+                <FiDownload />
+                {isInstalled ? "App Installed" : "Install App"}
+              </button>
+            </div>
           </div>
         </motion.div>
 

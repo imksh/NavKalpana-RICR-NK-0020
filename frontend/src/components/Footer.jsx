@@ -9,11 +9,14 @@ import {
   FiMapPin,
   FiSend,
   FiCheck,
+  FiDownload,
 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import usePwaInstall from "../hooks/usePwaInstall";
 
 const Footer = () => {
   const { t } = useTranslation();
+  const { canInstall, isInstalled, promptInstall } = usePwaInstall();
   const [email, setEmail] = useState("");
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
 
@@ -148,6 +151,20 @@ const Footer = () => {
                 <FiMail size={18} />
               </motion.a>
             </div>
+
+            <button
+              type="button"
+              onClick={promptInstall}
+              disabled={!canInstall}
+              className={`mt-5 inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                canInstall
+                  ? "bg-(--color-primary) text-white hover:opacity-90"
+                  : "border border-(--border-color) text-(--text-secondary) opacity-70"
+              }`}
+            >
+              <FiDownload size={16} />
+              {isInstalled ? "App Installed" : "Install App"}
+            </button>
           </motion.div>
 
           {/* Explore */}

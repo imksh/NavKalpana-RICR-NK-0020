@@ -15,6 +15,7 @@ import Footer from "./components/Footer";
 import Loading from "./components/Loading";
 import { Scroll } from "./components/Scrool";
 import ThemeBubble from "./components/ThemeBubble";
+import PwaInstallPrompt from "./components/PwaInstallPrompt";
 
 //Pages
 import Landing from "./pages/Landing";
@@ -56,7 +57,8 @@ import Courses from "./pages/Courses";
 
 const App = () => {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
-  const { setOpenLang, setOpenProfile, setMobileOpen,setShowSearch } = useUiStore();
+  const { setOpenLang, setOpenProfile, setMobileOpen, setShowSearch } =
+    useUiStore();
   const theme = useThemeStore((state) => state.theme);
   useLenis();
 
@@ -211,6 +213,7 @@ const App = () => {
         </Route>
       </Routes>
 
+      <PwaInstallPrompt />
       <Toaster position="top-right" />
     </div>
   );
