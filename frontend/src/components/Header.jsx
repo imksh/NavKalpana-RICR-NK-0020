@@ -22,9 +22,9 @@ import ChangeLanguage from "./ChangeLanguage";
 const Header = () => {
   const { t } = useTranslation();
   const { user, logout } = useAuthStore();
-  const { mobileOpen, setMobileOpen, closeAll } = useUiStore();
+  const { mobileOpen, setMobileOpen, openProfile, setOpenProfile, closeAll } =
+    useUiStore();
   const [showHeader, setShowHeader] = useState(true);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const lastScrollY = useRef(0);
@@ -44,7 +44,7 @@ const Header = () => {
       if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
         setShowHeader(false);
         setMobileOpen(false);
-        setShowProfileMenu(false);
+        setOpenProfile(false);
       } else {
         setShowHeader(true);
       }
@@ -54,7 +54,7 @@ const Header = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [setMobileOpen]);
+  }, [setMobileOpen, setOpenProfile]);
 
   /* ============================= */
   /*   CLOSE MENU ON OUTSIDE CLICK */
@@ -65,13 +65,13 @@ const Header = () => {
         profileMenuRef.current &&
         !profileMenuRef.current.contains(event.target)
       ) {
-        setShowProfileMenu(false);
+        setOpenProfile(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [setOpenProfile]);
 
   /* ============================= */
   /*     NAVIGATION HELPERS        */
@@ -93,7 +93,7 @@ const Header = () => {
       default:
         navigate("/");
     }
-    setShowProfileMenu(false);
+    closeAll();
   };
 
   const handleSearch = (e) => {
@@ -107,7 +107,7 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    setShowProfileMenu(false);
+    closeAll();
     navigate("/");
   };
 
@@ -121,6 +121,9 @@ const Header = () => {
       animate={{ y: showHeader ? 0 : -120 }}
       transition={{ duration: 0.3 }}
       className="fixed top-0 left-0 w-full z-50 px-4 md:px-16 pt-4"
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
     >
       <div className="flex justify-between items-center bg-(--color-primary)/80 backdrop-blur-3xl rounded-3xl px-6 py-3.5 shadow-lg border border-(--color-primary)/40">
         {/* LOGO */}
@@ -128,7 +131,7 @@ const Header = () => {
           <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
             <FiBookOpen className="text-white" size={20} />
           </div>
-          <p className="text-2xl font-bold text-white hidden sm:block">
+          <p className="text-2xl font-bold text-white ">
             {t("header.brand")}
           </p>
         </Link>
@@ -257,7 +260,10 @@ const Header = () => {
               {/* Profile Menu */}
               <div className="relative" ref={profileMenuRef}>
                 <button
-                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  onClick={() => {
+                    setOpenProfile(!openProfile);
+                    setMobileOpen(false);
+                  }}
                   className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all"
                 >
                   <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
@@ -270,7 +276,7 @@ const Header = () => {
 
                 {/* Dropdown Menu */}
                 <AnimatePresence>
-                  {showProfileMenu && (
+                  {openProfile && (
                     <motion.div
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -304,7 +310,7 @@ const Header = () => {
                         <button
                           onClick={() => {
                             navigate("/settings");
-                            setShowProfileMenu(false);
+                            closeAll();
                           }}
                           className="w-full px-4 py-2.5 text-left hover:bg-(--bg-surface) transition-colors flex items-center gap-3 text-(--text-primary)"
                         >
@@ -333,7 +339,10 @@ const Header = () => {
 
           {/* MOBILE TOGGLE */}
           <button
-            onClick={() => setMobileOpen(!mobileOpen)}
+            onClick={() => {
+              setMobileOpen(!mobileOpen);
+              setOpenProfile(false);
+            }}
             className="lg:hidden p-2 text-white"
             aria-label={t("header.toggleMenu")}
           >
@@ -389,7 +398,7 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -40 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden mt-3 bg-(--card-bg) backdrop-blur-lg rounded-2xl shadow-xl border border-(--border-color) overflow-hidden"
+            className="lg:hidden mt-3 bg-(--color-primary) backdrop-blur-lg rounded-2xl shadow-xl border border-(--border-color) overflow-hidden"
           >
             <div className="p-4 space-y-2">
               {/* User Info (if logged in) */}

@@ -67,7 +67,7 @@ const StudentHome = () => {
               <span className="inline-flex items-center gap-2 rounded-full border border-(--border-color) bg-(--bg-muted) px-3 py-1 text-xs md:text-sm text-(--text-secondary)">
                 <FiTrendingUp size={14} /> {t("studentHome.badge")}
               </span>
-              <h1 className="mt-3 text-2xl md:text-4xl font-semibold leading-tight flex flex-wrap items-center gap-1.5">
+              <h1 className="mt-3 text-2xl md:text-4xl font-semibold leading-tight flex  items-center gap-1.5">
                 {getPersonalGreeting(user.name)} <FloatingEmojis />
               </h1>
               <p className="text-(--text-secondary) mt-2 text-sm md:text-base max-w-2xl">

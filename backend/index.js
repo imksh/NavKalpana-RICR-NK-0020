@@ -22,7 +22,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://10.62.251.71:5173"],
+    origin: ["http://localhost:5173", "https://imksh-gradify.netlify.app"],
     credentials: true,
   }),
 );

@@ -12,7 +12,7 @@ export const seedUsers = async () => {
   try {
     await User.deleteMany();
 
-    const hashedPassword = await bcrypt.hash("ksh777", 10);
+    const hashedPassword = await bcrypt.hash("demo@123", 10);
 
     /* ================= STUDENT ================= */
 
@@ -23,6 +23,94 @@ export const seedUsers = async () => {
       role: "student",
       photo: {
         url: "https://placehold.co/600x400?text=K",
+        publicId: "",
+      },
+      preferredLanguage: "en",
+      themePreference: "light",
+      skillsAcquired: [],
+      learningStreak: {
+        current: 0,
+        longest: 0,
+        lastActiveDate: new Date(),
+      },
+      averageQuizScore: 0,
+      averageAssignmentScore: 0,
+      aiUsageCount: 0,
+    });
+
+    const student2 = await User.create({
+      name: "Demo Student",
+      email: "demo@gradify.com",
+      password: hashedPassword,
+      role: "student",
+      photo: {
+        url: "https://placehold.co/600x400?text=D",
+        publicId: "",
+      },
+      preferredLanguage: "en",
+      themePreference: "light",
+      skillsAcquired: [],
+      learningStreak: {
+        current: 0,
+        longest: 0,
+        lastActiveDate: new Date(),
+      },
+      averageQuizScore: 0,
+      averageAssignmentScore: 0,
+      aiUsageCount: 0,
+    });
+
+    const student3 = await User.create({
+      name: "Roshan Malviya",
+      email: "roshan07malviya07@gmail.com",
+      password: hashedPassword,
+      role: "student",
+      photo: {
+        url: "https://placehold.co/600x400?text=R",
+        publicId: "",
+      },
+      preferredLanguage: "en",
+      themePreference: "light",
+      skillsAcquired: [],
+      learningStreak: {
+        current: 0,
+        longest: 0,
+        lastActiveDate: new Date(),
+      },
+      averageQuizScore: 0,
+      averageAssignmentScore: 0,
+      aiUsageCount: 0,
+    });
+
+    const student4 = await User.create({
+      name: "Vishal Tiwari",
+      email: "vishaltiwary7878@gmail.com",
+      password: hashedPassword,
+      role: "student",
+      photo: {
+        url: "https://placehold.co/600x400?text=V",
+        publicId: "",
+      },
+      preferredLanguage: "en",
+      themePreference: "light",
+      skillsAcquired: [],
+      learningStreak: {
+        current: 0,
+        longest: 0,
+        lastActiveDate: new Date(),
+      },
+      averageQuizScore: 0,
+      averageAssignmentScore: 0,
+      aiUsageCount: 0,
+    });
+
+    const student5 = await User.create({
+      name: "Priyanshu Pawar",
+      email: "pawarpriyanshu198@gmail.com",
+      password: hashedPassword,
+      role: "student",
+      photo: {
+        url: "https://placehold.co/600x400?text=P",
         publicId: "",
       },
       preferredLanguage: "en",
@@ -103,11 +191,15 @@ export const seedUsers = async () => {
     console.log("Demo users created successfully");
 
     console.log("\nLogin Credentials:");
-    console.log("Student → karan03945@gmail.com / ksh777");
-    console.log("Instructor 1 → raj@gradify.com / ksh777");
-    console.log("Instructor 2 → pranay@gradify.com / ksh777");
-    console.log("Instructor 3 → aryan@gradify.com / ksh777");
-    console.log("Admin → admin@gradify.com / ksh777");
+    console.log("Student → karan03945@gmail.com / demo@123");
+    console.log("Student → demo@gradify.com / demo@123");
+    console.log("Student → roshan07malviya07@gmail.com / demo@123");
+    console.log("Student → vishaltiwary7878@gmail.com / demo@123");
+    console.log("Student → pawarpriyanshu198@gmail.com / demo@123");
+    console.log("Instructor 1 → raj@gradify.com / demo@123");
+    console.log("Instructor 2 → pranay@gradify.com / demo@123");
+    console.log("Instructor 3 → aryan@gradify.com / demo@123");
+    console.log("Admin → admin@gradify.com / demo@123");
 
     process.exit();
   } catch (error) {
