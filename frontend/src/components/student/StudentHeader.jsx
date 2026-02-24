@@ -267,7 +267,7 @@ const StudentHeader = () => {
                       navigate("/student/profile");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
+                    className="w-full text-left px-4 py-2 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.profile")}
                   </button>
@@ -277,7 +277,7 @@ const StudentHeader = () => {
                       navigate("/student/assignments");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
+                    className="w-full text-left px-4 py-2 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.assignments")}
                   </button>
@@ -286,7 +286,7 @@ const StudentHeader = () => {
                       navigate("/student/quizzes");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
+                    className="w-full text-left px-4 py-2 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.quizzes")}
                   </button>
@@ -295,7 +295,7 @@ const StudentHeader = () => {
                       navigate("/student/attendance");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
+                    className="w-full text-left px-4 py-2 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.attendance")}
                   </button>
@@ -305,7 +305,7 @@ const StudentHeader = () => {
                       navigate("/student/progress");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
+                    className="w-full text-left px-4 py-2 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.progress")}
                   </button>
@@ -315,7 +315,7 @@ const StudentHeader = () => {
                       navigate("/student/jobs");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
+                    className="w-full text-left px-4 py-2 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.jobs")}
                   </button>
@@ -325,7 +325,7 @@ const StudentHeader = () => {
                       navigate("/student/alumni");
                       closeAll();
                     }}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) transition"
+                    className="w-full text-left px-4 py-2 hover:bg-(--bg-muted) transition"
                   >
                     {t("header.alumni")}
                   </button>
@@ -334,7 +334,7 @@ const StudentHeader = () => {
 
                   <button
                     onClick={toggleTheme}
-                    className="w-full text-left px-4 py-3 hover:bg-(--bg-muted) flex gap-2 items-center transition"
+                    className="w-full text-left px-4 py-2 hover:bg-(--bg-muted) flex gap-2 items-center transition"
                   >
                     {theme === "dark"
                       ? t("header.lightMode")
@@ -425,7 +425,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.profile")}
             </button>
@@ -436,7 +436,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.assignments")}
             </button>
@@ -446,7 +446,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.quizzes")}
             </button>
@@ -456,7 +456,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.attendance")}
             </button>
@@ -467,7 +467,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.progress")}
             </button>
@@ -478,7 +478,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.jobs")}
             </button>
@@ -489,12 +489,12 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.alumni")}
             </button>
 
-            <div className="border-t border-white/20 my-2"></div>
+            <div className="border-t border-white/20 my-1"></div>
 
             <button
               onClick={() => {
@@ -502,7 +502,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-3 hover:bg-white/10 rounded-lg flex gap-2 items-center transition"
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg flex gap-2 items-center transition"
             >
               <div className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
                 {theme === "dark" ? (
@@ -514,11 +514,11 @@ const StudentHeader = () => {
               {theme === "dark" ? t("header.lightMode") : t("header.darkMode")}
             </button>
 
-            <div className="p-3">
+            <div className="p-2">
               <ChangeLanguage />
             </div>
 
-            <div className="border-t border-white/20 my-2"></div>
+            <div className="border-t border-white/20 my-1"></div>
 
             <button
               onClick={() => {
@@ -526,7 +526,7 @@ const StudentHeader = () => {
                 closeAll();
                 setMobileOpen(false);
               }}
-              className="w-full text-left p-3 hover:bg-red-500/20 rounded-lg flex items-center gap-2 text-red-200 transition"
+              className="w-full text-left p-2 hover:bg-red-500/20 rounded-lg flex items-center gap-2 text-red-200 transition"
             >
               <FiLogOut /> {t("header.logout")}
             </button>

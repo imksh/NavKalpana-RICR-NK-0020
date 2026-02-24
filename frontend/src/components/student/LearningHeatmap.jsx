@@ -17,6 +17,9 @@ const LearningHeatmap = () => {
     fetch();
   }, []);
 
+  console.log(data);
+  
+
   /* ============================= */
   /*       TRANSFORM DATA          */
   /* ============================= */
@@ -37,10 +40,12 @@ const LearningHeatmap = () => {
   }, []);
 
   const transformedData = useMemo(() => {
-    return data.map((item) => ({
-      date: item.date.replaceAll("-", "/"),
-      count: item.count || 0,
-    }));
+    return data
+      .filter((item) => item.count > 0) // remove zero activity days
+      .map((item) => ({
+        date: item.date.replaceAll("-", "/"),
+        count: item.count,
+      }));
   }, [data]);
 
   const scrollRef = useRef(null);
@@ -59,7 +64,9 @@ const LearningHeatmap = () => {
 
         <div className="flex items-center gap-2">
           <FiCalendar className="text-(--color-warning)" />
-          <span className="text-(--text-secondary) hidden md:inline-block">Streak:</span>
+          <span className="text-(--text-secondary) hidden md:inline-block">
+            Streak:
+          </span>
           <span className="sm:text-xl font-semibold">{streak} Days 🔥</span>
         </div>
       </div>

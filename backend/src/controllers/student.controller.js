@@ -34,13 +34,15 @@ export const stats = async (req, res, next) => {
 
     const submittedAssignments = assignmentSubmissions.length;
 
+    const gradedSubmissions = assignmentSubmissions.filter(
+      (sub) => sub.marks != null,
+    );
+
     const avgAssignmentMarks =
-      assignmentSubmissions.length > 0
+      gradedSubmissions.length > 0
         ? Math.round(
-            assignmentSubmissions.reduce(
-              (sum, sub) => sum + (sub.marks || 0),
-              0,
-            ) / assignmentSubmissions.length,
+            gradedSubmissions.reduce((sum, sub) => sum + sub.marks, 0) /
+              gradedSubmissions.length,
           )
         : 0;
 
@@ -330,10 +332,21 @@ export const leaderboard = async (req, res, next) => {
       },
       {
         $addFields: {
+          validQuizResults: {
+            $filter: {
+              input: "$quizResults",
+              as: "q",
+              cond: { $ne: ["$$q.scorePercent", null] },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
           avgQuizScore: {
             $cond: [
-              { $gt: [{ $size: "$quizResults" }, 0] },
-              { $avg: "$quizResults.scorePercent" },
+              { $gt: [{ $size: "$validQuizResults" }, 0] },
+              { $ifNull: [{ $avg: "$validQuizResults.scorePercent" }, 0] },
               0,
             ],
           },
@@ -351,10 +364,21 @@ export const leaderboard = async (req, res, next) => {
       },
       {
         $addFields: {
+          gradedSubmissions: {
+            $filter: {
+              input: "$assignmentSubmissions",
+              as: "sub",
+              cond: { $ne: ["$$sub.marks", null] },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
           avgAssignmentMarks: {
             $cond: [
-              { $gt: [{ $size: "$assignmentSubmissions" }, 0] },
-              { $avg: "$assignmentSubmissions.marks" },
+              { $gt: [{ $size: "$gradedSubmissions" }, 0] },
+              { $ifNull: [{ $avg: "$gradedSubmissions.marks" }, 0] },
               0,
             ],
           },
@@ -435,10 +459,19 @@ export const leaderboard = async (req, res, next) => {
             $round: [
               {
                 $add: [
-                  { $multiply: ["$avgAssignmentMarks", 0.4] },
-                  { $multiply: ["$avgQuizScore", 0.4] },
-                  { $multiply: ["$attendancePercent", 0.1] },
-                  { $multiply: ["$courseCompletionPercent", 0.1] },
+                  {
+                    $multiply: [{ $ifNull: ["$avgAssignmentMarks", 0] }, 0.4],
+                  },
+                  { $multiply: [{ $ifNull: ["$avgQuizScore", 0] }, 0.4] },
+                  {
+                    $multiply: [{ $ifNull: ["$attendancePercent", 0] }, 0.1],
+                  },
+                  {
+                    $multiply: [
+                      { $ifNull: ["$courseCompletionPercent", 0] },
+                      0.1,
+                    ],
+                  },
                 ],
               },
               0,

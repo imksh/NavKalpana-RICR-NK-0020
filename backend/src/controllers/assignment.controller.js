@@ -4,6 +4,7 @@ import Enrollment from "../models/enrollment.model.js";
 import Course from "../models/course.model.js";
 import cloudinary from "../config/cloudinary.js";
 import { updateLearningStreak } from "../utils/updateLearningStreak.js";
+import LearningActivity from "../models/learningActivity.model.js";
 
 export const getStudentAssignments = async (req, res, next) => {
   try {
@@ -205,6 +206,7 @@ export const submitAssignment = async (req, res, next) => {
       status: submission.status,
     });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };

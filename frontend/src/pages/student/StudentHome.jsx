@@ -29,7 +29,7 @@ const StudentHome = () => {
     useState(false);
 
   const navigate = useNavigate();
-  const { stats, leaderboard, events, upcommingEvents, init } =
+  const { stats, leaderboard, events, upcommingEvents, init, loading } =
     useStudentStore();
   const [activity, setActivity] = useState([]);
 
@@ -90,6 +90,7 @@ const StudentHome = () => {
             value={`${stats.overallScore || 0}%`}
             color="text-(--color-primary)"
             onClick={() => setOverallScoreInfoModalOpen(true)}
+            loading={loading}
           />
 
           <StatCard
@@ -98,6 +99,7 @@ const StudentHome = () => {
             value={`${stats.submittedAssignments || 0} / ${stats.totalAssignments || 0}`}
             color="text-(--color-success)"
             onClick={() => navigate("/student/assignments")}
+            loading={loading}
           />
 
           <StatCard
@@ -106,6 +108,7 @@ const StudentHome = () => {
             value={`${stats.skillsAcquired || 0} / ${stats.totalSkills || 0}`}
             color="text-(--color-accent)"
             onClick={() => navigate("/student/courses")}
+            loading={loading}
           />
 
           <StatCard
@@ -114,6 +117,7 @@ const StudentHome = () => {
             value={`${stats.attemptedQuizzes || 0} / ${stats.totalQuizzes || 0}`}
             color="text-(--color-warning)"
             onClick={() => navigate("/student/quizzes")}
+            loading={loading}
           />
         </section>
 
@@ -192,19 +196,38 @@ const StudentHome = () => {
 
 /* ================= COMPONENTS ================= */
 
-const StatCard = ({ icon, title, value, color, onClick }) => (
+const StatCard = ({ icon, title, value, color, onClick, loading }) => (
   <div
-    onClick={onClick}
-    className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-4 md:p-5 shadow-sm cursor-pointer hover:shadow-md transition flex flex-col items-start"
+    onClick={!loading ? onClick : undefined}
+    className={`bg-(--card-bg) border border-(--border-color) rounded-2xl p-4 md:p-5 shadow-sm ${
+      !loading ? "cursor-pointer hover:shadow-md" : "cursor-default"
+    } transition flex flex-col items-start`}
   >
-    <div className="w-full flex items-start justify-between gap-2">
-      <div className={`text-2xl mb-3 ${color}`}>{icon}</div>
-      <span className="text-(--text-muted)">
-        <FiArrowUpRight size={16} />
-      </span>
-    </div>
-    <h4 className="text-(--text-secondary) text-xs md:text-sm mb-1">{title}</h4>
-    <p className="text-xl md:text-2xl font-semibold leading-tight">{value}</p>
+    {loading ? (
+      <>
+        <div className="w-full flex items-start justify-between gap-2">
+          <div className="w-8 h-8 mb-3 bg-(--bg-muted) rounded-lg animate-pulse"></div>
+          <div className="w-4 h-4 bg-(--bg-muted) rounded animate-pulse"></div>
+        </div>
+        <div className="w-20 h-3 bg-(--bg-muted) rounded mb-2 animate-pulse"></div>
+        <div className="w-16 h-6 bg-(--bg-muted) rounded animate-pulse"></div>
+      </>
+    ) : (
+      <>
+        <div className="w-full flex items-start justify-between gap-2">
+          <div className={`text-2xl mb-3 ${color}`}>{icon}</div>
+          <span className="text-(--text-muted)">
+            <FiArrowUpRight size={16} />
+          </span>
+        </div>
+        <h4 className="text-(--text-secondary) text-xs md:text-sm mb-1">
+          {title}
+        </h4>
+        <p className="text-xl md:text-2xl font-semibold leading-tight">
+          {value}
+        </p>
+      </>
+    )}
   </div>
 );
 

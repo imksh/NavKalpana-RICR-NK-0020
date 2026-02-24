@@ -12,7 +12,7 @@ const useUiStore = create((set, get) => ({
   newNotification: false,
   isModal: false,
 
-  lang: localStorage.getItem("lang") || "hi",
+  lang: localStorage.getItem("lang") || "en",
 
   closeAll: () => {
     set({ mobileOpen: false, openLang: false, openProfile: false });

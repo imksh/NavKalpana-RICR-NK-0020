@@ -58,7 +58,7 @@ const App = () => {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
   const { setOpenLang, setOpenProfile, setMobileOpen } = useUiStore();
   const theme = useThemeStore((state) => state.theme);
-  // useLenis();
+  useLenis();
 
   /* ============================= */
   /*        INITIAL LOAD           */

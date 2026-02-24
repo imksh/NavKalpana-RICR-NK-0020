@@ -13,37 +13,43 @@ const seedSkillProgress = async () => {
   try {
     await SkillProgress.deleteMany();
 
-    const student = await User.findOne({ role: "student" });
+    const students = await User.find({ role: "student" });
     const courses = await Course.find();
 
-    if (!student || !courses.length) {
+    if (!students.length || !courses.length) {
       console.log("Seed users and courses first.");
       process.exit();
     }
 
     const skillsToInsert = [];
 
-    for (const course of courses) {
-      if (!course.skills || !course.skills.length) continue;
+    for (const student of students) {
+      for (const course of courses) {
+        if (!course.skills || !course.skills.length) continue;
 
-      // Give student only some skills from each course
-      const acquiredCount = Math.floor(course.skills.length / 2);
+        const acquiredCount = Math.floor(course.skills.length / 2);
 
-      for (let i = 0; i < acquiredCount; i++) {
-        skillsToInsert.push({
-          studentId: student._id,
-          skillName: course.skills[i],
-          acquiredFromCourse: course._id,
-          acquiredAt: new Date(
-            Date.now() - Math.floor(Math.random() * 60) * 24 * 60 * 60 * 1000
-          ) // random date within last 60 days
-        });
+        for (let i = 0; i < acquiredCount; i++) {
+          skillsToInsert.push({
+            studentId: student._id,
+            skillName: course.skills[i],
+            acquiredFromCourse: course._id,
+            acquiredAt: new Date(
+              Date.now() -
+                Math.floor(Math.random() * 60) *
+                  24 *
+                  60 *
+                  60 *
+                  1000
+            ),
+          });
+        }
       }
     }
 
     await SkillProgress.insertMany(skillsToInsert);
 
-    console.log("Skill progress seeded successfully");
+    console.log("Skill progress seeded successfully for all students");
     process.exit();
   } catch (error) {
     console.error(error);
