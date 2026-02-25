@@ -22,10 +22,22 @@ import {
 } from "react-icons/fi";
 import api from "../../config/api";
 import { useAuthStore } from "../../store/useAuthStore";
+import toast from "react-hot-toast";
 
 const InstructorHome = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const availableRoutes = new Set(["/instructor"]);
+
+  const safeNavigate = (path) => {
+    if (availableRoutes.has(path)) {
+      navigate(path);
+      return;
+    }
+
+    toast("Page is not created yet");
+  };
+
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({
     stats: {
@@ -147,28 +159,28 @@ const InstructorHome = () => {
       title: "Create Course",
       desc: "Start a new course",
       color: "primary",
-      action: () => navigate("/instructor/courses/create"),
+      action: () => safeNavigate("/instructor/courses/create"),
     },
     {
       icon: FiEdit,
       title: "Manage Content",
       desc: "Edit your courses",
       color: "accent",
-      action: () => navigate("/instructor/courses"),
+      action: () => safeNavigate("/instructor/courses"),
     },
     {
       icon: FiBarChart2,
       title: "View Analytics",
       desc: "Check performance",
       color: "success",
-      action: () => navigate("/instructor/analytics"),
+      action: () => safeNavigate("/instructor/analytics"),
     },
     {
       icon: FiMessageCircle,
       title: "Q&A Center",
       desc: "Answer questions",
       color: "warning",
-      action: () => navigate("/instructor/questions"),
+      action: () => safeNavigate("/instructor/questions"),
     },
   ];
 
@@ -202,7 +214,7 @@ const InstructorHome = () => {
               </p>
             </div>
             <button
-              onClick={() => navigate("/instructor/courses/create")}
+              onClick={() => safeNavigate("/instructor/courses/create")}
               className="px-6 py-3 bg-(--color-primary) text-white font-semibold rounded-xl hover:bg-(--color-primary-hover) transition-all flex items-center gap-2 whitespace-nowrap"
             >
               <FiPlus size={20} />
@@ -289,7 +301,7 @@ const InstructorHome = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold">Your Courses</h2>
                 <button
-                  onClick={() => navigate("/instructor/courses")}
+                  onClick={() => safeNavigate("/instructor/courses")}
                   className="text-(--color-primary) hover:underline text-sm font-medium"
                 >
                   View All →
@@ -364,7 +376,7 @@ const InstructorHome = () => {
               </div>
 
               <button
-                onClick={() => navigate("/instructor/earnings")}
+                onClick={() => safeNavigate("/instructor/earnings")}
                 className="w-full mt-6 px-4 py-2 bg-(--color-primary) text-white font-semibold rounded-xl hover:bg-(--color-primary-hover) transition-all"
               >
                 View Earnings Report
@@ -388,7 +400,7 @@ const InstructorHome = () => {
                 ))}
               </div>
               <button
-                onClick={() => navigate("/instructor/activity")}
+                onClick={() => safeNavigate("/instructor/activity")}
                 className="w-full mt-6 px-4 py-2 border-2 border-(--border-color) font-semibold rounded-xl hover:border-(--color-primary) transition-all"
               >
                 View All Activity

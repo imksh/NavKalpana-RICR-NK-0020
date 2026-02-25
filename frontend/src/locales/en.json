@@ -1455,6 +1455,25 @@
     }
   },
   "components": {
+    "adminHeader": {
+      "title": "Admin Panel",
+      "role": "Administrator",
+      "users": "Users",
+      "courses": "Courses",
+      "reports": "Reports",
+      "adminProfile": "Admin Profile",
+      "platformSettings": "Platform Settings",
+      "logout": "Logout"
+    },
+    "instructorHeader": {
+      "title": "Instructor Dashboard",
+      "role": "Instructor",
+      "courses": "Courses",
+      "analytics": "Analytics",
+      "myProfile": "My Profile",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
     "eventCard": {
       "highPriority": "High Priority"
     }

@@ -14,6 +14,7 @@ import { useThemeStore } from "../../store/useThemeStore";
 import useUiStore from "../../store/useUiStore";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 
 const _MotionRef = motion;
 
@@ -114,7 +115,7 @@ const AdminHeader = () => {
               >
                 <button
                   onClick={() => {
-                    navigate("/admin/profile");
+                    toast("Profile page will be available soon!");
                     closeAll();
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"
@@ -124,7 +125,7 @@ const AdminHeader = () => {
 
                 <button
                   onClick={() => {
-                    navigate("/admin/settings");
+                    toast("Settings page will be available soon!");
                     closeAll();
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-(--bg-muted)"

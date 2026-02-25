@@ -30,6 +30,17 @@ import toast from "react-hot-toast";
 const AdminHome = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const availableRoutes = new Set(["/admin"]);
+
+  const safeNavigate = (path) => {
+    if (availableRoutes.has(path)) {
+      navigate(path);
+      return;
+    }
+
+    toast("Page is not created yet");
+  };
+
   const [loading, setLoading] = useState(true);
   const [isSendingTestNotification, setIsSendingTestNotification] =
     useState(false);
@@ -206,28 +217,28 @@ const AdminHome = () => {
       title: "Manage Users",
       desc: "View and manage users",
       color: "primary",
-      action: () => navigate("/admin/users"),
+      action: () => safeNavigate("/admin/users"),
     },
     {
       icon: FiBook,
       title: "Manage Courses",
       desc: "Review and approve courses",
       color: "accent",
-      action: () => navigate("/admin/courses"),
+      action: () => safeNavigate("/admin/courses"),
     },
     {
       icon: FiBarChart2,
       title: "Analytics",
       desc: "View platform analytics",
       color: "success",
-      action: () => navigate("/admin/analytics"),
+      action: () => safeNavigate("/admin/analytics"),
     },
     {
       icon: FiSettings,
       title: "Settings",
       desc: "Platform configuration",
       color: "warning",
-      action: () => navigate("/admin/settings"),
+      action: () => safeNavigate("/admin/settings"),
     },
   ];
 
@@ -287,14 +298,14 @@ const AdminHome = () => {
                   : "Send Test Notification"}
               </button>
               <button
-                onClick={() => navigate("/admin/settings")}
+                onClick={() => safeNavigate("/admin/settings")}
                 className="px-5 py-3 bg-(--card-bg) border-2 border-(--border-color) font-semibold rounded-xl hover:border-(--color-primary) transition-all flex items-center gap-2"
               >
                 <FiSettings size={20} />
                 Settings
               </button>
               <button
-                onClick={() => navigate("/admin/reports")}
+                onClick={() => safeNavigate("/admin/reports")}
                 className="px-5 py-3 bg-(--color-primary) text-white font-semibold rounded-xl hover:bg-(--color-primary-hover) transition-all flex items-center gap-2"
               >
                 <FiBarChart2 size={20} />
@@ -415,7 +426,7 @@ const AdminHome = () => {
                   Revenue Overview
                 </h2>
                 <button
-                  onClick={() => navigate("/admin/revenue")}
+                  onClick={() => safeNavigate("/admin/revenue")}
                   className="text-(--color-primary) hover:underline text-sm font-medium"
                 >
                   View Details →
@@ -465,7 +476,7 @@ const AdminHome = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold">Recent Users</h2>
                 <button
-                  onClick={() => navigate("/admin/users")}
+                  onClick={() => safeNavigate("/admin/users")}
                   className="text-(--color-primary) hover:underline text-sm font-medium"
                 >
                   View All →
@@ -487,7 +498,7 @@ const AdminHome = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold">Recent Courses</h2>
                 <button
-                  onClick={() => navigate("/admin/courses")}
+                  onClick={() => safeNavigate("/admin/courses")}
                   className="text-(--color-primary) hover:underline text-sm font-medium"
                 >
                   View All →
@@ -557,7 +568,7 @@ const AdminHome = () => {
               </div>
 
               <button
-                onClick={() => navigate("/admin/system")}
+                onClick={() => safeNavigate("/admin/system")}
                 className="w-full mt-6 px-4 py-2 bg-(--color-success) text-white font-semibold rounded-xl hover:opacity-90 transition-all"
               >
                 View System Logs
@@ -581,7 +592,7 @@ const AdminHome = () => {
                 ))}
               </div>
               <button
-                onClick={() => navigate("/admin/activity")}
+                onClick={() => safeNavigate("/admin/activity")}
                 className="w-full mt-6 px-4 py-2 border-2 border-(--border-color) font-semibold rounded-xl hover:border-(--color-primary) transition-all"
               >
                 View All Activity
