@@ -25,12 +25,14 @@ import {
 } from "react-icons/fi";
 import { useAuthStore } from "../../store/useAuthStore";
 import api from "../../config/api";
-
+import toast from "react-hot-toast";
 
 const AdminHome = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(true);
+  const [isSendingTestNotification, setIsSendingTestNotification] =
+    useState(false);
   const [dashboardData, setDashboardData] = useState({
     stats: {
       totalUsers: 0,
@@ -229,6 +231,20 @@ const AdminHome = () => {
     },
   ];
 
+  const handleSendTestNotification = async () => {
+    try {
+      setIsSendingTestNotification(true);
+      const response = await api.post("/admin/send-test-notification");
+      toast.success(response?.data?.message || "Test notification sent");
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to send test notification",
+      );
+    } finally {
+      setIsSendingTestNotification(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-(--bg-main) flex items-center justify-center">
@@ -260,6 +276,16 @@ const AdminHome = () => {
               </p>
             </div>
             <div className="flex gap-3">
+              <button
+                onClick={handleSendTestNotification}
+                disabled={isSendingTestNotification}
+                className="px-5 py-3 bg-(--card-bg) border-2 border-(--border-color) font-semibold rounded-xl hover:border-(--color-primary) transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <FiMessageSquare size={20} />
+                {isSendingTestNotification
+                  ? "Sending..."
+                  : "Send Test Notification"}
+              </button>
               <button
                 onClick={() => navigate("/admin/settings")}
                 className="px-5 py-3 bg-(--card-bg) border-2 border-(--border-color) font-semibold rounded-xl hover:border-(--color-primary) transition-all flex items-center gap-2"

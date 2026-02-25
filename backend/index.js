@@ -16,6 +16,7 @@ import instructorRouter from "./src/routers/instructor.route.js";
 import courseRouter from "./src/routers/course.route.js";
 import jobRouter from "./src/routers/job.route.js";
 import aiRouter from "./src/routers/ai.route.js";
+import pushRouter from "./src/routers/push.route.js";
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use("/api/instructor", instructorRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/jobs", jobRouter);
 app.use("/api/ai", aiRouter);
+app.use("/api/push", pushRouter);
 
 //home route
 app.get("/", (req, res) => {

@@ -55,12 +55,14 @@ import InstructorLayout from "./components/Layout/InstructorLayout";
 import PublicLayout from "./components/Layout/PublicLayout";
 import StudentLayout from "./components/Layout/StudentLayout";
 import Courses from "./pages/Courses";
+import usePushStore from "./store/usePushStore";
 
 const App = () => {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
   const { setOpenLang, setOpenProfile, setMobileOpen, setShowSearch } =
     useUiStore();
   const theme = useThemeStore((state) => state.theme);
+  const { subscribeUserToPush } = usePushStore();
   useLenis();
 
   /* ============================= */
@@ -97,6 +99,36 @@ const App = () => {
       i18n.changeLanguage(savedLang);
     }
   }, []);
+
+  useEffect(() => {
+    const initPush = async () => {
+      if (!user || user.role !== "student") return;
+      if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+        return;
+      }
+
+      let permission = Notification.permission;
+
+      if (permission === "default") {
+        permission = await Notification.requestPermission();
+      }
+
+      if (permission !== "granted") {
+        console.log("Notification permission denied.");
+        return;
+      }
+
+      const registration = await navigator.serviceWorker.ready;
+      const existingSubscription =
+        await registration.pushManager.getSubscription();
+
+      if (!existingSubscription) {
+        await subscribeUserToPush();
+      }
+    };
+
+    initPush();
+  }, [user, subscribeUserToPush]);
 
   if (isCheckingAuth) return <Loading />;
 

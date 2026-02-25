@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "generate:vapID": "node ./src/utils/generateVapidKeys.js",
     "seed:all": "npm run seed:user && npm run seed:activity && npm run seed:courses && npm run seed:modules && npm run seed:lessons && npm run seed:attendance && npm run seed:enrollment && npm run seed:assignments  && npm run seed:quizzes && npm run seed:skillProgress && npm run seed:jobs && npm run seed:alumni && npm run seed:events && npm run seed:aiModels",
     "seed": "node ./src/seeders/seed.js",
     "seed:admin": "node ./src/seeders/seedAdmin.js",
@@ -43,6 +44,7 @@
     "multer": "^2.0.2",
     "nodemailer": "^8.0.1",
     "openai": "^6.24.0",
-    "pdfkit": "^0.17.2"
+    "pdfkit": "^0.17.2",
+    "web-push": "^3.6.7"
   }
 }
