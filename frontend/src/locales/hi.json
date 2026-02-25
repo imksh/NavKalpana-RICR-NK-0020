@@ -11,6 +11,7 @@
     "jobs": "नौकरियाँ और इंटर्नशिप",
     "alumni": "पूर्व छात्र",
     "progress": "प्रगति और ट्रैकिंग",
+    "growthDashboard": "ग्रोथ डैशबोर्ड",
     "about": "हमारे बारे में",
     "contact": "संपर्क करें",
     "login": "लॉगिन",
@@ -492,10 +493,12 @@
       "night": "शुभ रात्रि"
     },
     "stats": {
-      "overallScore": "कुल स्कोर",
+      "overallScore": "OGI स्कोर",
       "assignments": "असाइनमेंट्स",
       "skills": "प्राप्त कौशल",
-      "quizzes": "क्विज़"
+      "quizzes": "क्विज़",
+      "growthDashboard": "ग्रोथ डैशबोर्ड",
+      "open": "खोलें"
     },
     "learningConsistency": {
       "title": "सीखने की निरंतरता",
@@ -602,10 +605,33 @@
       "scoreSub2": "मिश्रित प्रगति अनुमान"
     }
   },
+  "growthDashboard": {
+    "badge": "ग्रोथ इंटेलिजेंस",
+    "title": "ग्रोथ डैशबोर्ड",
+    "subtitle": "आपके लाइव शैक्षणिक रिकॉर्ड से सिंक साप्ताहिक OGI ट्रेंड, मॉड्यूल पूर्णता और प्रदर्शन इतिहास।",
+    "currentOgi": "वर्तमान OGI",
+    "ogi": "OGI",
+    "weeklyTrend": "साप्ताहिक प्रदर्शन ट्रेंड",
+    "moduleCompletion": "मॉड्यूल पूर्णता अवलोकन",
+    "completionRate": "पूर्णता दर",
+    "weeklyHistory": "साप्ताहिक प्रदर्शन इतिहास",
+    "needsAttention": "ध्यान आवश्यक",
+    "noData": "ग्रोथ डेटा अभी उपलब्ध नहीं है।",
+    "table": {
+      "week": "सप्ताह",
+      "ogi": "OGI",
+      "quiz": "क्विज़ औसत",
+      "assignment": "असाइनमेंट औसत",
+      "completion": "पूर्णता",
+      "consistency": "निरंतरता",
+      "attendance": "उपस्थिति"
+    }
+  },
   "coursePage": {
     "badge": "कोर्स वर्कस्पेस",
     "progress": "कोर्स प्रगति",
     "attendance": "उपस्थिति",
+    "submissionConsistency": "सबमिशन निरंतरता",
     "completedLessons": "पूर्ण किए गए पाठ",
     "estimatedDuration": "अनुमानित अवधि",
     "moduleCompletion": "मॉड्यूल पूर्णता",
@@ -656,7 +682,8 @@
       "pending": "लंबित",
       "submitted": "जमा",
       "evaluated": "मूल्यांकित",
-      "avgScore": "औसत स्कोर"
+      "avgScore": "औसत स्कोर",
+      "submissionConsistency": "सबमिशन निरंतरता"
     },
     "filters": {
       "all": "सभी",
@@ -1375,12 +1402,12 @@
       "title": "अपना AI ट्यूटर चुनें"
     },
     "scoreInfo": {
-      "title": "समग्र स्कोर विवरण",
-      "assignments": "असाइनमेंट्स (40%)",
+      "title": "Overall Growth Index (OGI)",
+      "assignments": "असाइनमेंट्स (30%)",
       "quizzes": "क्विज़ (40%)",
-      "attendance": "उपस्थिति (10%)",
-      "courseCompletion": "कोर्स पूर्णता (10%)",
-      "finalScore": "अंतिम भारित स्कोर"
+      "consistency": "निरंतरता (10%)",
+      "courseCompletion": "कोर्स पूर्णता (20%)",
+      "finalScore": "अंतिम OGI स्कोर"
     },
     "supportTracker": {
       "title": "सपोर्ट ट्रैकर",

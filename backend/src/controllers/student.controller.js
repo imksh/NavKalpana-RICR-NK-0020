@@ -33,6 +33,11 @@ export const stats = async (req, res, next) => {
       assignmentId: { $in: assignments.map((a) => a._id) },
     });
 
+    const allAssignmentSubmissions = await AssignmentSubmission.find({
+      studentId: user._id,
+      assignmentId: { $in: assignments.map((a) => a._id) },
+    });
+
     const submittedAssignments = assignmentSubmissions.length;
 
     const gradedSubmissions = assignmentSubmissions.filter(
@@ -45,6 +50,17 @@ export const stats = async (req, res, next) => {
             gradedSubmissions.reduce((sum, sub) => sum + sub.marks, 0) /
               gradedSubmissions.length,
           )
+        : 0;
+
+    const onTimeSubmissions = new Set(
+      allAssignmentSubmissions
+        .filter((sub) => !sub.isLate && sub.status !== "Late Submitted")
+        .map((sub) => sub.assignmentId.toString()),
+    ).size;
+
+    const consistencyPercent =
+      totalAssignments > 0
+        ? Math.round((onTimeSubmissions / totalAssignments) * 100)
         : 0;
 
     const quizzes = await Quiz.find({
@@ -134,8 +150,8 @@ export const stats = async (req, res, next) => {
     const overallScore = calculateOverallScore({
       avgAssignmentMarks,
       avgQuizScore,
-      attendancePercent,
       courseCompletionPercent,
+      consistencyPercent,
     });
 
     /* ================= RESPONSE ================= */
@@ -156,6 +172,7 @@ export const stats = async (req, res, next) => {
       overallScore,
       attendancePercent,
       courseCompletionPercent,
+      consistencyPercent,
     });
   } catch (error) {
     console.log("Error in stats:", error);
@@ -391,46 +408,7 @@ export const leaderboard = async (req, res, next) => {
         },
       },
 
-      /* ================= ATTENDANCE ================= */
-      {
-        $lookup: {
-          from: "attendances",
-          localField: "_id",
-          foreignField: "studentId",
-          as: "attendanceRecords",
-        },
-      },
-      {
-        $addFields: {
-          attendancePercent: {
-            $cond: [
-              { $gt: [{ $size: "$attendanceRecords" }, 0] },
-              {
-                $multiply: [
-                  {
-                    $divide: [
-                      {
-                        $size: {
-                          $filter: {
-                            input: "$attendanceRecords",
-                            as: "a",
-                            cond: { $eq: ["$$a.status", "Present"] },
-                          },
-                        },
-                      },
-                      { $size: "$attendanceRecords" },
-                    ],
-                  },
-                  100,
-                ],
-              },
-              0,
-            ],
-          },
-        },
-      },
-
-      /* ================= COURSE COMPLETION ================= */
+      /* ================= ENROLLMENT & ASSIGNMENTS ================= */
       {
         $lookup: {
           from: "enrollments",
@@ -439,6 +417,27 @@ export const leaderboard = async (req, res, next) => {
           as: "enrollments",
         },
       },
+      {
+        $lookup: {
+          from: "assignments",
+          let: { courseIds: "$enrollments.courseId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $in: ["$courseId", "$$courseIds"] },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+              },
+            },
+          ],
+          as: "assignments",
+        },
+      },
+
+      /* ================= COURSE COMPLETION ================= */
       {
         $addFields: {
           courseCompletionPercent: {
@@ -458,6 +457,62 @@ export const leaderboard = async (req, res, next) => {
         },
       },
 
+      /* ================= CONSISTENCY ================= */
+      {
+        $addFields: {
+          totalAssignments: { $size: "$assignments" },
+          onTimeSubmittedAssignmentIds: {
+            $setUnion: [
+              {
+                $map: {
+                  input: {
+                    $filter: {
+                      input: "$assignmentSubmissions",
+                      as: "sub",
+                      cond: {
+                        $and: [
+                          { $ne: ["$$sub.isLate", true] },
+                          { $ne: ["$$sub.status", "Late Submitted"] },
+                        ],
+                      },
+                    },
+                  },
+                  as: "sub",
+                  in: "$$sub.assignmentId",
+                },
+              },
+              [],
+            ],
+          },
+        },
+      },
+      {
+        $addFields: {
+          consistencyPercent: {
+            $cond: [
+              { $gt: ["$totalAssignments", 0] },
+              {
+                $round: [
+                  {
+                    $multiply: [
+                      {
+                        $divide: [
+                          { $size: "$onTimeSubmittedAssignmentIds" },
+                          "$totalAssignments",
+                        ],
+                      },
+                      100,
+                    ],
+                  },
+                  0,
+                ],
+              },
+              0,
+            ],
+          },
+        },
+      },
+
       /* ================= FINAL SCORE ================= */
       {
         $addFields: {
@@ -466,17 +521,19 @@ export const leaderboard = async (req, res, next) => {
               {
                 $add: [
                   {
-                    $multiply: [{ $ifNull: ["$avgAssignmentMarks", 0] }, 0.4],
+                    $multiply: [{ $ifNull: ["$avgQuizScore", 0] }, 0.4],
                   },
-                  { $multiply: [{ $ifNull: ["$avgQuizScore", 0] }, 0.4] },
                   {
-                    $multiply: [{ $ifNull: ["$attendancePercent", 0] }, 0.1],
+                    $multiply: [{ $ifNull: ["$avgAssignmentMarks", 0] }, 0.3],
                   },
                   {
                     $multiply: [
                       { $ifNull: ["$courseCompletionPercent", 0] },
-                      0.1,
+                      0.2,
                     ],
+                  },
+                  {
+                    $multiply: [{ $ifNull: ["$consistencyPercent", 0] }, 0.1],
                   },
                 ],
               },
@@ -522,6 +579,260 @@ export const leaderboard = async (req, res, next) => {
     res.status(200).json(response);
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+};
+
+export const growthDashboard = async (req, res, next) => {
+  try {
+    const studentId = req.user._id;
+
+    const enrollments = await Enrollment.find({ studentId }).populate(
+      "courseId",
+      "title progressPercent",
+    );
+
+    const courseIds = enrollments
+      .map((item) => item.courseId?._id)
+      .filter(Boolean);
+
+    const assignments = await Assignment.find(
+      {
+        courseId: { $in: courseIds },
+      },
+      {
+        _id: 1,
+        courseId: 1,
+      },
+    );
+
+    const assignmentIds = assignments.map((item) => item._id);
+
+    const [submissions, quizzes, attendanceRecords] = await Promise.all([
+      AssignmentSubmission.find(
+        {
+          studentId,
+          assignmentId: { $in: assignmentIds },
+        },
+        {
+          assignmentId: 1,
+          marks: 1,
+          status: 1,
+          isLate: 1,
+          createdAt: 1,
+        },
+      ),
+      Quiz.find(
+        {
+          courseId: { $in: courseIds },
+        },
+        { _id: 1 },
+      ),
+      Attendance.find(
+        {
+          studentId,
+          courseId: { $in: courseIds },
+        },
+        {
+          status: 1,
+          date: 1,
+        },
+      ),
+    ]);
+
+    const quizIds = quizzes.map((item) => item._id);
+
+    const quizResults = await QuizResult.find(
+      {
+        studentId,
+        quizId: { $in: quizIds },
+      },
+      {
+        scorePercent: 1,
+        createdAt: 1,
+      },
+    );
+
+    const gradedSubmissions = submissions.filter(
+      (item) => item.status === "Evaluated" && item.marks != null,
+    );
+
+    const avgAssignmentMarks =
+      gradedSubmissions.length > 0
+        ? Math.round(
+            gradedSubmissions.reduce((sum, item) => sum + item.marks, 0) /
+              gradedSubmissions.length,
+          )
+        : 0;
+
+    const avgQuizScore =
+      quizResults.length > 0
+        ? Math.round(
+            quizResults.reduce(
+              (sum, item) => sum + (item.scorePercent || 0),
+              0,
+            ) / quizResults.length,
+          )
+        : 0;
+
+    const courseCompletionPercent =
+      enrollments.length > 0
+        ? Math.round(
+            enrollments.reduce(
+              (sum, item) => sum + (item.progressPercent || 0),
+              0,
+            ) / enrollments.length,
+          )
+        : 0;
+
+    const onTimeSubmissionIds = new Set(
+      submissions
+        .filter(
+          (item) => item.isLate !== true && item.status !== "Late Submitted",
+        )
+        .map((item) => item.assignmentId?.toString())
+        .filter(Boolean),
+    );
+
+    const consistencyPercent =
+      assignments.length > 0
+        ? Math.round((onTimeSubmissionIds.size / assignments.length) * 100)
+        : 0;
+
+    const currentOgi = calculateOverallScore({
+      avgAssignmentMarks,
+      avgQuizScore,
+      courseCompletionPercent,
+      consistencyPercent,
+    });
+
+    const now = new Date();
+    const currentWeekStart = getWeekStartDate(now);
+    const weeks = 8;
+
+    const weeklyHistory = Array.from({ length: weeks }).map((_, index) => {
+      const weekStart = new Date(currentWeekStart);
+      weekStart.setDate(currentWeekStart.getDate() - (weeks - 1 - index) * 7);
+
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 7);
+
+      const submissionsTillWeek = submissions.filter(
+        (item) => item.createdAt && new Date(item.createdAt) < weekEnd,
+      );
+
+      const gradedTillWeek = submissionsTillWeek.filter(
+        (item) => item.status === "Evaluated" && item.marks != null,
+      );
+
+      const quizResultsTillWeek = quizResults.filter(
+        (item) => item.createdAt && new Date(item.createdAt) < weekEnd,
+      );
+
+      const onTimeTillWeekIds = new Set(
+        submissionsTillWeek
+          .filter(
+            (item) => item.isLate !== true && item.status !== "Late Submitted",
+          )
+          .map((item) => item.assignmentId?.toString())
+          .filter(Boolean),
+      );
+
+      const weeklyAttendance = attendanceRecords.filter((item) => {
+        if (!item.date) return false;
+        const date = new Date(item.date);
+        return date >= weekStart && date < weekEnd;
+      });
+
+      const weeklyPresent = weeklyAttendance.filter(
+        (item) => item.status === "Present",
+      ).length;
+
+      const weeklyAttendancePercent =
+        weeklyAttendance.length > 0
+          ? Math.round((weeklyPresent / weeklyAttendance.length) * 100)
+          : 0;
+
+      const weeklyAssignmentsSubmitted = submissions.filter((item) => {
+        if (!item.createdAt) return false;
+        const date = new Date(item.createdAt);
+        return date >= weekStart && date < weekEnd;
+      }).length;
+
+      const weeklyQuizzesAttempted = quizResults.filter((item) => {
+        if (!item.createdAt) return false;
+        const date = new Date(item.createdAt);
+        return date >= weekStart && date < weekEnd;
+      }).length;
+
+      const weekAvgAssignment =
+        gradedTillWeek.length > 0
+          ? Math.round(
+              gradedTillWeek.reduce((sum, item) => sum + item.marks, 0) /
+                gradedTillWeek.length,
+            )
+          : 0;
+
+      const weekAvgQuiz =
+        quizResultsTillWeek.length > 0
+          ? Math.round(
+              quizResultsTillWeek.reduce(
+                (sum, item) => sum + (item.scorePercent || 0),
+                0,
+              ) / quizResultsTillWeek.length,
+            )
+          : 0;
+
+      const weekConsistency =
+        assignments.length > 0
+          ? Math.round((onTimeTillWeekIds.size / assignments.length) * 100)
+          : 0;
+
+      const weekOgi = calculateOverallScore({
+        avgAssignmentMarks: weekAvgAssignment,
+        avgQuizScore: weekAvgQuiz,
+        courseCompletionPercent,
+        consistencyPercent: weekConsistency,
+      });
+
+      return {
+        weekStart: weekStart.toISOString().split("T")[0],
+        weekLabel: formatWeekLabel(weekStart),
+        ogi: weekOgi,
+        quizAverage: weekAvgQuiz,
+        assignmentAverage: weekAvgAssignment,
+        completionRate: courseCompletionPercent,
+        consistency: weekConsistency,
+        attendancePercent: weeklyAttendancePercent,
+        assignmentsSubmitted: weeklyAssignmentsSubmitted,
+        quizzesAttempted: weeklyQuizzesAttempted,
+      };
+    });
+
+    const moduleCompletionOverview = enrollments.map((item) => ({
+      courseId: item.courseId?._id,
+      courseName: item.courseId?.title?.en || "Course",
+      completionPercent: item.progressPercent || 0,
+    }));
+
+    res.status(200).json({
+      current: {
+        ogi: currentOgi,
+        classification: getOgiClassification(currentOgi),
+        quizAverage: avgQuizScore,
+        assignmentAverage: avgAssignmentMarks,
+        completionRate: courseCompletionPercent,
+        consistency: consistencyPercent,
+      },
+      moduleCompletionOverview,
+      weeklyTrend: weeklyHistory.map((item) => ({
+        weekLabel: item.weekLabel,
+        ogi: item.ogi,
+      })),
+      weeklyHistory,
+    });
+  } catch (error) {
+    console.log("Error in growthDashboard:", error);
     next(error);
   }
 };
@@ -633,16 +944,41 @@ const calculateLongestStreak = (dateStrings) => {
   return longest;
 };
 
+const getWeekStartDate = (inputDate) => {
+  const date = new Date(inputDate);
+  date.setHours(0, 0, 0, 0);
+
+  const day = date.getDay();
+  const diffToMonday = day === 0 ? 6 : day - 1;
+  date.setDate(date.getDate() - diffToMonday);
+
+  return date;
+};
+
+const formatWeekLabel = (weekStartDate) => {
+  return weekStartDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+};
+
+const getOgiClassification = (ogi = 0) => {
+  if (ogi >= 85) return { label: "Excellent", color: "green" };
+  if (ogi >= 70) return { label: "Improving", color: "blue" };
+  if (ogi >= 50) return { label: "Stable", color: "yellow" };
+  return { label: "Needs Attention", color: "red" };
+};
+
 const calculateOverallScore = ({
   avgAssignmentMarks = 0,
   avgQuizScore = 0,
-  attendancePercent = 0,
   courseCompletionPercent = 0,
+  consistencyPercent = 0,
 }) => {
   return Math.round(
-    avgAssignmentMarks * 0.4 +
-      avgQuizScore * 0.4 +
-      attendancePercent * 0.1 +
-      courseCompletionPercent * 0.1,
+    avgQuizScore * 0.4 +
+      avgAssignmentMarks * 0.3 +
+      courseCompletionPercent * 0.2 +
+      consistencyPercent * 0.1,
   );
 };

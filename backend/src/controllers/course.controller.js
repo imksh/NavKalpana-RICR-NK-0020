@@ -3,6 +3,74 @@ import Course from "../models/course.model.js";
 import Module from "../models/module.model.js";
 import mongoose from "mongoose";
 import Lesson from "../models/lesson.model.js";
+import Assignment from "../models/assignment.model.js";
+import AssignmentSubmission from "../models/assignmentSubmission.model.js";
+
+const getSubmissionConsistencyByCourse = async ({
+  studentId,
+  courseIds = [],
+}) => {
+  if (!studentId || !courseIds.length) return {};
+
+  const assignments = await Assignment.find(
+    { courseId: { $in: courseIds } },
+    { _id: 1, courseId: 1 },
+  );
+
+  if (!assignments.length) return {};
+
+  const assignmentIds = assignments.map((item) => item._id);
+  const assignmentCourseMap = new Map(
+    assignments.map((item) => [item._id.toString(), item.courseId.toString()]),
+  );
+
+  const totalsByCourse = new Map();
+
+  assignments.forEach((item) => {
+    const courseId = item.courseId.toString();
+    totalsByCourse.set(courseId, (totalsByCourse.get(courseId) || 0) + 1);
+  });
+
+  const submissions = await AssignmentSubmission.find(
+    {
+      studentId,
+      assignmentId: { $in: assignmentIds },
+    },
+    { assignmentId: 1, isLate: 1, status: 1 },
+  );
+
+  const onTimeByCourse = new Map();
+
+  submissions.forEach((submission) => {
+    const assignmentId = submission.assignmentId?.toString();
+    const courseId = assignmentCourseMap.get(assignmentId);
+
+    if (!courseId) return;
+
+    const isOnTime =
+      submission.isLate !== true && submission.status !== "Late Submitted";
+
+    if (!isOnTime) return;
+
+    if (!onTimeByCourse.has(courseId)) {
+      onTimeByCourse.set(courseId, new Set());
+    }
+
+    onTimeByCourse.get(courseId).add(assignmentId);
+  });
+
+  const consistencyByCourse = {};
+
+  totalsByCourse.forEach((totalAssignments, courseId) => {
+    const onTimeCount = onTimeByCourse.get(courseId)?.size || 0;
+    consistencyByCourse[courseId] =
+      totalAssignments > 0
+        ? Math.round((onTimeCount / totalAssignments) * 100)
+        : 0;
+  });
+
+  return consistencyByCourse;
+};
 
 export const getStudentCourse = async (req, res, next) => {
   try {
@@ -16,6 +84,11 @@ export const getStudentCourse = async (req, res, next) => {
       },
     });
 
+    const consistencyByCourse = await getSubmissionConsistencyByCourse({
+      studentId,
+      courseIds: enrollments.map((item) => item.courseId?._id).filter(Boolean),
+    });
+
     const coursesWithStats = enrollments.map((e) => {
       const totalLessons = e.courseId.totalLessons || 1;
 
@@ -27,6 +100,8 @@ export const getStudentCourse = async (req, res, next) => {
         ...e.courseId._doc,
         progress,
         attendancePercent: e.attendancePercent || 0,
+        submissionConsistencyPercent:
+          consistencyByCourse[e.courseId._id.toString()] || 0,
       };
     });
 
@@ -53,6 +128,7 @@ export const getCourse = async (req, res, next) => {
 
     let progress = 0;
     let attendancePercent = 0;
+    let submissionConsistencyPercent = 0;
 
     if (studentId) {
       const enrollment = await Enrollment.findOne({
@@ -69,12 +145,21 @@ export const getCourse = async (req, res, next) => {
 
         attendancePercent = enrollment.attendancePercent || 0;
       }
+
+      const consistencyByCourse = await getSubmissionConsistencyByCourse({
+        studentId,
+        courseIds: [course._id],
+      });
+
+      submissionConsistencyPercent =
+        consistencyByCourse[course._id.toString()] || 0;
     }
 
     res.status(200).json({
       ...course._doc,
       progress,
       attendancePercent,
+      submissionConsistencyPercent,
     });
   } catch (error) {
     console.log("Error in getCourse:", error);

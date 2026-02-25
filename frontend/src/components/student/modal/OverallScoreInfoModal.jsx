@@ -7,17 +7,45 @@ import useUiStore from "../../../store/useUiStore";
 
 const _MotionRef = motion;
 
+const getOgiBadge = (ogi = 0) => {
+  if (ogi >= 85)
+    return {
+      label: "Excellent",
+      className:
+        "bg-(--color-success)/15 text-(--color-success) border border-(--color-success)/30",
+    };
+  if (ogi >= 70)
+    return {
+      label: "Improving",
+      className:
+        "bg-(--color-primary)/15 text-(--color-primary) border border-(--color-primary)/30",
+    };
+  if (ogi >= 50)
+    return {
+      label: "Stable",
+      className:
+        "bg-(--color-warning)/15 text-(--color-warning) border border-(--color-warning)/30",
+    };
+  return {
+    label: "Needs Attention",
+    className:
+      "bg-(--color-danger)/15 text-(--color-danger) border border-(--color-danger)/30",
+  };
+};
+
 const OverallScoreInfoModal = ({
   isOpen,
   onClose,
   avgAssignmentMarks = 0,
   avgQuizScore = 0,
-  attendancePercent = 0,
+  consistencyPercent = 0,
   courseCompletionPercent = 0,
   overallScore = 0,
 }) => {
   const { t } = useTranslation();
   const { setIsModal } = useUiStore();
+  const ogiBadge = getOgiBadge(overallScore);
+
   useEffect(() => {
     if (isOpen) {
       setIsModal(true);
@@ -31,7 +59,7 @@ const OverallScoreInfoModal = ({
       document.body.style.overflow = "auto";
       setIsModal(false);
     };
-  }, [isOpen]);
+  }, [isOpen, setIsModal]);
   return (
     <AnimatePresence>
       {/* Overlay */}
@@ -72,7 +100,7 @@ const OverallScoreInfoModal = ({
                 <ScoreRow
                   label={t("studentModals.scoreInfo.assignments")}
                   value={avgAssignmentMarks}
-                  weight="0.4"
+                  weight="0.3"
                 />
 
                 <ScoreRow
@@ -82,15 +110,15 @@ const OverallScoreInfoModal = ({
                 />
 
                 <ScoreRow
-                  label={t("studentModals.scoreInfo.attendance")}
-                  value={attendancePercent}
+                  label={t("studentModals.scoreInfo.consistency")}
+                  value={consistencyPercent}
                   weight="0.1"
                 />
 
                 <ScoreRow
                   label={t("studentModals.scoreInfo.courseCompletion")}
                   value={courseCompletionPercent}
-                  weight="0.1"
+                  weight="0.2"
                 />
               </div>
 
@@ -102,6 +130,11 @@ const OverallScoreInfoModal = ({
                 <p className="text-3xl font-bold text-(--color-primary) mt-2">
                   {overallScore}%
                 </p>
+                <span
+                  className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold mt-3 ${ogiBadge.className}`}
+                >
+                  {ogiBadge.label}
+                </span>
               </div>
             </div>
           </motion.div>

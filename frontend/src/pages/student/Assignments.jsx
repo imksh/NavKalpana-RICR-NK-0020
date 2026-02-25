@@ -80,6 +80,13 @@ const Assignments = () => {
           ).toFixed(1)
         : 0;
 
+    const onTimeSubmissions = assignments.filter(
+      (a) => a.status !== "Pending" && a.isLate !== true,
+    ).length;
+
+    const submissionConsistency =
+      total > 0 ? Math.round((onTimeSubmissions / total) * 100) : 0;
+
     // Upcoming deadlines (within 3 days)
     const now = new Date();
     const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
@@ -92,7 +99,15 @@ const Assignments = () => {
       );
     });
 
-    return { total, pending, submitted, evaluated, avgScore, upcoming };
+    return {
+      total,
+      pending,
+      submitted,
+      evaluated,
+      avgScore,
+      submissionConsistency,
+      upcoming,
+    };
   }, [assignments]);
 
   const generateAiInsight = useCallback(async () => {
@@ -275,7 +290,7 @@ Return ONLY valid JSON with this shape:
       </div>
 
       {/* STATS DASHBOARD */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -367,6 +382,25 @@ Return ONLY valid JSON with this shape:
           </h3>
           <p className="text-xs md:text-sm text-(--text-secondary) mt-1">
             {t("assignments.stats.avgScore")}
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-4 md:p-6"
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-(--color-success)/10 rounded-lg flex items-center justify-center">
+              <FiCheckCircle className="text-(--color-success)" size={20} />
+            </div>
+          </div>
+          <h3 className="text-2xl md:text-3xl font-bold text-(--color-success)">
+            {stats.submissionConsistency}%
+          </h3>
+          <p className="text-xs md:text-sm text-(--text-secondary) mt-1">
+            {t("assignments.stats.submissionConsistency")}
           </p>
         </motion.div>
       </div>

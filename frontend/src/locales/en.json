@@ -11,6 +11,7 @@
     "jobs":"Jobs & Internships",
     "alumni":"Alumni",
     "progress":"Progress & Tracking",
+    "growthDashboard": "Growth Dashboard",
     "about": "About",
     "contact": "Contact",
     "login": "Login",
@@ -499,10 +500,12 @@
       "night": "Good Night"
     },
     "stats": {
-      "overallScore": "Overall Score",
+      "overallScore": "OGI Score",
       "assignments": "Assignments",
       "skills": "Skills Acquired",
-      "quizzes": "Quizzes"
+      "quizzes": "Quizzes",
+      "growthDashboard": "Growth Dashboard",
+      "open": "Open"
     },
     "learningConsistency": {
       "title": "Learning Consistency",
@@ -628,10 +631,33 @@
       "scoreSub2": "blended progress estimate"
     }
   },
+  "growthDashboard": {
+    "badge": "Growth Intelligence",
+    "title": "Growth Dashboard",
+    "subtitle": "Weekly OGI trend, module completion, and performance history synced with your live academic records.",
+    "currentOgi": "Current OGI",
+    "ogi": "OGI",
+    "weeklyTrend": "Weekly Performance Trend",
+    "moduleCompletion": "Module Completion Overview",
+    "completionRate": "Completion Rate",
+    "weeklyHistory": "Weekly Performance History",
+    "needsAttention": "Needs Attention",
+    "noData": "Growth data is not available yet.",
+    "table": {
+      "week": "Week",
+      "ogi": "OGI",
+      "quiz": "Quiz Avg",
+      "assignment": "Assignment Avg",
+      "completion": "Completion",
+      "consistency": "Consistency",
+      "attendance": "Attendance"
+    }
+  },
   "coursePage": {
     "badge": "Course Workspace",
     "progress": "Course Progress",
     "attendance": "Attendance",
+    "submissionConsistency": "Submission Consistency",
     "completedLessons": "Completed Lessons",
     "estimatedDuration": "Estimated Duration",
     "moduleCompletion": "Module Completion",
@@ -682,7 +708,8 @@
       "pending": "Pending",
       "submitted": "Submitted",
       "evaluated": "Evaluated",
-      "avgScore": "Avg Score"
+      "avgScore": "Avg Score",
+      "submissionConsistency": "Submission Consistency"
     },
     "filters": {
       "all": "All",
@@ -1304,159 +1331,54 @@
     "success": "Password updated successfully"
   },
   "resetPasswordModal": {
-    "title": "Reset Password",
-    "subtitle": "Secure your account",
-    "steps": {
-      "email": "Enter your email address",
-      "verify": "Verify OTP code",
-      "newPassword": "Set new password"
-    },
-    "placeholders": {
-      "email": "Enter your email",
-      "otp": "Enter OTP",
-      "newPassword": "New Password",
-      "confirmPassword": "Confirm Password"
-    },
-    "buttons": {
-      "sendOtp": "Send OTP",
-      "sending": "Sending...",
-      "verifyOtp": "Verify OTP",
-      "verifying": "Verifying...",
-      "changePassword": "Change Password",
-      "changing": "Changing..."
-    },
-    "resendIn": "Resend OTP in",
-    "resendOtp": "Resend OTP",
-    "errors": {
-      "emailRequired": "Email is required",
-      "invalidEmail": "Please enter a valid email address",
-      "otpRequired": "Enter OTP",
-      "allRequired": "All fields required",
-      "minLength": "Password must be at least 6 characters",
-      "mismatch": "Passwords do not match",
-      "otpFailed": "Failed to send OTP",
-      "invalidOtp": "Invalid OTP",
-      "changeFailed": "Password change failed"
-    },
-    "success": {
-      "otpSent": "OTP sent",
-      "otpVerified": "OTP verified",
-      "passwordChanged": "Password changed successfully"
-    }
+  "title": "Reset Password",
+  "subtitle": "Secure your account",
+  "steps": {
+    "email": "Enter your email address",
+    "verify": "Verify OTP code",
+    "newPassword": "Set new password"
   },
+  "placeholders": {
+    "email": "Enter your email",
+    "otp": "Enter OTP",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password"
+  },
+  "buttons": {
+    "sendOtp": "Send OTP",
+    "sending": "Sending...",
+    "verifyOtp": "Verify OTP",
+    "verifying": "Verifying...",
+    "changePassword": "Change Password",
+    "changing": "Changing..."
+  },
+  "resendIn": "Resend OTP in",
+  "resendOtp": "Resend OTP",
+  "errors": {
+    "emailRequired": "Email is required",
+    "invalidEmail": "Please enter a valid email address",
+    "otpRequired": "Enter OTP",
+    "allRequired": "All fields required",
+    "minLength": "Password must be at least 6 characters",
+    "mismatch": "Passwords do not match",
+    "otpFailed": "Failed to send OTP",
+    "invalidOtp": "Invalid OTP",
+    "changeFailed": "Password change failed"
+  },
+  "success": {
+    "otpSent": "OTP sent",
+    "otpVerified": "OTP verified",
+    "passwordChanged": "Password changed successfully"
+  }
+},
   "studentModals": {
-    "askDoubt": {
-      "title": "Ask a Doubt",
-      "sendingTo": "Sending to",
-      "subjectLabel": "Subject / Topic",
-      "subjectPlaceholder": "React useEffect issue",
-      "doubtLabel": "Describe Your Doubt",
-      "doubtPlaceholder": "Explain your issue in detail...",
-      "submitButton": "Submit Doubt",
-      "submittingButton": "Submitting...",
-      "requiredFields": "Please fill in all required fields",
-      "success": "Doubt submitted successfully!",
-      "error": "Failed to submit doubt. Please try again."
-    },
-    "chat": {
-      "defaultWelcome": "Hi, how can I help you?",
-      "demoResponse": "This is a demo AI response.",
-      "inputPlaceholder": "Ask something...",
-      "sendButton": "Send"
-    },
-    "bookSession": {
-      "title": "Book a Session",
-      "topicLabel": "Session Topic",
-      "topicPlaceholder": "Doubts / Career Guidance",
-      "dateLabel": "Select Date",
-      "timeLabel": "Select Time",
-      "instructorLabel": "Instructor (Optional)",
-      "instructorPlaceholder": "Enter instructor name",
-      "notesLabel": "Notes (Optional)",
-      "notesPlaceholder": "Mention specific doubts...",
-      "confirmButton": "Confirm Booking",
-      "bookingButton": "Booking...",
-      "requiredFields": "Please fill in all required fields",
-      "pastDateError": "Cannot book a session in the past",
-      "success": "Session booked successfully!",
-      "error": "Failed to book session. Please try again."
-    },
-    "editProfile": {
-      "title": "Edit Profile",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "phoneLabel": "Phone",
-      "bioLabel": "Bio",
-      "updatePhoto": "Update Photo",
-      "uploading": "Uploading...",
-      "cancelButton": "Cancel",
-      "saveButton": "Save Changes",
-      "saving": "Saving...",
-      "profileUpdated": "Profile updated",
-      "updateFailed": "Update failed",
-      "photoUpdated": "Profile photo updated",
-      "photoFailed": "Photo upload failed"
-    },
-    "aiTutorSelect": {
-      "title": "Choose Your AI Tutor"
-    },
     "scoreInfo": {
-      "title": "Overall Score Breakdown",
-      "assignments": "Assignments (40%)",
+      "title": "Overall Growth Index (OGI)",
+      "assignments": "Assignments (30%)",
       "quizzes": "Quizzes (40%)",
-      "attendance": "Attendance (10%)",
-      "courseCompletion": "Course Completion (10%)",
-      "finalScore": "Final Weighted Score"
-    },
-    "supportTracker": {
-      "title": "Support Tracker",
-      "tabDoubts": "My Doubts",
-      "tabSessions": "My Sessions",
-      "noDoubts": "No doubts submitted yet.",
-      "noDoubtsSubtext": "Ask your instructors for help when you need it.",
-      "noSessions": "No sessions booked yet.",
-      "noSessionsSubtext": "Book one-on-one sessions with your instructors.",
-      "instructorReply": "Instructor Reply:",
-      "notes": "Notes:",
-      "with": "With",
-      "statusAnswered": "Answered",
-      "statusApproved": "Approved",
-      "statusPending": "Pending",
-      "statusRejected": "Rejected",
-      "statusClosed": "Closed",
-      "errorLoading": "Failed to load support data. Please try again.",
-      "retry": "Try Again",
-      "today": "Today",
-      "yesterday": "Yesterday",
-      "daysAgo": "days ago",
-      "footerText": "Track all your support activity here."
-    }
-  },
-  "components": {
-    "instructorHeader": {
-      "title": "Instructor Panel",
-      "role": "Educator",
-      "courses": "Courses",
-      "analytics": "Analytics",
-      "myProfile": "My Profile",
-      "settings": "Settings",
-      "logout": "Logout"
-    },
-    "adminHeader": {
-      "title": "Admin Control Panel",
-      "role": "SUPER ADMIN",
-      "users": "Users",
-      "courses": "Courses",
-      "reports": "Reports",
-      "adminProfile": "Admin Profile",
-      "platformSettings": "Platform Settings",
-      "logout": "Logout"
-    },
-    "imageUpload": {
-      "update": "Update"
-    },
-    "eventCard": {
-      "highPriority": "High Priority"
+      "consistency": "Consistency (10%)",
+      "courseCompletion": "Course Completion (20%)",
+      "finalScore": "Final OGI Score"
     }
   }
 }

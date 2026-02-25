@@ -51,10 +51,8 @@ const CoursePage = () => {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        if (!course) {
-          const res = await api.get(`/course/${slug}`);
-          setCourse(res.data);
-        }
+        const res = await api.get(`/course/${slug}`);
+        setCourse((prev) => ({ ...(prev || {}), ...res.data }));
       } catch (error) {
         console.log("Error fetching course:", error);
       } finally {
@@ -63,7 +61,7 @@ const CoursePage = () => {
     };
 
     fetchCourse();
-  }, [slug, location.pathname, course]);
+  }, [slug]);
 
   /* ================= FETCH MODULES ================= */
   useEffect(() => {
@@ -250,6 +248,11 @@ Return ONLY valid JSON with this shape:
               icon={<FiClock size={14} />}
               label={t("coursePage.estimatedDuration")}
               value={`${totalDurationMinutes} min`}
+            />
+            <StatCard
+              icon={<FiCheckCircle size={14} />}
+              label={t("coursePage.submissionConsistency")}
+              value={`${course?.submissionConsistencyPercent || 0}%`}
             />
           </div>
         </div>

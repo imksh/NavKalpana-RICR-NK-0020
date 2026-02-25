@@ -313,6 +313,16 @@ const StudentHeader = () => {
 
                   <button
                     onClick={() => {
+                      navigate("/student/growth-dashboard");
+                      closeAll();
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-(--bg-muted) transition"
+                  >
+                    {t("header.growthDashboard")}
+                  </button>
+
+                  <button
+                    onClick={() => {
                       navigate("/student/jobs");
                       closeAll();
                     }}
@@ -493,6 +503,17 @@ const StudentHeader = () => {
               className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
             >
               {t("header.progress")}
+            </button>
+
+            <button
+              onClick={() => {
+                navigate("/student/growth-dashboard");
+                closeAll();
+                setMobileOpen(false);
+              }}
+              className="w-full text-left p-2 hover:bg-white/10 rounded-lg transition"
+            >
+              {t("header.growthDashboard")}
             </button>
 
             <button

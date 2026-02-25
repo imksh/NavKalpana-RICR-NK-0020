@@ -51,6 +51,7 @@ export const getStudentAssignments = async (req, res, next) => {
         maxMarks: assignment.maxMarks,
         status,
         marks,
+        isLate: submission?.isLate === true,
       };
     });
 

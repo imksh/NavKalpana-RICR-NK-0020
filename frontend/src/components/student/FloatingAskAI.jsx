@@ -14,7 +14,7 @@ const FloatingAskAI = () => {
         whileTap={{ scale: 0.95 }}
         onClick={() => setOpen(true)}
         aria-label="Open AI tutor"
-        className="group fixed bottom-8 right-5 sm:right-8 z-50 w-16 aspect-square md:w-auto md:aspect-auto md:px-6 md:py-4 rounded-full md:rounded-2xl bg-linear-to-r from-(--color-primary) to-(--color-secondary) text-white shadow-lg ring-1 ring-(--border-color) overflow-hidden"
+        className="group fixed bottom-8 right-5 sm:right-8 z-49 w-16 aspect-square md:w-auto md:aspect-auto md:px-6 md:py-4 rounded-full md:rounded-2xl bg-linear-to-r from-(--color-primary) to-(--color-secondary) text-white shadow-lg ring-1 ring-(--border-color) overflow-hidden"
       >
         <span className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
         <span className="absolute -inset-3 rounded-full bg-(--color-primary)/25 blur-2xl opacity-60" />

@@ -42,6 +42,7 @@ import Alumni from "./pages/Alumni";
 import StudentJobs from "./pages/student/StudentJobs";
 import StudentJobPage from "./pages/student/StudentJobPage";
 import StudentProgress from "./pages/student/StudentProgress";
+import GrowthDashboard from "./pages/student/GrowthDashboard";
 import StudentSupport from "./pages/student/StudentSupport";
 import FloatingAskAI from "./components/student/FloatingAskAI";
 import StudentProfile from "./pages/student/StudentProfile";
@@ -190,6 +191,10 @@ const App = () => {
           <Route path="/student/jobs/:id" element={<StudentJobPage />} />
 
           <Route path="/student/progress" element={<StudentProgress />} />
+          <Route
+            path="/student/growth-dashboard"
+            element={<GrowthDashboard />}
+          />
         </Route>
 
         <Route

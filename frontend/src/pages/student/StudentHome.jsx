@@ -259,6 +259,34 @@ Provide analysis in this JSON structure:
     return `${greeting}${name ? `, ${name}` : ""}`;
   };
 
+  const getOgiBadge = (ogi = 0) => {
+    if (ogi >= 85)
+      return {
+        label: "Excellent",
+        className:
+          "bg-(--color-success)/15 text-(--color-success) border border-(--color-success)/30",
+      };
+    if (ogi >= 70)
+      return {
+        label: "Improving",
+        className:
+          "bg-(--color-primary)/15 text-(--color-primary) border border-(--color-primary)/30",
+      };
+    if (ogi >= 50)
+      return {
+        label: "Stable",
+        className:
+          "bg-(--color-warning)/15 text-(--color-warning) border border-(--color-warning)/30",
+      };
+    return {
+      label: "Needs Attention",
+      className:
+        "bg-(--color-danger)/15 text-(--color-danger) border border-(--color-danger)/30",
+    };
+  };
+
+  const ogiBadge = getOgiBadge(stats.overallScore || 0);
+
   return (
     <>
       <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-3 md:px-10 lg:px-16 pt-8 md:pt-12 pb-16">
@@ -284,11 +312,12 @@ Provide analysis in this JSON structure:
           </div>
         </section>
 
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 mb-8 md:mb-10">
+        <section className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-5 mb-8 md:mb-10">
           <StatCard
             icon={<FiTrendingUp />}
             title={t("studentHome.stats.overallScore")}
             value={`${stats.overallScore || 0}%`}
+            badge={ogiBadge}
             color="text-(--color-primary)"
             onClick={() => setOverallScoreInfoModalOpen(true)}
             loading={loading}
@@ -318,6 +347,15 @@ Provide analysis in this JSON structure:
             value={`${stats.attemptedQuizzes || 0} / ${stats.totalQuizzes || 0}`}
             color="text-(--color-warning)"
             onClick={() => navigate("/student/quizzes")}
+            loading={loading}
+          />
+
+          <StatCard
+            icon={<FaChartBar />}
+            title={t("studentHome.stats.growthDashboard")}
+            value={t("studentHome.stats.open")}
+            color="text-(--color-accent)"
+            onClick={() => navigate("/student/growth-dashboard")}
             loading={loading}
           />
         </section>
@@ -554,7 +592,7 @@ Provide analysis in this JSON structure:
         onClose={() => setOverallScoreInfoModalOpen(false)}
         avgAssignmentMarks={stats.avgAssignmentMarks}
         avgQuizScore={stats.avgQuizScore}
-        attendancePercent={stats.attendancePercent}
+        consistencyPercent={stats.consistencyPercent}
         courseCompletionPercent={stats.courseCompletionPercent}
         overallScore={stats.overallScore}
       />
@@ -590,7 +628,7 @@ const AiInsightList = ({ icon, title, items }) => (
   </div>
 );
 
-const StatCard = ({ icon, title, value, color, onClick, loading }) => (
+const StatCard = ({ icon, title, value, color, onClick, loading, badge }) => (
   <div
     onClick={!loading ? onClick : undefined}
     className={`bg-(--card-bg) border border-(--border-color) rounded-2xl p-4 md:p-5 shadow-sm ${
@@ -620,6 +658,13 @@ const StatCard = ({ icon, title, value, color, onClick, loading }) => (
         <p className="text-xl md:text-2xl font-semibold leading-tight">
           {value}
         </p>
+        {badge ? (
+          <span
+            className={`mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${badge.className}`}
+          >
+            {badge.label}
+          </span>
+        ) : null}
       </>
     )}
   </div>

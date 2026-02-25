@@ -6,6 +6,7 @@ import {
   getLearningActivity,
   getStudentProgress,
   getUpcomingEvents,
+  growthDashboard,
   leaderboard,
   lessonOpened,
   stats,
@@ -27,8 +28,14 @@ import {
   getStudentQuizzes,
   submitQuiz,
 } from "../controllers/quiz.controller.js";
-import { bookSession, getStudentSessions } from "../controllers/session.controller.js";
-import { createDoubt, getStudentDoubts } from "../controllers/doubt.controller.js";
+import {
+  bookSession,
+  getStudentSessions,
+} from "../controllers/session.controller.js";
+import {
+  createDoubt,
+  getStudentDoubts,
+} from "../controllers/doubt.controller.js";
 
 const router = express.Router();
 
@@ -49,6 +56,13 @@ router.get("/assignments/:id", protectedRoute, getAssignmentById);
 router.get("/attendance", protectedRoute, getStudentAttendance);
 
 router.get("/progress", protectedRoute, getStudentProgress);
+
+router.get(
+  "/growth-dashboard",
+  protectedRoute,
+  studentProtect,
+  growthDashboard,
+);
 
 router.get("/quizzes", protectedRoute, getStudentQuizzes);
 
