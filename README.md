@@ -142,7 +142,7 @@ Gradify/
 ### 1) Clone the repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/imksh/NavKalpana-RICR-NK-0020
 cd Gradify
 ```
 
@@ -182,8 +182,8 @@ npm run dev
 
 ### 6) Open in browser
 
-Frontend URL: https://imksh-gradify.netlify.app
-Backend URL: https://navkalpana-ricr-nk-0020.onrender.com
+Frontend URL: http://localhost:5173
+Backend URL: http://localhost:5001
 
 ### 7) Seed initial data (optional)
 
@@ -344,7 +344,7 @@ Local: http://localhost:5001
 
 ### Progress And Tracking
 
-![Progress And Tracking](./docs/screenshots/progressAndTracking.png)
+![Progress And Tracking](./docs/screenshots/progressTracking.png)
 
 ### Jobs And Internships
 
