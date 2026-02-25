@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
@@ -6,57 +6,58 @@ import useUiStore from "./store/useUiStore";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
 
-//Components
-import Header from "./components/Header";
-import AdminHeader from "./components/admin/AdminHeader";
-import InstructorHeader from "./components/instructor/InstructorHeader";
-import StudentHeader from "./components/student/StudentHeader";
-import Footer from "./components/Footer";
 import Loading from "./components/Loading";
 import { Scroll } from "./components/Scrool";
 import ThemeBubble from "./components/ThemeBubble";
 import PwaInstallPrompt from "./components/PwaInstallPrompt";
 
-//Pages
-import Landing from "./pages/Landing";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import TermsAndConditions from "./pages/TermsAndConditions";
-import UnsubscribeSuccess from "./pages/UnsubscribeSuccess";
-import InstructorHome from "./pages/instructor/InstructorHome";
-import StudentHome from "./pages/student/StudentHome";
-
 import api from "./config/api";
 import i18n from "./config/i18n";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import AdminHome from "./pages/admin/AdminHome";
-import MyCourses from "./pages/student/MyCourses";
-import CoursePage from "./pages/student/CoursePage";
-import AssignmentPage from "./pages/student/AssignmentPage";
-import Assignments from "./pages/student/Assignments";
-import QuizPage from "./pages/student/QuizPage";
-import Quizzes from "./pages/student/Quizzes";
-import StudentAttendence from "./pages/student/StudentAttendence";
-import Alumni from "./pages/Alumni";
-import StudentJobs from "./pages/student/StudentJobs";
-import StudentJobPage from "./pages/student/StudentJobPage";
-import StudentProgress from "./pages/student/StudentProgress";
-import GrowthDashboard from "./pages/student/GrowthDashboard";
-import StudentSupport from "./pages/student/StudentSupport";
-import FloatingAskAI from "./components/student/FloatingAskAI";
-import StudentProfile from "./pages/student/StudentProfile";
 import useLenis from "./hooks/useLenis";
-import LessonPage from "./pages/student/LessonPage";
-import StudentNotifications from "./pages/student/StudentNotifications";
-import ProtectedRoute from "./components/Layout/ProtectedRoute";
-import AdminLayout from "./components/Layout/AdminLayout";
-import InstructorLayout from "./components/Layout/InstructorLayout";
-import PublicLayout from "./components/Layout/PublicLayout";
-import StudentLayout from "./components/Layout/StudentLayout";
-import Courses from "./pages/Courses";
 import usePushStore from "./store/usePushStore";
-import NotFound from "./pages/NotFound";
+
+const Landing = lazy(() => import("./pages/Landing"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+const UnsubscribeSuccess = lazy(() => import("./pages/UnsubscribeSuccess"));
+const Courses = lazy(() => import("./pages/Courses"));
+const Register = lazy(() => import("./pages/Register"));
+const Login = lazy(() => import("./pages/Login"));
+const Alumni = lazy(() => import("./pages/Alumni"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+const StudentHome = lazy(() => import("./pages/student/StudentHome"));
+const StudentProfile = lazy(() => import("./pages/student/StudentProfile"));
+const MyCourses = lazy(() => import("./pages/student/MyCourses"));
+const StudentSupport = lazy(() => import("./pages/student/StudentSupport"));
+const StudentNotifications = lazy(
+  () => import("./pages/student/StudentNotifications"),
+);
+const CoursePage = lazy(() => import("./pages/student/CoursePage"));
+const LessonPage = lazy(() => import("./pages/student/LessonPage"));
+const Assignments = lazy(() => import("./pages/student/Assignments"));
+const AssignmentPage = lazy(() => import("./pages/student/AssignmentPage"));
+const Quizzes = lazy(() => import("./pages/student/Quizzes"));
+const QuizPage = lazy(() => import("./pages/student/QuizPage"));
+const StudentAttendence = lazy(
+  () => import("./pages/student/StudentAttendence"),
+);
+const StudentJobs = lazy(() => import("./pages/student/StudentJobs"));
+const StudentJobPage = lazy(() => import("./pages/student/StudentJobPage"));
+const StudentProgress = lazy(() => import("./pages/student/StudentProgress"));
+const GrowthDashboard = lazy(() => import("./pages/student/GrowthDashboard"));
+
+const AdminHome = lazy(() => import("./pages/admin/AdminHome"));
+const InstructorHome = lazy(() => import("./pages/instructor/InstructorHome"));
+
+const ProtectedRoute = lazy(() => import("./components/Layout/ProtectedRoute"));
+const AdminLayout = lazy(() => import("./components/Layout/AdminLayout"));
+const InstructorLayout = lazy(
+  () => import("./components/Layout/InstructorLayout"),
+);
+const PublicLayout = lazy(() => import("./components/Layout/PublicLayout"));
+const StudentLayout = lazy(() => import("./components/Layout/StudentLayout"));
 
 const App = () => {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
@@ -72,7 +73,7 @@ const App = () => {
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [checkAuth]);
 
   /* ============================= */
   /*        TRACK VISITOR          */
@@ -151,107 +152,115 @@ const App = () => {
 
       <ThemeBubble />
 
-      <Routes>
-        <Route element={<PublicLayout />}>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route element={<PublicLayout />}>
+            <Route
+              path="/"
+              element={
+                !user ? (
+                  <Landing />
+                ) : user.role === "admin" ? (
+                  <Navigate to="/admin" />
+                ) : user.role === "instructor" ? (
+                  <Navigate to="/instructor" />
+                ) : (
+                  <Navigate to="/student" />
+                )
+              }
+            />
+            <Route path="/about" element={<About />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route
+              path="/login"
+              element={user ? <Navigate to="/" /> : <Login />}
+            />
+            <Route
+              path="/register"
+              element={user ? <Navigate to="/" /> : <Register />}
+            />
+            <Route path="/contact" element={<Contact />} />
+            <Route
+              path="/terms-and-conditions"
+              element={<TermsAndConditions />}
+            />
+            <Route
+              path="/unsubscribe-success"
+              element={<UnsubscribeSuccess />}
+            />
+            <Route path="/alumini" element={<Alumni />} />
+          </Route>
+
           <Route
-            path="/"
             element={
-              !user ? (
-                <Landing />
-              ) : user.role === "admin" ? (
-                <Navigate to="/admin" />
-              ) : user.role === "instructor" ? (
-                <Navigate to="/instructor" />
-              ) : (
-                <Navigate to="/student" />
-              )
+              <ProtectedRoute role="student">
+                <StudentLayout />
+              </ProtectedRoute>
             }
-          />
-          <Route path="/about" element={<About />} />
-          <Route path="/courses" element={<Courses />} />
+          >
+            <Route path="/student" element={<StudentHome />} />
+            <Route path="/student/profile" element={<StudentProfile />} />
+            <Route path="/student/courses" element={<MyCourses />} />
+            <Route path="/student/support" element={<StudentSupport />} />
+            <Route path="/student/alumni" element={<Alumni />} />
+            <Route
+              path="/student/notifications"
+              element={<StudentNotifications />}
+            />
+            <Route path="/student/courses/:slug" element={<CoursePage />} />
+
+            <Route
+              path="/student/courses/:course/:slug"
+              element={<LessonPage />}
+            />
+
+            <Route path="/student/assignments" element={<Assignments />} />
+
+            <Route
+              path="/student/assignments/:id"
+              element={<AssignmentPage />}
+            />
+
+            <Route path="/student/quizzes" element={<Quizzes />} />
+
+            <Route path="/student/quizzes/:id" element={<QuizPage />} />
+
+            <Route path="/student/attendance" element={<StudentAttendence />} />
+
+            <Route path="/student/jobs" element={<StudentJobs />} />
+
+            <Route path="/student/jobs/:id" element={<StudentJobPage />} />
+
+            <Route path="/student/progress" element={<StudentProgress />} />
+            <Route
+              path="/student/growth-dashboard"
+              element={<GrowthDashboard />}
+            />
+          </Route>
+
           <Route
-            path="/login"
-            element={user ? <Navigate to="/" /> : <Login />}
-          />
-          <Route
-            path="/register"
-            element={user ? <Navigate to="/" /> : <Register />}
-          />
-          <Route path="/contact" element={<Contact />} />
-          <Route
-            path="/terms-and-conditions"
-            element={<TermsAndConditions />}
-          />
-          <Route path="/unsubscribe-success" element={<UnsubscribeSuccess />} />
-          <Route path="/alumini" element={<Alumni />} />
-        </Route>
-
-        <Route
-          element={
-            <ProtectedRoute role="student">
-              <StudentLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/student" element={<StudentHome />} />
-          <Route path="/student/profile" element={<StudentProfile />} />
-          <Route path="/student/courses" element={<MyCourses />} />
-          <Route path="/student/support" element={<StudentSupport />} />
-          <Route path="/student/alumni" element={<Alumni />} />
-          <Route
-            path="/student/notifications"
-            element={<StudentNotifications />}
-          />
-          <Route path="/student/courses/:slug" element={<CoursePage />} />
+            element={
+              <ProtectedRoute role="admin">
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/admin" element={<AdminHome />} />
+          </Route>
 
           <Route
-            path="/student/courses/:course/:slug"
-            element={<LessonPage />}
-          />
+            element={
+              <ProtectedRoute role="instructor">
+                <InstructorLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/instructor" element={<InstructorHome />} />
+          </Route>
 
-          <Route path="/student/assignments" element={<Assignments />} />
-
-          <Route path="/student/assignments/:id" element={<AssignmentPage />} />
-
-          <Route path="/student/quizzes" element={<Quizzes />} />
-
-          <Route path="/student/quizzes/:id" element={<QuizPage />} />
-
-          <Route path="/student/attendance" element={<StudentAttendence />} />
-
-          <Route path="/student/jobs" element={<StudentJobs />} />
-
-          <Route path="/student/jobs/:id" element={<StudentJobPage />} />
-
-          <Route path="/student/progress" element={<StudentProgress />} />
-          <Route
-            path="/student/growth-dashboard"
-            element={<GrowthDashboard />}
-          />
-        </Route>
-
-        <Route
-          element={
-            <ProtectedRoute role="admin">
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/admin" element={<AdminHome />} />
-        </Route>
-
-        <Route
-          element={
-            <ProtectedRoute role="instructor">
-              <InstructorLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/instructor" element={<InstructorHome />} />
-        </Route>
-
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
 
       <PwaInstallPrompt />
       <Toaster position="top-right" />
