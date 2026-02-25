@@ -229,7 +229,7 @@ const StudentHeader = () => {
                   }}
                 >
                   {/* Quick Stats */}
-                  <div className="bg-(--bg-surface) p-4 border-b border-(--border-color) rounded-xl">
+                  {/* <div className="bg-(--bg-surface) p-4 border-b border-(--border-color) rounded-xl">
                     <p className="text-xs text-(--text-muted) mb-3">
                       Quick Overview
                     </p>
@@ -260,7 +260,7 @@ const StudentHeader = () => {
                         <p className="text-[10px] text-(--text-muted)">Score</p>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Menu Items */}
                   <button

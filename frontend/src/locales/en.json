@@ -1372,6 +1372,56 @@
   }
 },
   "studentModals": {
+    "askDoubt": {
+      "title": "Ask a Doubt",
+      "sendingTo": "Sending to",
+      "subjectLabel": "Subject / Topic",
+      "subjectPlaceholder": "React useEffect issue",
+      "doubtLabel": "Describe your doubt",
+      "doubtPlaceholder": "Explain your problem in detail...",
+      "submitButton": "Submit Doubt",
+      "submittingButton": "Submitting...",
+      "requiredFields": "Please fill all required fields",
+      "success": "Doubt submitted successfully!",
+      "error": "Failed to submit doubt. Please try again."
+    },
+    "bookSession": {
+      "title": "Book Session",
+      "topicLabel": "Session Topic",
+      "topicPlaceholder": "Doubt / Career Guidance",
+      "dateLabel": "Select Date",
+      "timeLabel": "Select Time",
+      "instructorLabel": "Instructor (Optional)",
+      "instructorPlaceholder": "Enter instructor name",
+      "notesLabel": "Notes (Optional)",
+      "notesPlaceholder": "Mention specific doubts...",
+      "confirmButton": "Confirm Booking",
+      "bookingButton": "Booking...",
+      "requiredFields": "Please fill all required fields",
+      "pastDateError": "Cannot book a session in the past",
+      "success": "Session booked successfully!",
+      "error": "Failed to book session. Please try again."
+    },
+    "editProfile": {
+      "title": "Edit Profile",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "phoneLabel": "Phone",
+      "bioLabel": "Bio",
+      "updatePhoto": "Update Photo",
+      "uploading": "Uploading...",
+      "cancelButton": "Cancel",
+      "saveButton": "Save Changes",
+      "saving": "Saving...",
+      "profileUpdated": "Profile updated",
+      "updateFailed": "Update failed",
+      "photoUpdated": "Profile photo updated",
+      "photoFailed": "Photo upload failed"
+    },
+    "aiTutorSelect": {
+      "title": "Choose Your AI Tutor",
+      "loadError": "Failed to load AI models"
+    },
     "scoreInfo": {
       "title": "Overall Growth Index (OGI)",
       "assignments": "Assignments (30%)",
@@ -1379,6 +1429,34 @@
       "consistency": "Consistency (10%)",
       "courseCompletion": "Course Completion (20%)",
       "finalScore": "Final OGI Score"
+    },
+    "supportTracker": {
+      "title": "Support Tracker",
+      "tabDoubts": "My Doubts",
+      "tabSessions": "My Sessions",
+      "noDoubts": "No doubts submitted yet.",
+      "noDoubtsSubtext": "Ask your instructors for help when you need it.",
+      "noSessions": "No sessions booked yet.",
+      "noSessionsSubtext": "Book one-on-one sessions with your instructors.",
+      "instructorReply": "Instructor Reply:",
+      "notes": "Notes:",
+      "with": "With",
+      "statusAnswered": "Answered",
+      "statusApproved": "Approved",
+      "statusPending": "Pending",
+      "statusRejected": "Rejected",
+      "statusClosed": "Closed",
+      "errorLoading": "Failed to load support data. Please try again.",
+      "retry": "Try Again",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "daysAgo": "days ago",
+      "footerText": "Track all your support activity here."
+    }
+  },
+  "components": {
+    "eventCard": {
+      "highPriority": "High Priority"
     }
   }
 }

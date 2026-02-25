@@ -17,6 +17,7 @@ const AskDoubtModal = ({ isOpen, onClose, selectedInstructor, onSubmit }) => {
   const [aiModels, setAiModels] = useState([]);
   const [selectedAiModel, setSelectedAiModel] = useState(null);
   const [loadingModels, setLoadingModels] = useState(false);
+  const [aiResponse, setAiResponse] = useState("");
 
   const [form, setForm] = useState({
     subject: "",
@@ -33,7 +34,7 @@ const AskDoubtModal = ({ isOpen, onClose, selectedInstructor, onSubmit }) => {
     if (isOpen && activeTab === "ai" && aiModels.length === 0) {
       fetchAiModels();
     }
-  }, [isOpen, activeTab]);
+  }, [isOpen, activeTab, aiModels.length]);
 
   const fetchAiModels = async () => {
     try {
@@ -70,8 +71,9 @@ const AskDoubtModal = ({ isOpen, onClose, selectedInstructor, onSubmit }) => {
         instructorId: "",
         courseId: "",
       });
+      setAiResponse("");
     };
-  }, [isOpen]);
+  }, [isOpen, setIsModal]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -119,8 +121,10 @@ const AskDoubtModal = ({ isOpen, onClose, selectedInstructor, onSubmit }) => {
         courseId: form.courseId || null,
       });
 
+      const responseText = response?.data?.response || "";
+      setAiResponse(responseText);
+
       toast.success("Got response from AI!");
-      console.log("AI Response:", response.data);
     } catch (error) {
       console.error("Error submitting to AI:", error);
       toast.error("Failed to get AI response");
@@ -295,6 +299,15 @@ const AskDoubtModal = ({ isOpen, onClose, selectedInstructor, onSubmit }) => {
                     placeholder={t("studentModals.askDoubt.doubtPlaceholder")}
                   />
                 </div>
+
+                {activeTab === "ai" && aiResponse && (
+                  <div className="rounded-xl border border-(--border-color) bg-(--bg-muted) p-4">
+                    <p className="text-sm font-medium mb-2">AI Response</p>
+                    <p className="text-sm text-(--text-secondary) whitespace-pre-wrap">
+                      {aiResponse}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* ===== FOOTER ===== */}

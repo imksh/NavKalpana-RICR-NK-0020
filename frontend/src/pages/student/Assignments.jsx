@@ -280,7 +280,7 @@ Return ONLY valid JSON with this shape:
   }
 
   return (
-    <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-3 md:px-16 pt-20 md:pt-32 pb-16">
+    <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-3 md:px-16 pt-20 md:pt-24 pb-16">
       {/* HEADER */}
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">
