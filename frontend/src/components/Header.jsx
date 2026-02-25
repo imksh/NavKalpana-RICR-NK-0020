@@ -495,7 +495,7 @@ const Header = () => {
               </button>
 
               {/* Language Selector */}
-              <div className="px-4 py-3">
+              <div className="px-4 py-3 w-fit">
                 <ChangeLanguage />
               </div>
 

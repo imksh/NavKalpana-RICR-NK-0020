@@ -558,7 +558,7 @@ const StudentHeader = () => {
               {theme === "dark" ? t("header.lightMode") : t("header.darkMode")}
             </button>
 
-            <div className="p-2">
+            <div className="p-2 w-fit">
               <ChangeLanguage />
             </div>
 
