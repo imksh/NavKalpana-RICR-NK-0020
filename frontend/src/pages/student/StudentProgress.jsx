@@ -8,6 +8,7 @@ import {
   FiCheckCircle,
   FiAlertCircle,
   FiCpu,
+  FiDownload,
   FiRefreshCw,
 } from "react-icons/fi";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -36,6 +37,8 @@ const StudentProgress = () => {
   const [aiAnalytics, setAiAnalytics] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState("");
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState("");
   const analyticsRequestedRef = useRef(false);
 
   useEffect(() => {
@@ -146,6 +149,32 @@ Return ONLY valid JSON in this exact structure:
     generateAiAnalytics();
   }, [progressData, generateAiAnalytics]);
 
+  const downloadAcademicReport = async () => {
+    setReportLoading(true);
+    setReportError("");
+
+    try {
+      const res = await api.get("/student/academic-report", {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "gradify-academic-report.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.log("Error downloading academic report:", error);
+      setReportError("Unable to download academic report right now.");
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
   if (!progressData) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
@@ -183,15 +212,39 @@ Return ONLY valid JSON in this exact structure:
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary) px-4 md:px-10 lg:px-16 pt-10 md:pt-14 pb-16 space-y-8 md:space-y-10">
       <section className="rounded-3xl border border-(--border-color) bg-(--bg-surface) p-6 md:p-8 shadow-sm">
-        <span className="inline-flex items-center gap-2 rounded-full border border-(--border-color) bg-(--bg-muted) px-3 py-1 text-xs md:text-sm text-(--text-secondary)">
-          <FiBarChart2 size={14} /> {t("studentProgress.badge")}
-        </span>
-        <h1 className="text-3xl md:text-4xl font-semibold mt-4 mb-2">
-          {t("studentProgress.title")}
-        </h1>
-        <p className="text-(--text-secondary)">
-          {t("studentProgress.subtitle")}
-        </p>
+        <div className="flex flex-wrap justify-between gap-4">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-(--border-color) bg-(--bg-muted) px-3 py-1 text-xs md:text-sm text-(--text-secondary)">
+              <FiBarChart2 size={14} /> {t("studentProgress.badge")}
+            </span>
+            <h1 className="text-3xl md:text-4xl font-semibold mt-4 mb-2">
+              {t("studentProgress.title")}
+            </h1>
+            <p className="text-(--text-secondary)">
+              {t("studentProgress.subtitle")}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={downloadAcademicReport}
+            disabled={reportLoading}
+            className="inline-flex items-center gap-2 h-fit rounded-xl border border-(--border-color) px-4 py-2 text-sm font-medium hover:bg-(--bg-muted) disabled:opacity-60"
+          >
+            <FiDownload />
+            {reportLoading
+              ? t("studentProgress.downloading", {
+                  defaultValue: "Downloading...",
+                })
+              : t("studentProgress.downloadReport", {
+                  defaultValue: "Academic Report PDF",
+                })}
+          </button>
+        </div>
+
+        {reportError ? (
+          <p className="text-sm text-(--color-warning) mt-3">{reportError}</p>
+        ) : null}
       </section>
 
       <section className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5">

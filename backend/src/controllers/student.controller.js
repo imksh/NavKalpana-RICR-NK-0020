@@ -10,6 +10,7 @@ import LearningActivity from "../models/learningActivity.model.js";
 import Attendance from "../models/attendance.model.js";
 import User from "../models/user.model.js";
 import Event from "../models/event.model.js";
+import PDFDocument from "pdfkit";
 import { updateLearningStreak } from "../utils/updateLearningStreak.js";
 
 const getTotalLessonsByCourseIds = async (courseIds = []) => {
@@ -940,6 +941,214 @@ export const growthDashboard = async (req, res, next) => {
   } catch (error) {
     console.log("Error in growthDashboard:", error);
     next(error);
+  }
+};
+
+export const downloadAcademicReport = async (req, res) => {
+  try {
+    const studentId = req.user._id;
+
+    const student = await User.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    const enrollments = await Enrollment.find({ studentId }).populate(
+      "courseId",
+      "title progressPercent skills",
+    );
+
+    const courseIds = enrollments
+      .map((item) => item.courseId?._id)
+      .filter(Boolean);
+
+    const assignments = await Assignment.find(
+      { courseId: { $in: courseIds } },
+      { _id: 1 },
+    );
+
+    const assignmentIds = assignments.map((item) => item._id);
+
+    const [submissions, quizzes, attendanceRecords] = await Promise.all([
+      AssignmentSubmission.find(
+        { studentId, assignmentId: { $in: assignmentIds } },
+        { status: 1, marks: 1, isLate: 1, assignmentId: 1 },
+      ),
+      Quiz.find({ courseId: { $in: courseIds } }, { _id: 1 }),
+      Attendance.find(
+        { studentId, courseId: { $in: courseIds } },
+        { status: 1 },
+      ),
+    ]);
+
+    const quizResults = await QuizResult.find(
+      { studentId, quizId: { $in: quizzes.map((item) => item._id) } },
+      { scorePercent: 1 },
+    );
+
+    const gradedSubmissions = submissions.filter(
+      (item) => item.status === "Evaluated" && item.marks != null,
+    );
+
+    const avgAssignmentScore =
+      gradedSubmissions.length > 0
+        ? Math.round(
+            gradedSubmissions.reduce((sum, item) => sum + item.marks, 0) /
+              gradedSubmissions.length,
+          )
+        : 0;
+
+    const avgQuizScore =
+      quizResults.length > 0
+        ? Math.round(
+            quizResults.reduce(
+              (sum, item) => sum + (item.scorePercent || 0),
+              0,
+            ) / quizResults.length,
+          )
+        : 0;
+
+    const overallProgress =
+      enrollments.length > 0
+        ? Math.round(
+            enrollments.reduce(
+              (sum, item) => sum + (item.progressPercent || 0),
+              0,
+            ) / enrollments.length,
+          )
+        : 0;
+
+    const onTimeSubmissionIds = new Set(
+      submissions
+        .filter(
+          (item) => item.isLate !== true && item.status !== "Late Submitted",
+        )
+        .map((item) => item.assignmentId?.toString())
+        .filter(Boolean),
+    );
+
+    const consistencyPercent =
+      assignments.length > 0
+        ? Math.round((onTimeSubmissionIds.size / assignments.length) * 100)
+        : 0;
+
+    const attendancePercent =
+      attendanceRecords.length > 0
+        ? Math.round(
+            (attendanceRecords.filter((item) => item.status === "Present")
+              .length /
+              attendanceRecords.length) *
+              100,
+          )
+        : 0;
+
+    const totalSkills = enrollments.reduce(
+      (sum, item) => sum + (item.courseId?.skills?.length || 0),
+      0,
+    );
+
+    const skillsAcquiredCount = student.skillsAcquired?.length || 0;
+
+    const overallScore = calculateOverallScore({
+      avgAssignmentMarks: avgAssignmentScore,
+      avgQuizScore,
+      courseCompletionPercent: overallProgress,
+      consistencyPercent,
+    });
+
+    const doc = new PDFDocument({ margin: 50 });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=gradify-academic-report.pdf",
+    );
+
+    doc.pipe(res);
+
+    const margin = 50;
+    const pageWidth = doc.page.width;
+    const contentWidth = pageWidth - margin * 2;
+    const leftX = margin;
+    const rightX = pageWidth - margin;
+
+    doc.rect(0, 0, pageWidth, 110).fill("#4f46e5");
+    doc.fillColor("#ffffff").fontSize(28).text("Gradify", leftX, 40);
+    doc.fontSize(16).text("Student Academic Report", leftX, 75);
+    doc.fontSize(16).text(`Overall Score: ${overallScore}%`, rightX - 200, 75, {
+      width: 200,
+      align: "right",
+    });
+
+    doc.moveDown(4);
+    doc.fillColor("#111827");
+    doc.fontSize(18).text("Student Information", leftX, doc.y, {
+      underline: true,
+    });
+
+    doc.moveDown(1);
+    doc.fontSize(12);
+    doc.text(`Name: ${student.name}`, leftX);
+    doc.text(`Email: ${student.email}`, leftX);
+    doc.text(`Generated On: ${new Date().toDateString()}`, leftX);
+
+    doc.moveDown(1.5);
+    doc.fontSize(18).text("Academic Summary", leftX, doc.y, {
+      underline: true,
+    });
+
+    doc.moveDown(1);
+    doc.fontSize(12);
+    doc.text(`Overall Progress: ${overallProgress}%`, leftX);
+    doc.text(`Average Quiz Score: ${avgQuizScore}%`, leftX);
+    doc.text(`Average Assignment Score: ${avgAssignmentScore}%`, leftX);
+    doc.text(`Attendance: ${attendancePercent}%`, leftX);
+    doc.text(`Consistency: ${consistencyPercent}%`, leftX);
+    doc.text(`Skills Acquired: ${skillsAcquiredCount}/${totalSkills}`, leftX);
+
+    doc.moveDown(1.5);
+    doc.fillColor("#2563eb").rect(leftX, doc.y, contentWidth, 25).fill();
+    doc.fillColor("#ffffff").fontSize(12);
+    doc.text("Course", leftX + 10, doc.y + 7);
+    doc.text("Progress", rightX - 100, doc.y + 7);
+    doc.moveDown(2);
+
+    enrollments.forEach((item, index) => {
+      if (doc.y > doc.page.height - 80) {
+        doc.addPage();
+      }
+
+      if (index % 2 === 0) {
+        doc.fillColor("#f9fafb").rect(leftX, doc.y, contentWidth, 25).fill();
+      }
+
+      doc.fillColor("#111827");
+      doc.text(item.courseId?.title?.en || "Course", leftX + 10, doc.y + 7, {
+        width: contentWidth - 120,
+      });
+      doc.text(`${item.progressPercent || 0}%`, rightX - 100, doc.y + 7, {
+        width: 90,
+        align: "right",
+      });
+      doc.moveDown(2);
+    });
+
+    doc
+      .moveDown(2)
+      .fillColor("#9ca3af")
+      .fontSize(10)
+      .text(
+        "© 2026 Gradify — Academic report generated for student progress tracking",
+        leftX,
+        doc.y,
+        { width: contentWidth, align: "center" },
+      );
+
+    doc.end();
+  } catch (error) {
+    console.log("Error generating academic report:", error);
+    res.status(500).json({ message: "Error generating academic report" });
   }
 };
 

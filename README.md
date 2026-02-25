@@ -47,8 +47,6 @@ Educational workflows are often split across multiple disconnected tools, making
 Gradify solves this by providing a centralized, scalable platform where:
 
 - Students can access learning resources, submit assignments, attempt quizzes, and track performance.
-- Instructors can create/manage courses and monitor engagement.
-- Admins can oversee platform activity, user operations, and institutional data.
 
 ---
 
@@ -182,7 +180,7 @@ npm run dev
 
 ### 6) Open in browser
 
-Frontend URL: http://localhost:5173
+Frontend URL: http://localhost:5173  
 Backend URL: http://localhost:5001
 
 ### 7) Seed initial data (optional)

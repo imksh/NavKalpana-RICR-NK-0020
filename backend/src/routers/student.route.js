@@ -9,6 +9,7 @@ import {
   growthDashboard,
   leaderboard,
   lessonOpened,
+  downloadAcademicReport,
   stats,
 } from "../controllers/student.controller.js";
 import { getStudentCourse } from "../controllers/course.controller.js";
@@ -95,5 +96,7 @@ router.post("/doubts", protectedRoute, createDoubt);
 router.get("/doubts", protectedRoute, getStudentDoubts);
 
 router.get("/sessions", protectedRoute, getStudentSessions);
+
+router.get("/academic-report", protectedRoute, downloadAcademicReport);
 
 export default router;
