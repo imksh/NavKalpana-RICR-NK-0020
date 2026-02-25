@@ -99,6 +99,7 @@ const StudentSupport = () => {
       console.log("Error refreshing doubts:", error);
     }
   };
+  
 
   const handleSessionBooked = async () => {
     try {
