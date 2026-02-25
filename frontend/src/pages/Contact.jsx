@@ -20,6 +20,7 @@ import {
 } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import SEO from "../components/SEO";
 
 const _MotionRef = motion;
 
@@ -98,6 +99,12 @@ const Contact = () => {
 
   return (
     <div className="bg-(--bg-main) text-(--text-primary) min-h-screen">
+      <SEO
+        title="Contact Gradify | Support, Help & Partnerships"
+        description="Reach out to Gradify for support, enrollment questions, partnership opportunities, and platform assistance."
+        keywords="contact Gradify, LMS support, student support, partnership inquiry, education support"
+        canonical="https://gradify.in/contact"
+      />
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-(--color-primary)/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-(--color-secondary)/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
@@ -227,7 +234,10 @@ const Contact = () => {
 
             {/* Map Placeholder */}
             <div className="bg-(--card-bg) border border-(--border-color) rounded-2xl h-48 overflow-hidden">
-              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14661.164942506253!2d77.45872335!3d23.268865150000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c6967f58e0dbf%3A0x65d0724cf8368e2d!2sRICR%20-%20Raj%20Institute%20of%20Coding%20%26%20Robotics%20%7C%20Best%20Java%20Coding%20Classes%20In%20Bhopal!5e0!3m2!1sen!2sin!4v1771940241153!5m2!1sen!2sin" className="w-full h-full" />
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14661.164942506253!2d77.45872335!3d23.268865150000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c6967f58e0dbf%3A0x65d0724cf8368e2d!2sRICR%20-%20Raj%20Institute%20of%20Coding%20%26%20Robotics%20%7C%20Best%20Java%20Coding%20Classes%20In%20Bhopal!5e0!3m2!1sen!2sin!4v1771940241153!5m2!1sen!2sin"
+                className="w-full h-full"
+              />
             </div>
           </motion.div>
 

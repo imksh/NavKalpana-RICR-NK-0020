@@ -11,6 +11,7 @@ import {
 } from "react-icons/fi";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import SEO from "../components/SEO";
 
 const _MotionRef = motion;
 
@@ -74,6 +75,12 @@ const TermsAndConditions = () => {
 
   return (
     <div className="bg-(--bg-main) text-(--text-primary) min-h-screen">
+      <SEO
+        title="Terms and Conditions | Gradify"
+        description="Read Gradify's terms and conditions for platform usage, account policies, course access, refunds, and legal information."
+        keywords="Gradify terms, terms and conditions, privacy policy, LMS legal, user agreement"
+        canonical="https://gradify.in/terms-and-conditions"
+      />
       {/* Hero Section */}
       <section className="relative pt-32 pb-16 px-6 md:px-20 text-center bg-(--bg-surface) border-b border-(--border-color)">
         <motion.div

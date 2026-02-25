@@ -17,6 +17,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DeveloperSection from "../components/DeveloperSection";
+import SEO from "../components/SEO";
 
 const _MotionRef = motion;
 
@@ -130,6 +131,12 @@ const About = () => {
 
   return (
     <div className="bg-(--bg-main) text-(--text-primary) relative overflow-hidden">
+      <SEO
+        title="About Gradify | Smart Learning Platform"
+        description="Learn about Gradify's mission, vision, and values powering AI-driven learning, student performance tracking, and institutional growth."
+        keywords="about Gradify, AI learning platform, LMS mission, student growth platform, education technology"
+        canonical="https://gradify.in/about"
+      />
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-(--color-primary)/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute top-1/3 right-0 w-96 h-96 bg-(--color-secondary)/5 rounded-full blur-3xl translate-x-1/2"></div>

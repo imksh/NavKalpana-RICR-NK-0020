@@ -13,6 +13,7 @@ import {
 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import ResetPasswordModal from "../components/modals/ResetPasswordModal";
+import SEO from "../components/SEO";
 
 const _MotionRef = motion;
 
@@ -60,6 +61,12 @@ const Login = () => {
 
   return (
     <>
+      <SEO
+        title="Login | Gradify Student & Instructor Portal"
+        description="Login to Gradify to access your courses, assignments, quizzes, attendance, and AI-powered learning dashboard."
+        keywords="Gradify login, student login, instructor login, LMS portal, AI learning dashboard"
+        canonical="https://gradify.in/login"
+      />
       <div className="min-h-[90dvh] bg-(--bg-main) relative overflow-hidden">
         {/* Decorative Background Elements */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-(--color-primary)/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>

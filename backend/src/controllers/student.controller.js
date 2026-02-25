@@ -4,11 +4,52 @@ import AssignmentSubmission from "../models/assignmentSubmission.model.js";
 import Quiz from "../models/quiz.model.js";
 import QuizResult from "../models/quizResult.model.js";
 import Course from "../models/course.model.js";
+import Module from "../models/module.model.js";
+import Lesson from "../models/lesson.model.js";
 import LearningActivity from "../models/learningActivity.model.js";
 import Attendance from "../models/attendance.model.js";
 import User from "../models/user.model.js";
 import Event from "../models/event.model.js";
 import { updateLearningStreak } from "../utils/updateLearningStreak.js";
+
+const getTotalLessonsByCourseIds = async (courseIds = []) => {
+  if (!courseIds.length) return {};
+
+  const modules = await Module.find(
+    { courseId: { $in: courseIds } },
+    { _id: 1, courseId: 1 },
+  );
+
+  if (!modules.length) {
+    return Object.fromEntries(courseIds.map((id) => [id.toString(), 0]));
+  }
+
+  const moduleIds = modules.map((item) => item._id);
+
+  const lessonsByModule = await Lesson.aggregate([
+    { $match: { moduleId: { $in: moduleIds } } },
+    { $group: { _id: "$moduleId", count: { $sum: 1 } } },
+  ]);
+
+  const lessonCountByModule = new Map(
+    lessonsByModule.map((item) => [item._id.toString(), item.count]),
+  );
+
+  const totalsByCourse = {};
+
+  courseIds.forEach((id) => {
+    totalsByCourse[id.toString()] = 0;
+  });
+
+  modules.forEach((module) => {
+    const courseId = module.courseId.toString();
+    totalsByCourse[courseId] =
+      (totalsByCourse[courseId] || 0) +
+      (lessonCountByModule.get(module._id.toString()) || 0);
+  });
+
+  return totalsByCourse;
+};
 
 export const stats = async (req, res, next) => {
   try {
@@ -20,6 +61,50 @@ export const stats = async (req, res, next) => {
 
     const courseIds = enrollments.map((e) => e.courseId._id);
     const enrolledCourses = enrollments.map((e) => e.courseId);
+
+    const totalLessonsByCourse = await getTotalLessonsByCourseIds(courseIds);
+    const enrollmentUpdates = [];
+    const mergedSkills = new Set(user.skillsAcquired || []);
+
+    const enrollmentProgressValues = enrollments.map((enrollment) => {
+      const courseId = enrollment.courseId?._id?.toString();
+      const totalLessons =
+        (courseId ? totalLessonsByCourse[courseId] : 0) ||
+        enrollment.courseId?.totalLessons ||
+        0;
+
+      const progress = Math.round(
+        totalLessons > 0
+          ? ((enrollment.completedLessons?.length || 0) / totalLessons) * 100
+          : 0,
+      );
+
+      if ((enrollment.progressPercent || 0) !== progress) {
+        enrollment.progressPercent = progress;
+        enrollmentUpdates.push(enrollment.save());
+      }
+
+      if (progress === 100) {
+        (enrollment.courseId?.skills || []).forEach((skill) =>
+          mergedSkills.add(skill),
+        );
+      }
+
+      return progress;
+    });
+
+    if (enrollmentUpdates.length) {
+      await Promise.all(enrollmentUpdates);
+    }
+
+    let syncedSkillsAcquired = user.skillsAcquired || [];
+
+    if (mergedSkills.size !== syncedSkillsAcquired.length) {
+      syncedSkillsAcquired = Array.from(mergedSkills);
+      await User.findByIdAndUpdate(user._id, {
+        skillsAcquired: syncedSkillsAcquired,
+      });
+    }
 
     const assignments = await Assignment.find({
       courseId: { $in: courseIds },
@@ -96,7 +181,7 @@ export const stats = async (req, res, next) => {
       }
     });
 
-    const skillsAcquired = user.skillsAcquired?.length || 0;
+    const skillsAcquired = syncedSkillsAcquired.length || 0;
 
     /* ================= LONGEST STREAK ================= */
 
@@ -139,12 +224,14 @@ export const stats = async (req, res, next) => {
 
     let courseCompletionPercent = 0;
 
-    if (enrollments.length > 0) {
-      const totalPercent = enrollments.reduce(
-        (sum, enrollment) => sum + (enrollment.progressPercent || 0),
+    if (enrollmentProgressValues.length > 0) {
+      const totalPercent = enrollmentProgressValues.reduce(
+        (sum, progress) => sum + progress,
         0,
       );
-      courseCompletionPercent = Math.round(totalPercent / enrollments.length);
+      courseCompletionPercent = Math.round(
+        totalPercent / enrollmentProgressValues.length,
+      );
     }
 
     const overallScore = calculateOverallScore({
@@ -226,11 +313,26 @@ export const getStudentProgress = async (req, res, next) => {
       "courseId",
     );
 
+    const totalLessonsByCourse = await getTotalLessonsByCourseIds(
+      enrollments.map((item) => item.courseId?._id).filter(Boolean),
+    );
+
+    const enrollmentUpdates = [];
+
     const courseProgress = enrollments.map((e) => {
-      const totalLessons = e.courseId.totalLessons || 1;
+      const totalLessons =
+        totalLessonsByCourse[e.courseId._id.toString()] ||
+        e.courseId.totalLessons ||
+        0;
+
       const progress = Math.round(
-        (e.completedLessons.length / totalLessons) * 100,
+        totalLessons > 0 ? (e.completedLessons.length / totalLessons) * 100 : 0,
       );
+
+      if ((e.progressPercent || 0) !== progress) {
+        e.progressPercent = progress;
+        enrollmentUpdates.push(e.save());
+      }
 
       return {
         _id: e.courseId._id,
@@ -238,6 +340,10 @@ export const getStudentProgress = async (req, res, next) => {
         progress,
       };
     });
+
+    if (enrollmentUpdates.length) {
+      await Promise.all(enrollmentUpdates);
+    }
 
     /* ================= OVERALL PROGRESS ================= */
     const overallProgress =

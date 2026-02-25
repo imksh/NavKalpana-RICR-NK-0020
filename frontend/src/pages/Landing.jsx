@@ -18,6 +18,7 @@ import {
 } from "react-icons/fi";
 import DashboardPreview from "../assets/images/dashboard.png";
 import { useTranslation } from "react-i18next";
+import SEO from "../components/SEO";
 
 const _MotionRef = motion;
 
@@ -118,6 +119,12 @@ const Landing = () => {
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary)">
+      <SEO
+        title="Gradify | AI-Powered LMS for Students, Instructors & Institutes"
+        description="Gradify is an AI-powered learning platform with structured courses, analytics dashboards, assignment tracking, quizzes, and career opportunities."
+        keywords="Gradify, LMS platform, AI tutor, student dashboard, online courses, assignments, quizzes, learning analytics"
+        canonical="https://gradify.in/"
+      />
       <section className="px-6 md:px-20 pt-10 md:pt-16 pb-20 md:pb-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div

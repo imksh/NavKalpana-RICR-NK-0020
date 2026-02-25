@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import api from "../config/api";
 import { useTranslation } from "react-i18next";
 import LoadingWave from "../components/LoadingWave";
+import SEO from "../components/SEO";
 
 const _MotionRef = motion;
 
@@ -184,6 +185,12 @@ const Alumni = () => {
 
   return (
     <div className="min-h-dvh bg-(--bg-main) text-(--text-primary)">
+      <SEO
+        title="Alumni Network | Gradify Success Stories & Careers"
+        description="Explore Gradify alumni achievements, career outcomes, top hiring companies, and inspiring student success stories."
+        keywords="Gradify alumni, student success stories, placement outcomes, alumni network, hiring companies"
+        canonical="https://gradify.in/alumini"
+      />
       {/* Hero Section */}
       <div className="bg-linear-to-br from-(--color-primary)/10 via-(--bg-main) to-(--color-secondary)/10 px-6 md:px-16 pt-32 pb-20">
         <motion.div

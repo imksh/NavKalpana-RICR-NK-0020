@@ -2,11 +2,19 @@ import React from "react";
 import Lottie from "lottie-react";
 import Success from "../assets/animations/success.json";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 
 const UnsubscribeSuccess = () => {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-slate-50 px-4 text-center absolute top-0 left-0 w-full z-99">
-      
+      <SEO
+        title="Unsubscribed | Gradify Newsletter"
+        description="You have successfully unsubscribed from Gradify newsletter updates."
+        keywords="unsubscribe, newsletter preferences, email settings"
+        canonical="https://gradify.in/unsubscribe-success"
+        noIndex={true}
+      />
+
       {/* animation */}
       <div className="w-60 mb-6">
         <Lottie animationData={Success} loop={false} />
@@ -18,8 +26,8 @@ const UnsubscribeSuccess = () => {
       </h1>
 
       <p className="text-gray-600 max-w-md mb-6">
-        You have been successfully unsubscribed from our newsletter.
-        You will no longer receive emails from us.
+        You have been successfully unsubscribed from our newsletter. You will no
+        longer receive emails from us.
       </p>
 
       {/* optional link */}

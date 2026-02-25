@@ -15,6 +15,7 @@ import {
   FiUsers,
   FiAward,
 } from "react-icons/fi";
+import SEO from "../components/SEO";
 
 const _MotionRef = motion;
 
@@ -93,6 +94,12 @@ const Register = () => {
 
   return (
     <div className="min-h-[90dvh] bg-(--bg-main) relative overflow-hidden">
+      <SEO
+        title="Register | Create Your Gradify Account"
+        description="Create your Gradify account and start learning with structured courses, quizzes, assignments, and personalized AI guidance."
+        keywords="Gradify signup, create student account, online learning registration, LMS registration"
+        canonical="https://gradify.in/register"
+      />
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-(--color-primary)/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-(--color-secondary)/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>

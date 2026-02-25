@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import Lesson from "../models/lesson.model.js";
 import Assignment from "../models/assignment.model.js";
 import AssignmentSubmission from "../models/assignmentSubmission.model.js";
+import User from "../models/user.model.js";
 
 const getSubmissionConsistencyByCourse = async ({
   studentId,
@@ -72,6 +73,45 @@ const getSubmissionConsistencyByCourse = async ({
   return consistencyByCourse;
 };
 
+const getTotalLessonsByCourseIds = async (courseIds = []) => {
+  if (!courseIds.length) return {};
+
+  const modules = await Module.find(
+    { courseId: { $in: courseIds } },
+    { _id: 1, courseId: 1 },
+  );
+
+  if (!modules.length) {
+    return Object.fromEntries(courseIds.map((id) => [id.toString(), 0]));
+  }
+
+  const moduleIds = modules.map((item) => item._id);
+
+  const lessonsByModule = await Lesson.aggregate([
+    { $match: { moduleId: { $in: moduleIds } } },
+    { $group: { _id: "$moduleId", count: { $sum: 1 } } },
+  ]);
+
+  const lessonCountByModule = new Map(
+    lessonsByModule.map((item) => [item._id.toString(), item.count]),
+  );
+
+  const totalsByCourse = {};
+
+  courseIds.forEach((id) => {
+    totalsByCourse[id.toString()] = 0;
+  });
+
+  modules.forEach((module) => {
+    const courseId = module.courseId.toString();
+    totalsByCourse[courseId] =
+      (totalsByCourse[courseId] || 0) +
+      (lessonCountByModule.get(module._id.toString()) || 0);
+  });
+
+  return totalsByCourse;
+};
+
 export const getStudentCourse = async (req, res, next) => {
   try {
     const studentId = req.user._id;
@@ -89,12 +129,31 @@ export const getStudentCourse = async (req, res, next) => {
       courseIds: enrollments.map((item) => item.courseId?._id).filter(Boolean),
     });
 
+    const totalLessonsByCourse = await getTotalLessonsByCourseIds(
+      enrollments.map((item) => item.courseId?._id).filter(Boolean),
+    );
+
+    const enrollmentUpdates = [];
+    const mergedSkills = new Set(req.user.skillsAcquired || []);
+
     const coursesWithStats = enrollments.map((e) => {
-      const totalLessons = e.courseId.totalLessons || 1;
+      const totalLessons =
+        totalLessonsByCourse[e.courseId._id.toString()] ||
+        e.courseId.totalLessons ||
+        0;
 
       const progress = Math.round(
-        (e.completedLessons.length / totalLessons) * 100,
+        totalLessons > 0 ? (e.completedLessons.length / totalLessons) * 100 : 0,
       );
+
+      if ((e.progressPercent || 0) !== progress) {
+        e.progressPercent = progress;
+        enrollmentUpdates.push(e.save());
+      }
+
+      if (progress === 100) {
+        (e.courseId?.skills || []).forEach((skill) => mergedSkills.add(skill));
+      }
 
       return {
         ...e.courseId._doc,
@@ -104,6 +163,16 @@ export const getStudentCourse = async (req, res, next) => {
           consistencyByCourse[e.courseId._id.toString()] || 0,
       };
     });
+
+    if (enrollmentUpdates.length) {
+      await Promise.all(enrollmentUpdates);
+    }
+
+    if (mergedSkills.size !== (req.user.skillsAcquired || []).length) {
+      await User.findByIdAndUpdate(studentId, {
+        skillsAcquired: Array.from(mergedSkills),
+      });
+    }
 
     res.status(200).json(coursesWithStats);
   } catch (error) {
@@ -137,13 +206,41 @@ export const getCourse = async (req, res, next) => {
       });
 
       if (enrollment) {
-        const totalLessons = course.totalLessons || 1;
+        const totalLessonsByCourse = await getTotalLessonsByCourseIds([
+          course._id,
+        ]);
+
+        const totalLessons =
+          totalLessonsByCourse[course._id.toString()] ||
+          course.totalLessons ||
+          0;
 
         progress = Math.round(
-          ((enrollment.completedLessons?.length || 0) / totalLessons) * 100,
+          totalLessons > 0
+            ? ((enrollment.completedLessons?.length || 0) / totalLessons) * 100
+            : 0,
         );
 
         attendancePercent = enrollment.attendancePercent || 0;
+
+        if ((enrollment.progressPercent || 0) !== progress) {
+          enrollment.progressPercent = progress;
+          await enrollment.save();
+        }
+
+        if (progress === 100) {
+          const currentUser = await User.findById(studentId);
+          const mergedSkills = new Set(currentUser?.skillsAcquired || []);
+          (course.skills || []).forEach((skill) => mergedSkills.add(skill));
+
+          if (
+            mergedSkills.size !== (currentUser?.skillsAcquired || []).length
+          ) {
+            await User.findByIdAndUpdate(studentId, {
+              skillsAcquired: Array.from(mergedSkills),
+            });
+          }
+        }
       }
 
       const consistencyByCourse = await getSubmissionConsistencyByCourse({
@@ -322,10 +419,14 @@ export const markLessonCompleted = async (req, res, next) => {
     /* ===== Calculate Progress ===== */
     const course = await Course.findById(courseId);
 
-    const totalLessons = course.totalLessons || 1;
+    const totalLessonsByCourse = await getTotalLessonsByCourseIds([courseId]);
+    const totalLessons =
+      totalLessonsByCourse[courseId.toString()] || course.totalLessons || 0;
 
     const progress = Math.round(
-      (enrollment.completedLessons.length / totalLessons) * 100,
+      totalLessons > 0
+        ? (enrollment.completedLessons.length / totalLessons) * 100
+        : 0,
     );
 
     enrollment.progressPercent = progress;
@@ -334,7 +435,11 @@ export const markLessonCompleted = async (req, res, next) => {
     await enrollment.save();
 
     if (enrollment.progressPercent === 100) {
-      user.skillsAcquired = enrollment.courseId.skills;
+      const mergedSkills = new Set(user.skillsAcquired || []);
+      (enrollment.courseId.skills || []).forEach((skill) =>
+        mergedSkills.add(skill),
+      );
+      user.skillsAcquired = Array.from(mergedSkills);
       await user.save();
     }
     res.status(200).json({

@@ -15,6 +15,7 @@ import {
   FiChevronUp,
 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import SEO from "../components/SEO";
 
 const _MotionRef = motion;
 
@@ -304,6 +305,12 @@ const Courses = () => {
 
   return (
     <div className="min-h-screen bg-(--bg-main) text-(--text-primary) pt-24">
+      <SEO
+        title="Courses | Gradify Learning Catalog"
+        description="Explore Gradify courses across web development, data science, design, mobile apps, and business with structured learning paths."
+        keywords="online courses, Gradify courses, web development course, data science course, design course, business course"
+        canonical="https://gradify.in/courses"
+      />
       {/* Hero Section */}
       <section className="bg-(--bg-surface) border-b border-(--border-color) px-6 md:px-20 py-12">
         <motion.div
