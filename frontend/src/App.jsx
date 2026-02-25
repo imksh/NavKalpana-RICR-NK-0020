@@ -56,6 +56,7 @@ import PublicLayout from "./components/Layout/PublicLayout";
 import StudentLayout from "./components/Layout/StudentLayout";
 import Courses from "./pages/Courses";
 import usePushStore from "./store/usePushStore";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
@@ -248,6 +249,8 @@ const App = () => {
         >
           <Route path="/instructor" element={<InstructorHome />} />
         </Route>
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       <PwaInstallPrompt />
