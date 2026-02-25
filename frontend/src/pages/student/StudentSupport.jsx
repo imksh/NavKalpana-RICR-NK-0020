@@ -100,6 +100,8 @@ const StudentSupport = () => {
     }
   };
 
+
+  
   const handleSessionBooked = async () => {
     try {
       const sessionsRes = await api.get("/student/sessions");
