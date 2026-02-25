@@ -14,6 +14,7 @@ import {
 } from "react-icons/fi";
 import { HiOutlineSparkles } from "react-icons/hi";
 
+
 const MotionDiv = motion.div;
 
 const QuizAiReviewModal = ({ quizId, courseId, onClose, isOpen }) => {
