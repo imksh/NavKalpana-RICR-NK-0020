@@ -15,6 +15,7 @@ const StudentJobPage = () => {
   const [resume, setResume] = useState(null);
   const [coverLetter, setCoverLetter] = useState("");
   const [loading, setLoading] = useState(false);
+  const externalApplyDemoLink = "https://www.linkedin.com/jobs/";
 
   const getLocalizedText = (value) => {
     if (typeof value === "string") return value;
@@ -195,6 +196,16 @@ const StudentJobPage = () => {
           </div>
 
           <div className="flex justify-end gap-4">
+            <button
+              onClick={() => window.open(externalApplyDemoLink, "_blank")}
+              disabled={job.status === "close"}
+              className="px-6 py-3 rounded-xl border border-(--border-color) bg-(--card-bg) disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {t("studentJobPage.applyExternallyDemo", {
+                defaultValue: "Apply Externally (Demo)",
+              })}
+            </button>
+
             <button
               onClick={() => navigate(-1)}
               className="px-6 py-3 rounded-xl bg-(--bg-muted)"
