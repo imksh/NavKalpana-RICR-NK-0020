@@ -1385,6 +1385,12 @@
       "success": "Doubt submitted successfully!",
       "error": "Failed to submit doubt. Please try again."
     },
+    "chat": {
+      "defaultWelcome": "Hi, how can I help you today?",
+      "demoResponse": "This is a demo AI response.",
+      "inputPlaceholder": "Ask something...",
+      "sendButton": "Send Message"
+    },
     "bookSession": {
       "title": "Book Session",
       "topicLabel": "Session Topic",

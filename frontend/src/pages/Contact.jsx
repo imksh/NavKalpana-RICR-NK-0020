@@ -98,7 +98,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="bg-(--bg-main) text-(--text-primary) min-h-screen">
+    <div className="relative overflow-x-hidden bg-(--bg-main) text-(--text-primary) min-h-screen">
       <SEO
         title="Contact Gradify | Support, Help & Partnerships"
         description="Reach out to Gradify for support, enrollment questions, partnership opportunities, and platform assistance."
@@ -110,7 +110,7 @@ const Contact = () => {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-(--color-secondary)/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
       {/* ================= HERO ================= */}
-      <section className="relative pt-32 pb-20 px-6 md:px-20 text-center">
+      <section className="relative pt-24 sm:pt-28 md:pt-32 pb-14 sm:pb-20 px-4 sm:px-6 md:px-20 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -125,7 +125,7 @@ const Contact = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-4xl md:text-5xl font-bold"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold"
         >
           {t("contact.title")}
         </motion.h1>
@@ -134,15 +134,15 @@ const Contact = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-6 max-w-2xl mx-auto text-lg text-(--text-secondary)"
+          className="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-(--text-secondary)"
         >
           {t("contact.subtitle")}
         </motion.p>
       </section>
 
       {/* ================= CONTACT SECTION ================= */}
-      <section className="relative px-6 md:px-20 pb-24">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
+      <section className="relative px-4 sm:px-6 md:px-20 pb-20 sm:pb-24">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 sm:gap-10 lg:gap-12">
           {/* ===== Contact Info Column ===== */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
@@ -175,7 +175,7 @@ const Contact = () => {
             </div>
 
             {/* Office Hours */}
-            <div className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-6">
+            <div className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-5 sm:p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-(--color-primary)/10 rounded-lg flex items-center justify-center">
                   <FiClock className="text-(--color-primary)" size={20} />
@@ -185,7 +185,7 @@ const Contact = () => {
                 </h3>
               </div>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3">
                   <span className="text-(--text-secondary)">
                     {t("contact.officeHours.weekdays")}
                   </span>
@@ -193,7 +193,7 @@ const Contact = () => {
                     {t("contact.officeHours.weekdaysTimes")}
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3">
                   <span className="text-(--text-secondary)">
                     {t("contact.officeHours.saturday")}
                   </span>
@@ -201,7 +201,7 @@ const Contact = () => {
                     {t("contact.officeHours.saturdayTimes")}
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3">
                   <span className="text-(--text-secondary)">
                     {t("contact.officeHours.sunday")}
                   </span>
@@ -213,11 +213,11 @@ const Contact = () => {
             </div>
 
             {/* Social Media */}
-            <div className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-6">
+            <div className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-5 sm:p-6">
               <h3 className="font-semibold text-lg mb-4">
                 {t("contact.followUs")}
               </h3>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 {socialLinks.map((social, index) => (
                   <motion.a
                     key={index}
@@ -246,7 +246,7 @@ const Contact = () => {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-(--card-bg) p-8 md:p-10 rounded-3xl shadow-xl border border-(--border-color)"
+            className="bg-(--card-bg) p-5 sm:p-6 md:p-10 rounded-2xl sm:rounded-3xl shadow-xl border border-(--border-color)"
           >
             <h2 className="text-2xl font-semibold mb-6">
               {t("contact.sendMessage")}
@@ -257,7 +257,7 @@ const Contact = () => {
               <label className="block text-sm font-medium mb-3 text-(--text-secondary)">
                 {t("contact.topicLabel")}
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {contactTopics.map((topic) => (
                   <button
                     key={topic.id}
@@ -277,7 +277,9 @@ const Contact = () => {
                       }
                       size={18}
                     />
-                    <p className="text-sm font-medium mt-1">{topic.label}</p>
+                    <p className="text-sm font-medium mt-1 wrap-break-word">
+                      {topic.label}
+                    </p>
                   </button>
                 ))}
               </div>
@@ -396,7 +398,7 @@ const Contact = () => {
         </div>
       </section>
       {/* ================= FAQ SECTION ================= */}
-      <section className="relative px-6 md:px-20 pb-24">
+      <section className="relative px-4 sm:px-6 md:px-20 pb-20 sm:pb-24">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">{t("contact.faqTitle")}</h2>
@@ -413,7 +415,7 @@ const Contact = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-6 hover:shadow-lg transition-shadow"
+                className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-4 sm:p-6 hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-start gap-4">
                   <div className="w-8 h-8 bg-(--color-primary)/10 rounded-lg flex items-center justify-center shrink-0 mt-1">
@@ -439,7 +441,7 @@ const Contact = () => {
 };
 
 const InfoCard = ({ icon, title, desc, subdesc }) => (
-  <div className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-6 hover:shadow-lg transition-shadow">
+  <div className="bg-(--card-bg) border border-(--border-color) rounded-2xl p-5 sm:p-6 hover:shadow-lg transition-shadow">
     <div className="flex items-start gap-4">
       <div className="w-12 h-12 bg-(--color-primary)/10 rounded-lg flex items-center justify-center shrink-0">
         <div className="text-(--color-primary)">{icon}</div>

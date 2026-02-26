@@ -3,6 +3,111 @@ import AiConversation from "../models/aiConversation.model.js";
 import QuizResult from "../models/quizResult.model.js";
 import Quiz from "../models/quiz.model.js";
 
+const OUT_OF_SCOPE_RESPONSE =
+  "This question is outside my role. Please ask a role-related question or choose a more suitable AI mentor.";
+
+const MODEL_SCOPE_KEYWORDS = {
+  CourseHelper: [
+    "course",
+    "concept",
+    "topic",
+    "syllabus",
+    "module",
+    "lesson",
+    "study",
+    "learn",
+    "exam",
+    "assignment",
+  ],
+  PlacementHelper: [
+    "placement",
+    "interview",
+    "resume",
+    "cv",
+    "job",
+    "salary",
+    "hr",
+    "aptitude",
+    "company",
+    "offer",
+  ],
+  DoubtSolver: [
+    "doubt",
+    "explain",
+    "clarify",
+    "why",
+    "how",
+    "error",
+    "issue",
+    "fix",
+    "problem",
+    "step",
+  ],
+  CareerGuide: [
+    "career",
+    "roadmap",
+    "goal",
+    "industry",
+    "growth",
+    "skill",
+    "switch",
+    "future",
+    "domain",
+    "opportunity",
+  ],
+  ProjectMentor: [
+    "project",
+    "architecture",
+    "design",
+    "debug",
+    "code",
+    "scalable",
+    "deploy",
+    "production",
+    "api",
+    "database",
+  ],
+  DSAMentor: [
+    "dsa",
+    "array",
+    "linked list",
+    "tree",
+    "graph",
+    "stack",
+    "queue",
+    "recursion",
+    "dynamic programming",
+    "complexity",
+    "algorithm",
+    "sorting",
+    "searching",
+  ],
+  FSDMentor: [
+    "full stack",
+    "frontend",
+    "backend",
+    "react",
+    "node",
+    "express",
+    "mongodb",
+    "authentication",
+    "mern",
+    "deployment",
+  ],
+  ProgrammingBasicsMentor: [
+    "programming",
+    "variable",
+    "loop",
+    "condition",
+    "function",
+    "oop",
+    "beginner",
+    "syntax",
+    "logic",
+    "if else",
+  ],
+};
+
 // ================================
 // Get all available AI models
 // ================================
@@ -61,11 +166,14 @@ export const chatWithAi = async (req, res, next) => {
 
     // Limit conversation context (last 10 messages only)
     const limitedMessages = conversation.messages.slice(-10);
+    const inScope = isMessageInModelScope(aiModel.name, message);
 
-    const aiResponse = await generateAiResponse(
-      aiModel.systemPrompt,
-      limitedMessages,
-    );
+    const aiResponse = inScope
+      ? await generateAiResponse(
+          buildScopedSystemPrompt(aiModel.systemPrompt),
+          limitedMessages,
+        )
+      : OUT_OF_SCOPE_RESPONSE;
 
     conversation.messages.push({
       role: "assistant",
@@ -78,12 +186,28 @@ export const chatWithAi = async (req, res, next) => {
       conversationId: conversation._id,
       response: aiResponse,
       messages: conversation.messages,
+      outOfScope: !inScope,
     });
   } catch (error) {
     console.error("Error in chatWithAi:", error);
     next(error);
   }
 };
+
+function isMessageInModelScope(modelName, message) {
+  const modelKeywords = MODEL_SCOPE_KEYWORDS[modelName];
+
+  if (!modelKeywords || !message) {
+    return true;
+  }
+
+  const normalizedMessage = message.toLowerCase();
+  return modelKeywords.some((keyword) => normalizedMessage.includes(keyword));
+}
+
+function buildScopedSystemPrompt(basePrompt) {
+  return `${basePrompt}\n\nImportant Rule: Answer only questions related to your assigned role. If the question is outside your role, respond exactly with: "${OUT_OF_SCOPE_RESPONSE}"`;
+}
 
 // ================================
 // Get single conversation
