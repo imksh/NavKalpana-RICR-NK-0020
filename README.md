@@ -256,11 +256,6 @@ Local: http://localhost:5001
 | GET    | /api/student/profile | Fetch student profile and metadata | Yes           |
 | PUT    | /api/student/profile | Update student profile details     | Yes           |
 
-### Instructor
-
-| Method | Endpoint                  | Description                              | Auth Required |
-| ------ | ------------------------- | ---------------------------------------- | ------------- |
-| GET    | /api/instructor/dashboard | Instructor analytics and course overview | Yes           |
 
 ### Course
 
@@ -268,12 +263,6 @@ Local: http://localhost:5001
 | ------ | ----------- | ----------------------------------- | ------------- |
 | GET    | /api/course | List available courses with filters | Optional      |
 | POST   | /api/course | Create a new course                 | Yes           |
-
-### Admin
-
-| Method | Endpoint         | Description                             | Auth Required |
-| ------ | ---------------- | --------------------------------------- | ------------- |
-| GET    | /api/admin/stats | Platform-level statistics and summaries | Yes           |
 
 ### Public
 

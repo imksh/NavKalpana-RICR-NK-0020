@@ -101,7 +101,7 @@ curl -X POST "http://localhost:5001/api/auth/login" \
 
 | Method | Endpoint                  | Access            | Description                              |
 | ------ | ------------------------- | ----------------- | ---------------------------------------- |
-| POST   | `/`                       | Protected + Admin | Create alumni record.                    |
+
 | POST   | `/send-test-notification` | Protected + Admin | Send test push notification to students. |
 
 ---
