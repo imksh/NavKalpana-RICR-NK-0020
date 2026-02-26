@@ -62,6 +62,7 @@ const ChatModal = ({ tutor, onClose, isOpen }) => {
         modelName: tutor.name,
         message: userMessage,
         conversationId: conversationId,
+        strictRoleScope: true,
       });
 
       // Store conversation ID for future messages
@@ -102,7 +103,7 @@ const ChatModal = ({ tutor, onClose, isOpen }) => {
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "tween" }}
-        className="fixed right-0 top-0 h-full w-full sm:w-[420px] 
+        className="fixed right-0 top-0 h-full w-full sm:w-105 
                    bg-(--card-bg) border-l border-(--border-color) 
                    z-101 flex flex-col"
       >

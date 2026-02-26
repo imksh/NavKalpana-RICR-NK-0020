@@ -129,7 +129,8 @@ export const getAiModels = async (req, res, next) => {
 export const chatWithAi = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const { modelName, message, courseId, conversationId } = req.body;
+    const { modelName, message, courseId, conversationId, strictRoleScope } =
+      req.body;
 
     if (!modelName || !message) {
       return res
@@ -166,11 +167,16 @@ export const chatWithAi = async (req, res, next) => {
 
     // Limit conversation context (last 10 messages only)
     const limitedMessages = conversation.messages.slice(-10);
-    const inScope = isMessageInModelScope(aiModel.name, message);
+    const shouldEnforceRoleScope = Boolean(strictRoleScope);
+    const inScope = shouldEnforceRoleScope
+      ? isMessageInModelScope(aiModel.name, message)
+      : true;
 
     const aiResponse = inScope
       ? await generateAiResponse(
-          buildScopedSystemPrompt(aiModel.systemPrompt),
+          shouldEnforceRoleScope
+            ? buildScopedSystemPrompt(aiModel.systemPrompt)
+            : aiModel.systemPrompt,
           limitedMessages,
         )
       : OUT_OF_SCOPE_RESPONSE;
@@ -186,7 +192,7 @@ export const chatWithAi = async (req, res, next) => {
       conversationId: conversation._id,
       response: aiResponse,
       messages: conversation.messages,
-      outOfScope: !inScope,
+      outOfScope: shouldEnforceRoleScope && !inScope,
     });
   } catch (error) {
     console.error("Error in chatWithAi:", error);
