@@ -13,6 +13,8 @@ import Event from "../models/event.model.js";
 import PDFDocument from "pdfkit";
 import { updateLearningStreak } from "../utils/updateLearningStreak.js";
 
+const APP_TIMEZONE = process.env.APP_TIMEZONE || "Asia/Kolkata";
+
 const getTotalLessonsByCourseIds = async (courseIds = []) => {
   if (!courseIds.length) return {};
 
@@ -194,6 +196,7 @@ export const stats = async (req, res, next) => {
             $dateToString: {
               format: "%Y-%m-%d",
               date: "$createdAt",
+              timezone: APP_TIMEZONE,
             },
           },
         },
@@ -279,6 +282,7 @@ export const getLearningActivity = async (req, res, next) => {
             $dateToString: {
               format: "%Y-%m-%d",
               date: "$createdAt",
+              timezone: APP_TIMEZONE,
             },
           },
           count: { $sum: 1 },
@@ -296,7 +300,8 @@ export const getLearningActivity = async (req, res, next) => {
       },
     ]);
 
-    const streak = calculateStreak(activity.map((a) => a.date));
+    const student = await User.findById(studentId).select("learningStreak");
+    const streak = student?.learningStreak?.current || 0;
 
     res.status(200).json({ activity, streak });
   } catch (error) {

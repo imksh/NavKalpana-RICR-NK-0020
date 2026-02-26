@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FiBookOpen,
   FiCheckCircle,
@@ -28,6 +28,7 @@ const LessonPage = () => {
   const [courseMeta, setCourseMeta] = useState(null);
   const [moduleLessons, setModuleLessons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const openedLessonRef = useRef(null);
 
   /* ================= FETCH LESSON ================= */
   useEffect(() => {
@@ -93,16 +94,25 @@ const LessonPage = () => {
       : null;
 
   useEffect(() => {
-    if (!lesson) return;
+    if (!lesson?._id || !lesson?.courseId) return;
+    if (openedLessonRef.current === lesson._id) return;
+
+    openedLessonRef.current = lesson._id;
+
     const addStreak = async () => {
-      const res = await api.post(`/student/lesson/${lesson._id}/opened`, {
-        lessonId: lesson._id,
-        courseId: lesson.courseId,
-      });
-      console.log("Lesson Opened Activity Logged:", res.data);
+      try {
+        const res = await api.post(`/student/lesson/${lesson._id}/opened`, {
+          lessonId: lesson._id,
+          courseId: lesson.courseId,
+        });
+        console.log("Lesson Opened Activity Logged:", res.data);
+      } catch (error) {
+        console.log("Error logging lesson opened activity:", error);
+      }
     };
+
     addStreak();
-  }, [lesson]);
+  }, [lesson?._id, lesson?.courseId]);
 
   if (loading) {
     return <LoadingWave />;
