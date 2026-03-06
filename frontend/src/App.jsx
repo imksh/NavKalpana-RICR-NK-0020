@@ -203,6 +203,7 @@ const App = () => {
             <Route path="/student/courses" element={<MyCourses />} />
             <Route path="/student/support" element={<StudentSupport />} />
             <Route path="/student/alumni" element={<Alumni />} />
+            <Route path="/student/contact" element={<Contact />} />
             <Route
               path="/student/notifications"
               element={<StudentNotifications />}

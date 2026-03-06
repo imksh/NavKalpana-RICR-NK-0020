@@ -63,7 +63,7 @@ const StudentLayout = () => {
 
             <div className="mt-7 flex flex-wrap gap-3">
               <button
-                onClick={() => navigate("/contact")}
+                onClick={() => navigate("/student/contact")}
                 className="px-5 py-2.5 rounded-xl bg-(--color-primary) text-white font-medium hover:bg-(--color-primary-hover) transition"
               >
                 Contact Admin

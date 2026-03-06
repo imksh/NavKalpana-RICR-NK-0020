@@ -21,7 +21,7 @@ const Login = () => {
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] =
     useState(false);
   const navigate = useNavigate();
-  const { login, isLoading } = useAuthStore();
+  const { login, isLogging } = useAuthStore();
   const { t } = useTranslation();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -173,6 +173,18 @@ const Login = () => {
                   </p>
                 </div>
 
+                <div className="mb-6 rounded-xl border border-(--border-color) bg-(--bg-muted) p-4">
+                  <p className="text-sm font-semibold text-(--text-primary)">
+                    Demo Login
+                  </p>
+                  <p className="text-sm text-(--text-secondary)">
+                    Email: <span className="font-medium">demo@gradify.com</span>
+                  </p>
+                  <p className="text-sm text-(--text-secondary)">
+                    Password: <span className="font-medium">demo@123</span>
+                  </p>
+                </div>
+
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Email */}
@@ -254,13 +266,20 @@ const Login = () => {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={isLoading}
-                    className="w-full py-3.5 rounded-xl bg-(--color-primary) text-white font-semibold hover:bg-(--color-primary-hover) transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-(--color-primary)/20"
+                    disabled={isLogging}
+                    className={`w-full py-3.5 rounded-xl bg-(--color-primary) text-white font-semibold hover:bg-(--color-primary-hover) transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-(--color-primary)/20 ${
+                      isLogging ? "cursor-wait" : ""
+                    }`}
                   >
-                    {isLoading ? (
+                    {isLogging ? (
                       <span className="flex items-center justify-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        {t("login.loading")}
+                        <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        <span>{t("login.loading")}</span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-bounce [animation-delay:-0.3s]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-bounce [animation-delay:-0.15s]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-bounce"></span>
+                        </span>
                       </span>
                     ) : (
                       t("login.button")

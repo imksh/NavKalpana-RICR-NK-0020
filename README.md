@@ -1,10 +1,26 @@
-# Gradify — Student Learning & Progress Platform
+# 🥇 Gradify — Student Learning & Progress Platform
 
-> A full-stack platform for managing courses, assessments, attendance, communication, and student progress in one place.
+> A full-stack platform for managing courses, assessments, attendance, communication, and student progress in one place.  
+> **🏆 1st Rank Winner – NavKalpana Hackathon**
 
+![Winner](https://img.shields.io/badge/NavKalpana%20Hackathon-1st%20Place%20Winner-gold)
 ![Status](https://img.shields.io/badge/status-in%20development-blue)
 ![License](https://img.shields.io/badge/license-ISC-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D18.x-brightgreen)
+
+---
+
+## 🏆 Hackathon Victory
+
+<p align="center">
+  <img src="./docs/screenshots/winner.jpg" width="45%" />
+  <img src="./docs/screenshots/winningTeam.jpg" width="45%" />
+</p>
+
+<p align="center">
+  <img src="./docs/screenshots/winningCheque.jpg" width="45%" />
+  <img src="./docs/screenshots/winningCheque.jpg" width="45%" />
+</p>
 
 ---
 
